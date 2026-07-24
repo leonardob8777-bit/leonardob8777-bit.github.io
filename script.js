@@ -30,6 +30,22 @@ const links = [
     tipo: "install", // enlace OTA: misma pestaña, sin target _blank (iOS lo exige)
   },
   {
+    id: "kravasign",
+    titulo: "KravaSign",
+    subtitulo: "Purchase",
+    url: "https://www.kravasign.com/purchase", // KravaSign
+    icono: "kravasign",
+    tipo: "externo",
+  },
+  {
+    id: "udid",
+    titulo: "Get UDID",
+    subtitulo: "Find your device ID",
+    url: "https://udid.tech/", // udid.tech
+    icono: "getudid",
+    tipo: "externo",
+  },
+  {
     id: "certificados",
     titulo: "Download Certificates",
     subtitulo: "MediaFire folder",
@@ -83,6 +99,26 @@ const ICONS = {
       </defs>
       <circle cx="120" cy="120" r="120" fill="url(#mf)"/>
       <path fill="#fff" d="M133 46c5 29 31 41 35 76 4 37-23 66-51 66-29 0-51-23-51-51 0-21 11-33 23-45 0 16 6 27 19 31-13-23-4-53 25-76z"/>
+    </svg>`,
+
+  // Logo real de KravaSign (la vaquita): imagen circular.
+  kravasign: `<img class="logo" src="assets/kravasign.png" alt="" />`,
+
+  // Logo propio para "Get UDID": huella digital en círculo verde-azulado (SVG).
+  getudid: `
+    <svg class="logo" viewBox="0 0 240 240" aria-hidden="true">
+      <defs>
+        <linearGradient id="uid" x1="120" y1="0" x2="120" y2="240" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#22d3aa"/>
+          <stop offset="1" stop-color="#0e9488"/>
+        </linearGradient>
+      </defs>
+      <circle cx="120" cy="120" r="120" fill="url(#uid)"/>
+      <g fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M74 158 V132 a46 46 0 0 1 92 0 V158"/>
+        <path d="M100 158 V134 a20 20 0 0 1 40 0 V158"/>
+        <path d="M120 158 V120"/>
+      </g>
     </svg>`,
 
   download: `

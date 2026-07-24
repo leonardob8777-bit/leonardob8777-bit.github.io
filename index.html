@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ============================================================= -->
+  <!-- BASIC SEO  —  CHANGE to your real data                        -->
+  <!-- ============================================================= -->
+  <title>Leonardo Bt · Links</title>
+  <meta name="description" content="All my links in one place: Telegram, certificates and the signing app." />
+  <meta name="author" content="Leonardo Bt" />
+  <meta name="theme-color" content="#05060c" />
+
+  <!-- ============================================================= -->
+  <!-- OPEN GRAPH (Facebook, WhatsApp, Telegram, LinkedIn…)          -->
+  <!-- When online, use the ABSOLUTE URL:                            -->
+  <!--   https://YOUR-USER.github.io/YOUR-REPO/assets/og-image.jpg   -->
+  <!-- ============================================================= -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Leonardo Bt · Links" />
+  <meta property="og:description" content="All my links in one place: Telegram, certificates and the signing app." />
+  <meta property="og:image" content="assets/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://YOUR-USER.github.io/YOUR-REPO/" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- ============================================================= -->
+  <!-- TWITTER CARD                                                  -->
+  <!-- ============================================================= -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Leonardo Bt · Links" />
+  <meta name="twitter:description" content="All my links in one place: Telegram, certificates and the signing app." />
+  <meta name="twitter:image" content="assets/og-image.jpg" />
+
+  <!-- ============================================================= -->
+  <!-- FAVICON                                                       -->
+  <!-- ============================================================= -->
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="apple-touch-icon" href="assets/avatar.jpg" />
+
+  <!-- ============================================================= -->
+  <!-- GOOGLE FONTS  —  Space Grotesk (preconnect for speed)         -->
+  <!-- ============================================================= -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <!-- Animated aurora gradient layer. Purely decorative. -->
+  <div class="aurora" aria-hidden="true"></div>
+
+  <main class="card" role="main">
+    <!-- ---------- HEADER / PROFILE ---------- -->
+    <header class="profile">
+      <div class="avatar-wrap">
+        <!-- Replace assets/avatar.jpg with your photo (square, ~400x400) -->
+        <img
+          class="avatar"
+          src="assets/avatar.jpg"
+          alt="Leonardo Bt profile photo"
+          width="112"
+          height="112"
+          fetchpriority="high"
+        />
+      </div>
+
+      <!-- Name, handle and bio -->
+      <h1 class="name">Leonardo Bt</h1>
+      <p class="handle">@leonardo.bt4</p>
+      <p class="bio">Welcome — all my links in one place</p>
+    </header>
+
+    <!-- ---------- BUTTONS ---------- -->
+    <!-- This <nav> is filled ONLY from script.js. Don't write   -->
+    <!-- buttons by hand here: edit the `links` array in script.js. -->
+    <nav id="links" class="links" aria-label="My links"></nav>
+
+    <!-- ---------- FOOTER ---------- -->
+    <footer class="footer">
+      <p>© <span id="year"></span> Leonardo Bt · Made with ♥</p>
+    </footer>
+  </main>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

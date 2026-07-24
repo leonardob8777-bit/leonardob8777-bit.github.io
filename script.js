@@ -25,7 +25,7 @@ const links = [
     subtitulo: "Tap to install (iOS)",
     // Instalación OTA de iOS: el .plist va envuelto en itms-services://
     // para que iPhone muestre el instalador en vez de abrir el XML.
-    url: "itms-services://?action=download-manifest&url=https://signtools.ipaomtk.com/output/KSign-IPAOMTK.COM-signed-b6bc26767fc9db529fa0.plist",
+    url: "itms-services://?action=download-manifest&url=https://signtools.ipaomtk.com/output/Ksign-signed-4042826097807ab171c2.plist",
     icono: "ksign",
     tipo: "install", // enlace OTA: misma pestaña, sin target _blank (iOS lo exige)
   },

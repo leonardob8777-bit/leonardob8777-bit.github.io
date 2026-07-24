@@ -30,6 +30,15 @@ const links = [
     tipo: "install", // enlace OTA: misma pestaña, sin target _blank (iOS lo exige)
   },
   {
+    id: "lara",
+    titulo: "Install Lara",
+    subtitulo: "Tap to install (iOS)",
+    // Instalación OTA de iOS (mismo esquema que KSign).
+    url: "itms-services://?action=download-manifest&url=https://signtools.ipaomtk.com/output/lara-signed-e6068e62d5475dfbeabd.plist",
+    icono: "lara",
+    tipo: "install",
+  },
+  {
     id: "kravasign",
     titulo: "KravaSign",
     subtitulo: "Purchase",
@@ -87,6 +96,9 @@ const ICONS = {
 
   // Logo real de KSign: imagen circular. Reemplazá assets/ksign.png por el tuyo.
   ksign: `<img class="logo" src="assets/ksign.png" alt="" />`,
+
+  // Logo real de Lara (la hormiga): imagen circular.
+  lara: `<img class="logo" src="assets/lara.png" alt="" />`,
 
   // Logo de MediaFire (llama) a color, en círculo (SVG => nítido siempre).
   mediafire: `

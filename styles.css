@@ -178,6 +178,26 @@ body {
    Para la esquina IZQUIERDA: cambiá `right:` por `left:`.
    Para el borde inferior: cambiá `top:` por `bottom:`.
    ================================================================= */
+/* -----------------------------------------------------------------
+   LIENZO WebGL (el agujero negro "de verdad", con lente gravitacional)
+   Ocupa la misma esquina que la versión CSS. Si WebGL arranca bien,
+   el JS le pone al <body> la clase `has-webgl-bh` y escondemos el
+   respaldo CSS. Si no, no pasa nada y se ve el de CSS.
+   ----------------------------------------------------------------- */
+.bh-canvas {
+  position: fixed;
+  top: clamp(-90px, -9vw, -45px);
+  right: clamp(-110px, -11vw, -60px);
+  width: clamp(380px, 78vw, 560px);
+  aspect-ratio: 1;
+  z-index: -1;
+  pointer-events: none;
+  display: block;
+}
+
+/* Con WebGL activo, el agujero negro de CSS sobra */
+body.has-webgl-bh .bh { display: none; }
+
 .bh {
   position: fixed;
   /* Poco recorte: así se ve la esfera completa Y el arco de arriba */

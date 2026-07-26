@@ -46,7 +46,7 @@
 
   <!-- El ?v= evita que el navegador use una versión vieja en caché.
        Subí el número cada vez que edites styles.css. -->
-  <link rel="stylesheet" href="styles.css?v=26" />
+  <link rel="stylesheet" href="styles.css?v=27" />
 </head>
 
 <body>
@@ -59,6 +59,10 @@
        adelante: lente que distorsiona el fondo, disco de acreción,
        materia cayendo, anillo de fotones y el vacío negro.
        Ver el bloque "AGUJERO NEGRO" en styles.css. -->
+  <!-- Agujero negro por WebGL (lente gravitacional real).
+       Si el navegador no soporta WebGL, queda el de CSS de abajo. -->
+  <canvas id="bh-canvas" class="bh-canvas" aria-hidden="true"></canvas>
+
   <div class="bh" aria-hidden="true">
     <div class="bh__halo"></div>
     <!-- Arcos LENTEADOS: la luz del disco lejano se curva y aparece
@@ -132,5 +136,6 @@
   </div>
 
   <script src="script.js?v=26" defer></script>
+  <script src="blackhole.js?v=1" defer></script>
 </body>
 </html>

@@ -146,6 +146,21 @@ body {
    segundos (al azar) y la saca enseguida. Todo lo de abajo solo se
    activa durante ese instante, así el fallo se siente impredecible.
    ================================================================= */
+/* Variables que el JS aleatoriza en CADA glitch: distancia, dirección,
+   inclinación, posición/alto de las bandas, ruido y duración. Por eso
+   ningún glitch se ve igual al anterior. */
+body {
+  --gx: 8px;      /* desplazamiento horizontal */
+  --gy: 3px;      /* desplazamiento vertical   */
+  --gskew: 0.5deg;
+  --gdur: 0.26s;
+  --gband: 34%;   /* dónde aparece la banda cortada */
+  --gbandh: 9%;   /* qué tan alta es              */
+  --gnoise: 0.5;  /* intensidad del ruido         */
+  --ghue: -14deg;
+  --gsy: 1;       /* compresión vertical          */
+}
+
 .glitch {
   position: fixed;
   inset: 0;
@@ -166,8 +181,8 @@ body {
   content: "";
   position: absolute;
   left: 0; right: 0;
-  top: 34%;
-  height: 9%;
+  top: var(--gband);
+  height: var(--gbandh);
   background: rgba(255, 255, 255, 0.08);
   box-shadow:
     0 -170px 0 rgba(255, 60, 60, 0.07),
@@ -185,42 +200,38 @@ body {
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.55'/></svg>");
 }
 
-body.is-glitching .glitch         { animation: glitch-bars 0.26s steps(3) 1; }
-body.is-glitching .glitch::before { animation: glitch-tear 0.26s steps(2) 1; }
-body.is-glitching .glitch::after  { animation: noise-burst 0.26s steps(2) 1; }
+body.is-glitching .glitch         { animation: glitch-bars var(--gdur) steps(3) 1; }
+body.is-glitching .glitch::before { animation: glitch-tear var(--gdur) steps(2) 1; }
+body.is-glitching .glitch::after  { animation: noise-burst var(--gdur) steps(2) 1; }
 
 @keyframes noise-burst {
   0%   { opacity: 0; }
-  25%  { opacity: 0.5; }
-  55%  { opacity: 0.18; }
-  80%  { opacity: 0.38; }
+  25%  { opacity: var(--gnoise); }
+  55%  { opacity: calc(var(--gnoise) * 0.35); }
+  80%  { opacity: calc(var(--gnoise) * 0.75); }
   100% { opacity: 0; }
 }
 
 @keyframes glitch-bars {
-  0%   { opacity: 0;    transform: translate3d(0, 0, 0); }
-  12%  { opacity: 1;    transform: translate3d(-11px, 3px, 0); }
-  35%  { opacity: 0.5;  transform: translate3d(9px, -4px, 0); }
-  62%  { opacity: 1;    transform: translate3d(-6px, 2px, 0); }
-  85%  { opacity: 0.7;  transform: translate3d(3px, 0, 0); }
-  100% { opacity: 0;    transform: none; }
+  0%   { opacity: 0;   transform: translate3d(0, 0, 0); }
+  12%  { opacity: 1;   transform: translate3d(calc(var(--gx) * -1.3), var(--gy), 0); }
+  35%  { opacity: 0.5; transform: translate3d(var(--gx), calc(var(--gy) * -1.4), 0); }
+  62%  { opacity: 1;   transform: translate3d(calc(var(--gx) * -0.7), var(--gy), 0); }
+  85%  { opacity: 0.7; transform: translate3d(calc(var(--gx) * 0.4), 0, 0); }
+  100% { opacity: 0;   transform: none; }
 }
 @keyframes glitch-tear {
-  0%   { opacity: 0; transform: translateX(0) scaleY(1); }
-  25%  { opacity: 1; transform: translateX(-24px) scaleY(1.6); }
-  50%  { opacity: 1; transform: translateX(18px)  scaleY(0.55); }
-  75%  { opacity: 0.8; transform: translateX(-9px) scaleY(1.2); }
-  100% { opacity: 0; transform: none; }
+  0%   { opacity: 0;   transform: translateX(0) scaleY(1); }
+  25%  { opacity: 1;   transform: translateX(calc(var(--gx) * -2.6)) scaleY(1.6); }
+  50%  { opacity: 1;   transform: translateX(calc(var(--gx) * 2))    scaleY(0.55); }
+  75%  { opacity: 0.8; transform: translateX(calc(var(--gx) * -1))   scaleY(1.2); }
+  100% { opacity: 0;   transform: none; }
 }
 
-/* Tirón de la malla del fondo */
-body.is-glitching .aurora {
-  animation: mesh-drift 5s linear infinite, mesh-jolt 0.3s steps(3) 1;
-}
 @keyframes mesh-jolt {
   0%   { transform: translate3d(0, 0, 0); }
-  35%  { transform: translate3d(-9px, 4px, 0); }
-  70%  { transform: translate3d(7px, -3px, 0); }
+  35%  { transform: translate3d(calc(var(--gx) * -1.2), calc(var(--gy) * 1.4), 0); }
+  70%  { transform: translate3d(var(--gx), calc(var(--gy) * -1), 0); }
   100% { transform: none; }
 }
 
@@ -239,39 +250,135 @@ body.is-glitching .aurora {
 }
 body.is-glitching .name::before {
   color: #ff2d55;
-  animation: glitch-red 0.3s steps(2) 1;
+  animation: glitch-red var(--gdur) steps(2) 1;
 }
 body.is-glitching .name::after {
   color: #22d3ee;
-  animation: glitch-cyan 0.3s steps(2) 1;
+  animation: glitch-cyan var(--gdur) steps(2) 1;
 }
+/* Los cortes del texto usan --gband, que también es aleatorio,
+   así el nombre se parte a distinta altura cada vez. */
 @keyframes glitch-red {
   0%   { opacity: 0; transform: none; clip-path: inset(0 0 100% 0); }
-  30%  { opacity: 0.9; transform: translate(-3px, -1px); clip-path: inset(8% 0 55% 0); }
-  65%  { opacity: 0.7; transform: translate(2px, 1px);  clip-path: inset(60% 0 12% 0); }
+  30%  { opacity: 0.9; transform: translate(calc(var(--gx) * -0.4), -1px);
+         clip-path: inset(calc(var(--gband) * 0.2) 0 55% 0); }
+  65%  { opacity: 0.7; transform: translate(calc(var(--gx) * 0.3), 1px);
+         clip-path: inset(60% 0 12% 0); }
   100% { opacity: 0; transform: none; }
 }
 @keyframes glitch-cyan {
   0%   { opacity: 0; transform: none; clip-path: inset(100% 0 0 0); }
-  30%  { opacity: 0.85; transform: translate(3px, 1px);  clip-path: inset(50% 0 18% 0); }
-  65%  { opacity: 0.6;  transform: translate(-2px, -1px); clip-path: inset(15% 0 62% 0); }
+  30%  { opacity: 0.85; transform: translate(calc(var(--gx) * 0.4), 1px);
+         clip-path: inset(50% 0 18% 0); }
+  65%  { opacity: 0.6;  transform: translate(calc(var(--gx) * -0.3), -1px);
+         clip-path: inset(calc(var(--gband) * 0.3) 0 62% 0); }
   100% { opacity: 0; transform: none; }
 }
 
-/* Parpadeo general + corrimiento lateral (como si saltara la señal) */
-body.is-glitching .page {
-  animation: glitch-flicker 0.26s steps(2) 1, page-shift 0.26s steps(3) 1;
-}
+/* Parpadeo general (siempre presente, con color aleatorio) */
+body.is-glitching .page { animation: glitch-flicker var(--gdur) steps(2) 1; }
 @keyframes glitch-flicker {
-  0%, 100% { opacity: 1; filter: none; }
-  22%      { opacity: 0.78; filter: hue-rotate(-14deg) saturate(1.5); }
+  0%, 100% { opacity: 1;    filter: none; }
+  22%      { opacity: 0.78; filter: hue-rotate(var(--ghue)) saturate(1.5); }
   48%      { opacity: 1;    filter: contrast(1.25); }
   70%      { opacity: 0.9;  filter: none; }
 }
-@keyframes page-shift {
+
+/* -----------------------------------------------------------------
+   VARIANTES DE MOVIMIENTO
+   El JS elige una al azar en cada glitch (gv-1 … gv-6), así el
+   fallo nunca se repite igual. Cada una mueve la página distinto.
+   ----------------------------------------------------------------- */
+
+/* 1 · Corrimiento lateral con inclinación */
+body.gv-1.is-glitching .page {
+  animation: glitch-flicker var(--gdur) steps(2) 1,
+             gv-shift var(--gdur) steps(3) 1;
+}
+@keyframes gv-shift {
   0%   { transform: translate3d(0, 0, 0); }
-  30%  { transform: translate3d(-5px, 1px, 0) skewX(0.6deg); }
-  60%  { transform: translate3d(4px, -1px, 0) skewX(-0.4deg); }
+  30%  { transform: translate3d(calc(var(--gx) * -0.6), var(--gy), 0) skewX(var(--gskew)); }
+  60%  { transform: translate3d(calc(var(--gx) * 0.5), calc(var(--gy) * -1), 0) skewX(calc(var(--gskew) * -1)); }
+  100% { transform: none; }
+}
+
+/* 2 · Rodado vertical (como una TV desincronizada) */
+body.gv-2.is-glitching .page {
+  animation: glitch-flicker var(--gdur) steps(2) 1,
+             gv-roll var(--gdur) steps(4) 1;
+}
+@keyframes gv-roll {
+  0%   { transform: translate3d(0, 0, 0) scaleY(1); }
+  25%  { transform: translate3d(0, calc(var(--gy) * -4), 0) scaleY(1.03); }
+  55%  { transform: translate3d(0, calc(var(--gy) * 3), 0)  scaleY(0.97); }
+  80%  { transform: translate3d(0, calc(var(--gy) * -1.5), 0) scaleY(1.01); }
+  100% { transform: none; }
+}
+
+/* 3 · Separación RGB de todo el contenido */
+body.gv-3.is-glitching .page {
+  animation: glitch-flicker var(--gdur) steps(2) 1,
+             gv-rgb var(--gdur) steps(3) 1;
+}
+@keyframes gv-rgb {
+  0%, 100% { filter: none; transform: none; }
+  30% {
+    transform: translate3d(calc(var(--gx) * -0.3), 0, 0);
+    filter: drop-shadow(3px 0 0 rgba(255, 0, 80, 0.75))
+            drop-shadow(-3px 0 0 rgba(0, 220, 255, 0.65));
+  }
+  65% {
+    transform: translate3d(calc(var(--gx) * 0.25), 0, 0);
+    filter: drop-shadow(-4px 0 0 rgba(255, 0, 80, 0.6))
+            drop-shadow(4px 0 0 rgba(0, 220, 255, 0.5));
+  }
+}
+
+/* 4 · Estallido de estática (casi sin movimiento, mucho ruido) */
+body.gv-4.is-glitching .page {
+  animation: gv-static var(--gdur) steps(4) 1;
+}
+@keyframes gv-static {
+  0%, 100% { opacity: 1; filter: none; transform: none; }
+  20%  { opacity: 0.62; filter: brightness(1.5) contrast(1.6); }
+  45%  { opacity: 1;    filter: brightness(0.75); transform: translate3d(1px, 0, 0); }
+  70%  { opacity: 0.8;  filter: contrast(1.3) saturate(0.4); }
+}
+
+/* 5 · Destello / inversión brevísima */
+body.gv-5.is-glitching .page {
+  animation: gv-flash var(--gdur) steps(2) 1;
+}
+@keyframes gv-flash {
+  0%, 100% { filter: none; transform: none; }
+  18%  { filter: invert(0.85) hue-rotate(180deg); }
+  32%  { filter: none; transform: translate3d(calc(var(--gx) * -0.4), 0, 0); }
+  55%  { filter: brightness(1.6) contrast(0.8); }
+  78%  { filter: none; }
+}
+
+/* 6 · Estirado / compresión (la imagen se deforma) */
+body.gv-6.is-glitching .page {
+  animation: glitch-flicker var(--gdur) steps(2) 1,
+             gv-squeeze var(--gdur) steps(3) 1;
+}
+@keyframes gv-squeeze {
+  0%, 100% { transform: none; }
+  28%  { transform: scale(1.012, var(--gsy)) translate3d(var(--gx), 0, 0); }
+  60%  { transform: scale(0.994, calc(2 - var(--gsy))) translate3d(calc(var(--gx) * -0.6), 0, 0); }
+}
+
+/* La malla del fondo también se sacude distinto según la variante */
+body.is-glitching .aurora {
+  animation: mesh-drift 5s linear infinite, mesh-jolt var(--gdur) steps(3) 1;
+}
+body.gv-2.is-glitching .aurora {
+  animation: mesh-drift 5s linear infinite, mesh-jolt-v var(--gdur) steps(3) 1;
+}
+@keyframes mesh-jolt-v {
+  0%   { transform: translate3d(0, 0, 0); }
+  40%  { transform: translate3d(0, calc(var(--gy) * -5), 0); }
+  75%  { transform: translate3d(0, calc(var(--gy) * 3), 0); }
   100% { transform: none; }
 }
 
@@ -279,17 +386,31 @@ body.is-glitching .page {
    MICRO-GLITCH: muy corto y sutil, pasa seguido.
    Mantiene la sensación de "señal inestable" sin robar atención.
    ----------------------------------------------------------------- */
-body.is-glitching-micro .page { animation: micro-flicker 0.13s steps(2) 1; }
+/* 3 sabores de micro-glitch, elegidos al azar por el JS */
+body.is-glitching-micro.mv-1 .page { animation: micro-flicker var(--gdur) steps(2) 1; }
+body.is-glitching-micro.mv-2 .page { animation: micro-jump var(--gdur) steps(2) 1; }
+body.is-glitching-micro.mv-3 .page { animation: micro-fade var(--gdur) steps(3) 1; }
+
 @keyframes micro-flicker {
   0%, 100% { opacity: 1;    transform: none; }
-  40%      { opacity: 0.93; transform: translate3d(-1.5px, 0, 0); }
-  70%      { opacity: 1;    transform: translate3d(1px, 0, 0); }
+  40%      { opacity: 0.93; transform: translate3d(calc(var(--gx) * -0.2), 0, 0); }
+  70%      { opacity: 1;    transform: translate3d(calc(var(--gx) * 0.15), 0, 0); }
+}
+@keyframes micro-jump {
+  0%, 100% { transform: none; filter: none; }
+  50%      { transform: translate3d(0, calc(var(--gy) * -0.8), 0);
+             filter: hue-rotate(var(--ghue)); }
+}
+@keyframes micro-fade {
+  0%, 100% { opacity: 1; filter: none; }
+  35%      { opacity: 0.88; filter: contrast(1.35); }
+  70%      { opacity: 0.97; filter: brightness(1.15); }
 }
 
-body.is-glitching-micro .glitch { animation: micro-bars 0.13s steps(2) 1; }
+body.is-glitching-micro .glitch { animation: micro-bars var(--gdur) steps(2) 1; }
 @keyframes micro-bars {
   0%, 100% { opacity: 0; }
-  50%      { opacity: 0.55; transform: translate3d(-3px, 0, 0); }
+  50%      { opacity: 0.55; transform: translate3d(calc(var(--gx) * -0.35), 0, 0); }
 }
 
 body.is-glitching-micro .name::before {

@@ -599,33 +599,84 @@ function activarGlitches() {
   };
 
   const entre = (min, max) => min + Math.random() * (max - min);
+  const signo = () => (Math.random() < 0.5 ? -1 : 1);
+  const elegir = (n) => 1 + Math.floor(Math.random() * n);
 
-  const pulso = (clase, duracion) => {
-    cuerpo.classList.add(clase);
-    setTimeout(() => cuerpo.classList.remove(clase), duracion);
+  // Clases de variante que hay que limpiar antes de poner una nueva.
+  const VARIANTES = ["gv-1", "gv-2", "gv-3", "gv-4", "gv-5", "gv-6"];
+  const MICRO_VARIANTES = ["mv-1", "mv-2", "mv-3"];
+
+  /**
+   * Sortea la "forma" del glitch: distancia, dirección, inclinación,
+   * dónde se corta la imagen, cuánto ruido y cuánto dura.
+   * Devuelve la duración para saber cuándo apagarlo.
+   */
+  function sortearForma(esMicro) {
+    const s = cuerpo.style;
+    const duracion = esMicro
+      ? entre(90, 190)
+      : entre(170, 420); // cada glitch dura distinto
+
+    s.setProperty("--gx", `${entre(4, 22) * signo()}px`);
+    s.setProperty("--gy", `${entre(1, 6) * signo()}px`);
+    s.setProperty("--gskew", `${entre(0.2, 1.4) * signo()}deg`);
+    s.setProperty("--gband", `${entre(8, 78)}%`);
+    s.setProperty("--gbandh", `${entre(3, 16)}%`);
+    s.setProperty("--gnoise", `${entre(0.25, 0.7)}`);
+    s.setProperty("--ghue", `${entre(8, 45) * signo()}deg`);
+    s.setProperty("--gsy", `${entre(0.97, 1.05)}`);
+    s.setProperty("--gdur", `${Math.round(duracion)}ms`);
+
+    return duracion;
+  }
+
+  // Glitch fuerte: elige 1 de 6 variantes + forma aleatoria.
+  const dispararFuerte = () => {
+    const duracion = sortearForma(false);
+
+    cuerpo.classList.remove(...VARIANTES);
+    cuerpo.classList.add(`gv-${elegir(6)}`, "is-glitching");
+
+    setTimeout(() => {
+      cuerpo.classList.remove("is-glitching", ...VARIANTES);
+    }, duracion);
+
+    return duracion;
   };
 
-  // Glitch fuerte: bandas RGB, ruido, corte de imagen y sacudida.
+  // Micro-glitch: 1 de 3 sabores, apenas perceptible.
+  const dispararMicro = () => {
+    const duracion = sortearForma(true);
+
+    cuerpo.classList.remove(...MICRO_VARIANTES);
+    cuerpo.classList.add(`mv-${elegir(3)}`, "is-glitching-micro");
+
+    setTimeout(() => {
+      cuerpo.classList.remove("is-glitching-micro", ...MICRO_VARIANTES);
+    }, duracion);
+  };
+
   const cicloFuerte = () => {
     setTimeout(() => {
-      pulso("is-glitching", CONFIG.fuerteDur);
+      const dur = dispararFuerte();
 
-      // A veces dispara una réplica inmediata (se siente más real).
+      // A veces una réplica, y de vez en cuando hasta una tercera:
+      // eso rompe el ritmo y evita que parezca un bucle.
       if (Math.random() < CONFIG.replica) {
-        setTimeout(() => pulso("is-glitching", CONFIG.fuerteDur), entre(300, 520));
+        setTimeout(() => {
+          dispararFuerte();
+          if (Math.random() < 0.3) setTimeout(dispararFuerte, entre(90, 260));
+        }, dur + entre(60, 380));
       }
 
       cicloFuerte();
     }, entre(CONFIG.fuerteMin, CONFIG.fuerteMax));
   };
 
-  // Micro-glitch: apenas perceptible, mantiene la señal "inestable".
   const cicloMicro = () => {
     setTimeout(() => {
       // No lo lanzamos si justo hay un glitch fuerte en curso.
-      if (!cuerpo.classList.contains("is-glitching")) {
-        pulso("is-glitching-micro", CONFIG.microDur);
-      }
+      if (!cuerpo.classList.contains("is-glitching")) dispararMicro();
       cicloMicro();
     }, entre(CONFIG.microMin, CONFIG.microMax));
   };

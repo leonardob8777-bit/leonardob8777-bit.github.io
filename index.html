@@ -46,7 +46,7 @@
 
   <!-- El ?v= evita que el navegador use una versión vieja en caché.
        Subí el número cada vez que edites styles.css. -->
-  <link rel="stylesheet" href="styles.css?v=19" />
+  <link rel="stylesheet" href="styles.css?v=20" />
 </head>
 
 <body>
@@ -60,17 +60,19 @@
        materia cayendo, anillo de fotones y el vacío negro.
        Ver el bloque "AGUJERO NEGRO" en styles.css. -->
   <div class="bh" aria-hidden="true">
+    <div class="bh__halo"></div>
+    <!-- Cara LEJANA del disco: la gravedad curva su luz y la vemos
+         arcando por encima de la esfera -->
+    <div class="bh__disk bh__disk--back"><i></i></div>
     <div class="bh__lens"></div>
-    <div class="bh__lens bh__lens--2"></div>
-    <div class="bh__disk"><i></i></div>
-    <div class="bh__disk bh__disk--inner"><i></i></div>
+    <div class="bh__core"></div>
+    <div class="bh__ring"></div>
+    <!-- Cara CERCANA: cruza por delante, por debajo de la esfera -->
+    <div class="bh__disk bh__disk--front"><i></i></div>
     <div class="bh__debris">
       <span></span><span></span><span></span><span></span><span></span>
-      <span></span><span></span><span></span><span></span><span></span>
-      <span></span><span></span>
+      <span></span><span></span><span></span>
     </div>
-    <div class="bh__ring"></div>
-    <div class="bh__core"></div>
   </div>
 
   <div class="glitch" aria-hidden="true"></div>
@@ -122,6 +124,6 @@
     </footer>
   </div>
 
-  <script src="script.js?v=19" defer></script>
+  <script src="script.js?v=20" defer></script>
 </body>
 </html>

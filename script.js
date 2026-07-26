@@ -622,6 +622,80 @@ function actualizarEstado() {
 }
 
 /* -----------------------------------------------------------------
+   BITS: unos y ceros que aparecen y desaparecen sobre la malla
+   -----------------------------------------------------------------
+   Se colocan en las celdas de la cuadrícula (34px) para que queden
+   alineados con las líneas del fondo. Cada uno tiene su propio ritmo
+   y cambia de valor (0 ↔ 1) al terminar cada ciclo.
+   Para tener más o menos números, tocá DENSIDAD.
+   ----------------------------------------------------------------- */
+function activarBits() {
+  const capa = document.getElementById("bits");
+  if (!capa) return;
+
+  const CELDA = 34;      // debe coincidir con la malla del CSS
+  const DENSIDAD = 0.05; // 5% de las celdas tienen un número
+  const MAX = 220;       // techo, para no recargar el celular
+
+  const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function generar() {
+    capa.innerHTML = "";
+
+    const cols = Math.ceil(window.innerWidth / CELDA);
+    const filas = Math.ceil(window.innerHeight / CELDA);
+    const total = Math.min(Math.round(cols * filas * DENSIDAD), MAX);
+
+    const frag = document.createDocumentFragment();
+
+    for (let i = 0; i < total; i++) {
+      const b = document.createElement("b");
+
+      // Posición sobre la cuadrícula, con un pelín de desfase
+      const cx = Math.floor(Math.random() * cols);
+      const cy = Math.floor(Math.random() * filas);
+      b.style.left = cx * CELDA + 6 + "px";
+      b.style.top = cy * CELDA + 8 + "px";
+
+      b.textContent = Math.random() < 0.5 ? "0" : "1";
+
+      // 1 de cada 7 brilla más fuerte
+      if (Math.random() < 0.14) b.classList.add("hot");
+
+      if (!reducido) {
+        // Ritmo propio: entre 3 y 9 segundos por ciclo
+        b.style.setProperty("--t", (3 + Math.random() * 6).toFixed(2) + "s");
+        b.style.setProperty("--d", (Math.random() * 8).toFixed(2) + "s");
+
+        // Al cerrar un ciclo, cambia de valor y a veces de lugar
+        b.addEventListener("animationiteration", () => {
+          b.textContent = Math.random() < 0.5 ? "0" : "1";
+          if (Math.random() < 0.25) {
+            b.style.left = Math.floor(Math.random() * cols) * CELDA + 6 + "px";
+            b.style.top = Math.floor(Math.random() * filas) * CELDA + 8 + "px";
+          }
+        });
+      } else {
+        b.style.opacity = "0.5"; // sin animación: quietos y tenues
+      }
+
+      frag.appendChild(b);
+    }
+
+    capa.appendChild(frag);
+  }
+
+  generar();
+
+  // Rehacer la grilla si cambia el tamaño de la ventana (sin exagerar)
+  let temporizador;
+  window.addEventListener("resize", () => {
+    clearTimeout(temporizador);
+    temporizador = setTimeout(generar, 350);
+  });
+}
+
+/* -----------------------------------------------------------------
    GLITCHES ALEATORIOS
    Cada tantos segundos (al azar) le ponemos la clase `is-glitching`
    al <body> por un instante. El CSS se encarga del efecto visual.
@@ -755,6 +829,7 @@ document.addEventListener("DOMContentLoaded", () => {
   actualizarEstado();
   iniciarObservador();
   activarPestanas();
+  activarBits();
   activarGlitches();
 
   // Abre la categoría del enlace (#guide) o, si no hay, la primera.

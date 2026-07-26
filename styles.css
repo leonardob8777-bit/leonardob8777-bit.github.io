@@ -2,12 +2,13 @@
    VARIABLES DE TEMA  ← cambiá acá para cambiar todo el look
    ================================================================= */
 :root {
-  --bg: #05060a;
+  --bg: #030806;
 
   /* ---- Malla cyber del fondo ---- */
-  --mesh:       rgba(255, 45, 45, 0.16);  /* rejilla principal */
-  --mesh-fine:  rgba(255, 45, 45, 0.055); /* rejilla micro     */
-  --mesh-glow:  rgba(220, 30, 30, 0.22);  /* resplandor rojo   */
+  --mesh:       rgba(40, 255, 130, 0.15);  /* rejilla principal */
+  --mesh-fine:  rgba(40, 255, 130, 0.05);  /* rejilla micro     */
+  --mesh-glow:  rgba(20, 210, 110, 0.18);  /* resplandor verde  */
+  --bit:        rgba(80, 255, 150, 0.85);  /* color de los 1 y 0 */
 
   --text:        #f6f7fc;
   --text-muted:  #b3b9d1;
@@ -20,7 +21,7 @@
   --edge-top:    rgba(255, 255, 255, 0.55);
   --edge-bottom: rgba(255, 255, 255, 0.06);
 
-  --avatar-glow: #e02424;
+  --avatar-glow: #16c47f;
 
   /* Estados */
   --ok:      #34d399;
@@ -124,8 +125,8 @@ body {
   inset: 0;
   background:
     radial-gradient(60% 42% at 50% 0%, var(--mesh-glow) 0%, transparent 70%),
-    radial-gradient(75% 55% at 50% 100%, rgba(190, 18, 18, 0.14) 0%, transparent 70%),
-    radial-gradient(120% 85% at 50% 45%, transparent 32%, rgba(2, 2, 4, 0.86) 100%);
+    radial-gradient(75% 55% at 50% 100%, rgba(16, 160, 90, 0.12) 0%, transparent 70%),
+    radial-gradient(120% 85% at 50% 45%, transparent 32%, rgba(1, 5, 3, 0.88) 100%);
   animation: glow-pulse 7s ease-in-out infinite;
 }
 
@@ -145,9 +146,9 @@ body {
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(255, 60, 60, 0.05) 45%,
-    rgba(255, 90, 90, 0.11) 50%,
-    rgba(255, 60, 60, 0.05) 55%,
+    rgba(50, 255, 140, 0.05) 45%,
+    rgba(90, 255, 165, 0.10) 50%,
+    rgba(50, 255, 140, 0.05) 55%,
     transparent 100%
   );
   animation: scan-move 9s linear infinite;
@@ -178,288 +179,49 @@ body {
    Para la esquina IZQUIERDA: cambiá `right:` por `left:`.
    Para el borde inferior: cambiá `top:` por `bottom:`.
    ================================================================= */
-/* -----------------------------------------------------------------
-   LIENZO WebGL (el agujero negro "de verdad", con lente gravitacional)
-   Ocupa la misma esquina que la versión CSS. Si WebGL arranca bien,
-   el JS le pone al <body> la clase `has-webgl-bh` y escondemos el
-   respaldo CSS. Si no, no pasa nada y se ve el de CSS.
-   ----------------------------------------------------------------- */
-.bh-canvas {
+/* =================================================================
+   BITS: unos y ceros que aparecen y desaparecen
+   -----------------------------------------------------------------
+   Los genera script.js y los ubica sobre la cuadrícula de la malla
+   (cada 34px), así los números caen justo en las celdas.
+   Cada uno tiene su propio ritmo: aparece, se queda un momento y se
+   desvanece. Cuando termina un ciclo, el JS le cambia el valor.
+   Para cambiar el color, tocá --bit en :root.
+   ================================================================= */
+.bits {
   position: fixed;
-  top: clamp(-90px, -9vw, -45px);
-  right: clamp(-110px, -11vw, -60px);
-  width: clamp(380px, 78vw, 560px);
-  aspect-ratio: 1;
+  inset: 0;
   z-index: -1;
   pointer-events: none;
-  display: block;
+  overflow: hidden;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
-/* Con WebGL activo, el agujero negro de CSS sobra */
-body.has-webgl-bh .bh { display: none; }
-
-.bh {
-  position: fixed;
-  /* Poco recorte: así se ve la esfera completa Y el arco de arriba */
-  top: clamp(-50px, -5vw, -20px);
-  right: clamp(-70px, -8vw, -35px);
-  width: clamp(260px, 58vw, 380px);
-  aspect-ratio: 1;
-  z-index: -1;
-  pointer-events: none;
-  animation: bh-float 28s ease-in-out infinite;
-}
-
-/* --- Resplandor general (tenue, solo para ambientar) --- */
-.bh__halo {
+.bits b {
   position: absolute;
-  inset: 6%;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(255, 170, 90, 0.13) 18%,
-    rgba(200, 70, 25, 0.07) 34%,
-    transparent 56%
-  );
-  filter: blur(18px);
-  animation: bh-breathe 9s ease-in-out infinite;
-}
-
-/* --- LENTE: aro finito que distorsiona el fondo real --- */
-.bh__lens {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  -webkit-backdrop-filter: blur(2px) saturate(1.6) brightness(1.3);
-          backdrop-filter: blur(2px) saturate(1.6) brightness(1.3);
-  -webkit-mask: radial-gradient(circle, transparent 15%, #000 17%, #000 23%, transparent 27%);
-          mask: radial-gradient(circle, transparent 15%, #000 17%, #000 23%, transparent 27%);
-  animation: bh-lens 26s linear infinite;
-}
-
-/* =========== DISCO: color y giro compartidos ===========
-   Blanco incandescente en el punto más caliente, cayendo a ámbar y
-   luego a marrón oscuro (así se ve en la foto, no naranja plano). */
-.bh__arc i,
-.bh__band i {
-  position: absolute;
-  inset: 0;
-  display: block;
-  border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    rgba(120, 45, 12, 0.55) 0deg,
-    rgba(228, 126, 40, 0.9) 35deg,
-    rgba(255, 205, 130, 1) 70deg,
-    rgba(255, 252, 242, 1) 100deg,
-    rgba(255, 216, 150, 1) 132deg,
-    rgba(234, 132, 45, 0.92) 180deg,
-    rgba(150, 58, 18, 0.6) 250deg,
-    rgba(120, 45, 12, 0.55) 360deg
-  );
-  animation: bh-spin 26s linear infinite;
-}
-
-/* --- ARCOS LENTEADOS (detrás de la esfera) --- */
-.bh__arc {
-  position: absolute;
-  inset: 0;
-  filter: blur(1px) saturate(1.35) contrast(1.15) brightness(1.25);
-}
-.bh__arc i {
-  /* Aro FINO de radio 0.365–0.40W */
-  -webkit-mask: radial-gradient(circle, transparent 70%, #000 73%, #000 80%, transparent 84%);
-          mask: radial-gradient(circle, transparent 70%, #000 73%, #000 80%, transparent 84%);
-}
-.bh__arc--top {
-  transform: scaleY(0.8);
-  clip-path: inset(0 0 51% 0);
-  /* Más brillante: es el arco que define la silueta lenteada */
-  filter: blur(1.2px) saturate(1.4) contrast(1.15) brightness(1.7);
-}
-.bh__arc--bottom {
-  transform: scaleY(0.8);
-  clip-path: inset(51% 0 0 0);
-  opacity: 0.75;
-}
-
-/* --- BANDA CERCANA: línea finísima por delante de la esfera --- */
-.bh__band {
-  position: absolute;
-  inset: 0;
-  /* Con cuerpo: no es una línea, es una banda de plasma */
-  transform: translateY(8%) scaleY(0.2);
-  filter: blur(3px) saturate(1.4) contrast(1.1) brightness(1.4);
-}
-.bh__band i {
-  /* Máscara con caída SUAVE hacia afuera: denso y brillante cerca de
-     la esfera, desvaneciéndose en los extremos (como en la foto). */
-  -webkit-mask: radial-gradient(circle,
-                transparent 46%, rgba(0,0,0,0.85) 56%, #000 64%,
-                rgba(0,0,0,0.6) 80%, rgba(0,0,0,0.25) 92%, transparent 100%);
-          mask: radial-gradient(circle,
-                transparent 46%, rgba(0,0,0,0.85) 56%, #000 64%,
-                rgba(0,0,0,0.6) 80%, rgba(0,0,0,0.25) 92%, transparent 100%);
-}
-
-/* Núcleo incandescente: más fino, más brillante, encima de la banda.
-   Es lo que da el filo blanco que se ve en la foto de referencia. */
-.bh__band--hot {
-  transform: translateY(8%) scaleY(0.05);
-  filter: blur(0.6px) brightness(1.5);
-}
-.bh__band--hot i {
-  background: conic-gradient(
-    from 0deg,
-    rgba(255, 190, 110, 0.5) 0deg,
-    rgba(255, 236, 195, 0.95) 45deg,
-    rgba(255, 255, 252, 1) 95deg,
-    rgba(255, 240, 205, 0.98) 140deg,
-    rgba(255, 175, 90, 0.7) 200deg,
-    rgba(190, 90, 35, 0.35) 270deg,
-    rgba(255, 190, 110, 0.5) 360deg
-  );
-  -webkit-mask: radial-gradient(circle, transparent 67%, #000 71%, #000 88%, transparent 94%);
-          mask: radial-gradient(circle, transparent 67%, #000 71%, #000 88%, transparent 94%);
-}
-
-/* --- EFECTO DOPPLER ---
-   En un agujero negro real, el lado del disco que gira HACIA el
-   observador se ve mucho más brillante y blanco. Esa asimetría es lo
-   que evita que el disco parezca un aro plano.
-   Truco: la máscara del PADRE recorta el lado izquierdo, y la del
-   hijo <i> hace el aro fino. Dos máscaras encadenadas. */
-.bh__band--dop {
-  transform: translateY(8%) scaleY(0.09);
-  filter: blur(1.4px) brightness(1.8) saturate(1.1);
-  -webkit-mask: linear-gradient(to right, #000 0%, #000 34%, transparent 66%);
-          mask: linear-gradient(to right, #000 0%, #000 34%, transparent 66%);
-}
-.bh__band--dop i {
-  background: conic-gradient(
-    from 0deg,
-    rgba(255, 225, 175, 0.85) 0deg,
-    rgba(255, 248, 232, 1) 90deg,
-    rgba(255, 255, 255, 1) 150deg,
-    rgba(255, 235, 190, 0.9) 220deg,
-    rgba(255, 225, 175, 0.85) 360deg
-  );
-  -webkit-mask: radial-gradient(circle, transparent 66%, #000 70%, #000 90%, transparent 96%);
-          mask: radial-gradient(circle, transparent 66%, #000 70%, #000 90%, transparent 96%);
-}
-
-/* --- NEBLINA DEL DISCO ---
-   Va DETRÁS de la esfera (que le tapa el centro). Es una elipse muy
-   difuminada: las líneas finas de arriba quedan envueltas en plasma
-   en vez de verse como un aro de Saturno. */
-.bh__glow {
-  position: absolute;
-  inset: 0;
-  transform: translateY(8%) scaleY(0.34);
-  border-radius: 50%;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(255, 225, 175, 0.75) 0%,
-    rgba(255, 150, 60, 0.58) 30%,
-    rgba(225, 85, 28, 0.32) 55%,
-    transparent 78%
-  );
-  filter: blur(14px);
-  animation: bh-breathe 11s ease-in-out infinite;
-}
-
-/* --- LA ESFERA (chica y negra) --- */
-.bh__core {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 30%;
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: #000;
-  box-shadow: 0 0 30px 10px rgba(0, 0, 0, 0.95);
-}
-
-/* --- ANILLO DE FOTONES: el borde brillante que define la esfera --- */
-.bh__ring {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 30.6%;
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  border: 1.5px solid rgba(255, 251, 242, 1);
-  box-shadow:
-    0 0 4px 1px rgba(255, 236, 196, 1),
-    0 0 12px 2px rgba(255, 180, 90, 0.75),
-    0 0 34px 7px rgba(255, 120, 40, 0.3);
-  animation: bh-ring 8s ease-in-out infinite;
-}
-
-/* --- MATERIA CAYENDO --- */
-.bh__debris { position: absolute; inset: 0; }
-.bh__debris span {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 1.5px;
-  height: 1.5px;
-  margin: -0.75px 0 0 -0.75px;
-  border-radius: 50%;
-  background: rgba(255, 242, 220, 0.95);
-  box-shadow: 0 0 5px 1.5px rgba(255, 165, 75, 0.55);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--bit);
+  text-shadow: 0 0 8px rgba(60, 255, 140, 0.55);
   opacity: 0;
-  animation: bh-swallow var(--t, 10s) cubic-bezier(0.5, 0, 0.85, 0.4) infinite;
+  animation: bit-blink var(--t, 6s) ease-in-out infinite;
   animation-delay: var(--d, 0s);
-}
-.bh__debris span:nth-child(1) { --a: 18deg;  --r: 38%; --t: 11s;   --d: 0s; }
-.bh__debris span:nth-child(2) { --a: 76deg;  --r: 44%; --t: 13s;   --d: 2.1s; }
-.bh__debris span:nth-child(3) { --a: 134deg; --r: 36%; --t: 10s;   --d: 4.4s; }
-.bh__debris span:nth-child(4) { --a: 192deg; --r: 46%; --t: 14s;   --d: 1.2s; }
-.bh__debris span:nth-child(5) { --a: 245deg; --r: 40%; --t: 12s;   --d: 6.3s; }
-.bh__debris span:nth-child(6) { --a: 298deg; --r: 48%; --t: 9.5s;  --d: 3.5s; }
-.bh__debris span:nth-child(7) { --a: 340deg; --r: 42%; --t: 15s;   --d: 7.8s; }
-.bh__debris span:nth-child(8) { --a: 108deg; --r: 50%; --t: 12.5s; --d: 5.1s; }
-
-/* --- ANIMACIONES --- */
-@keyframes bh-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-@keyframes bh-lens { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-@keyframes bh-float {
-  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  33%      { transform: translate3d(-7px, 5px, 0) scale(1.02); }
-  66%      { transform: translate3d(5px, -4px, 0) scale(0.99); }
-}
-@keyframes bh-breathe {
-  0%, 100% { opacity: 0.8; transform: scale(1); }
-  50%      { opacity: 1;   transform: scale(1.04); }
-}
-@keyframes bh-ring {
-  0%, 100% { opacity: 0.94; filter: brightness(1); }
-  50%      { opacity: 1;    filter: brightness(1.22); }
-}
-@keyframes bh-swallow {
-  0% {
-    opacity: 0;
-    transform: rotate(var(--a)) translateX(var(--r)) scale(1.1);
-  }
-  14%  { opacity: 1; }
-  80%  { opacity: 0.85; }
-  100% {
-    opacity: 0;
-    transform: rotate(calc(var(--a) + 300deg)) translateX(4%) scale(0.15);
-  }
+  will-change: opacity;
 }
 
-/* Durante un glitch, el agujero negro también se sacude */
-body.is-glitching .bh { animation: bh-jolt var(--gdur) steps(3) 1; }
-@keyframes bh-jolt {
-  0%   { transform: translate3d(0, 0, 0) scale(1); }
-  40%  { transform: translate3d(var(--gx), calc(var(--gy) * -1), 0) scale(1.04); }
-  75%  { transform: translate3d(calc(var(--gx) * -0.6), 0, 0) scale(0.98); }
-  100% { transform: none; }
+/* Algunos brillan más fuerte: dan la sensación de "dato activo" */
+.bits b.hot {
+  color: #d9ffe9;
+  text-shadow: 0 0 10px rgba(120, 255, 180, 0.95), 0 0 22px rgba(40, 255, 130, 0.5);
+  font-weight: 700;
+}
+
+@keyframes bit-blink {
+  0%, 100% { opacity: 0; transform: translateY(2px); }
+  12%      { opacity: 1; transform: translateY(0); }
+  62%      { opacity: 0.85; }
+  82%      { opacity: 0; }
 }
 
 /* =================================================================
@@ -1254,14 +1016,6 @@ body.is-glitching-micro .name::after {
   .aurora,
   .aurora::after,
   .scan,
-  .bh,
-  .bh__halo,
-  .bh__glow,
-  .bh__lens,
-  .bh__arc i,
-  .bh__band i,
-  .bh__debris span,
-  .bh__ring,
   .glitch,
   .glitch::before,
   .glitch::after,

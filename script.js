@@ -587,26 +587,51 @@ function activarGlitches() {
 
   const cuerpo = document.body;
 
-  const disparar = () => {
-    cuerpo.classList.add("is-glitching");
-    setTimeout(() => cuerpo.classList.remove("is-glitching"), 300);
+  /* --- Ajustes: tocá estos números para calibrar el efecto --- */
+  const CONFIG = {
+    fuerteMin: 2200,  // espera mínima entre glitches fuertes (ms)
+    fuerteMax: 5200,  // espera máxima
+    fuerteDur: 260,   // cuánto dura el glitch fuerte
+    replica: 0.55,    // probabilidad de una segunda sacudida seguida
+    microMin: 800,    // espera mínima entre micro-glitches
+    microMax: 2200,   // espera máxima
+    microDur: 130,    // cuánto dura el micro-glitch
   };
 
-  const programar = () => {
-    // Entre 3 y 9 segundos hasta el próximo glitch.
-    const espera = 3000 + Math.random() * 6000;
+  const entre = (min, max) => min + Math.random() * (max - min);
 
+  const pulso = (clase, duracion) => {
+    cuerpo.classList.add(clase);
+    setTimeout(() => cuerpo.classList.remove(clase), duracion);
+  };
+
+  // Glitch fuerte: bandas RGB, ruido, corte de imagen y sacudida.
+  const cicloFuerte = () => {
     setTimeout(() => {
-      disparar();
+      pulso("is-glitching", CONFIG.fuerteDur);
 
-      // 40% de las veces, una segunda sacudida rápida.
-      if (Math.random() < 0.4) setTimeout(disparar, 380 + Math.random() * 220);
+      // A veces dispara una réplica inmediata (se siente más real).
+      if (Math.random() < CONFIG.replica) {
+        setTimeout(() => pulso("is-glitching", CONFIG.fuerteDur), entre(300, 520));
+      }
 
-      programar();
-    }, espera);
+      cicloFuerte();
+    }, entre(CONFIG.fuerteMin, CONFIG.fuerteMax));
   };
 
-  programar();
+  // Micro-glitch: apenas perceptible, mantiene la señal "inestable".
+  const cicloMicro = () => {
+    setTimeout(() => {
+      // No lo lanzamos si justo hay un glitch fuerte en curso.
+      if (!cuerpo.classList.contains("is-glitching")) {
+        pulso("is-glitching-micro", CONFIG.microDur);
+      }
+      cicloMicro();
+    }, entre(CONFIG.microMin, CONFIG.microMax));
+  };
+
+  cicloFuerte();
+  cicloMicro();
 }
 
 /* =================================================================

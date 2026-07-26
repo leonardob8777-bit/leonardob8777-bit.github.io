@@ -160,32 +160,56 @@ body {
   );
 }
 
-/* Banda que "se corta" y se desplaza, como una imagen rota */
+/* Bandas que "se cortan" y se desplazan, como una imagen rota.
+   El box-shadow clona la banda arriba y abajo → 3 cortes a la vez. */
 .glitch::before {
   content: "";
   position: absolute;
   left: 0; right: 0;
   top: 34%;
-  height: 12%;
-  background: rgba(255, 255, 255, 0.07);
-  box-shadow: 0 0 0 1px rgba(255, 60, 60, 0.25);
+  height: 9%;
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 -170px 0 rgba(255, 60, 60, 0.07),
+    0  240px 0 rgba(120, 220, 255, 0.06);
   opacity: 0;
 }
 
-body.is-glitching .glitch { animation: glitch-bars 0.3s steps(3) 1; }
-body.is-glitching .glitch::before { animation: glitch-tear 0.3s steps(2) 1; }
+/* Ruido estático (SVG inline, sin archivos externos) */
+.glitch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='0.55'/></svg>");
+}
+
+body.is-glitching .glitch         { animation: glitch-bars 0.26s steps(3) 1; }
+body.is-glitching .glitch::before { animation: glitch-tear 0.26s steps(2) 1; }
+body.is-glitching .glitch::after  { animation: noise-burst 0.26s steps(2) 1; }
+
+@keyframes noise-burst {
+  0%   { opacity: 0; }
+  25%  { opacity: 0.5; }
+  55%  { opacity: 0.18; }
+  80%  { opacity: 0.38; }
+  100% { opacity: 0; }
+}
 
 @keyframes glitch-bars {
   0%   { opacity: 0;    transform: translate3d(0, 0, 0); }
-  15%  { opacity: 1;    transform: translate3d(-7px, 2px, 0); }
-  40%  { opacity: 0.45; transform: translate3d(6px, -3px, 0); }
-  70%  { opacity: 0.9;  transform: translate3d(-4px, 1px, 0); }
+  12%  { opacity: 1;    transform: translate3d(-11px, 3px, 0); }
+  35%  { opacity: 0.5;  transform: translate3d(9px, -4px, 0); }
+  62%  { opacity: 1;    transform: translate3d(-6px, 2px, 0); }
+  85%  { opacity: 0.7;  transform: translate3d(3px, 0, 0); }
   100% { opacity: 0;    transform: none; }
 }
 @keyframes glitch-tear {
   0%   { opacity: 0; transform: translateX(0) scaleY(1); }
-  30%  { opacity: 1; transform: translateX(-14px) scaleY(1.4); }
-  60%  { opacity: 1; transform: translateX(11px) scaleY(0.7); }
+  25%  { opacity: 1; transform: translateX(-24px) scaleY(1.6); }
+  50%  { opacity: 1; transform: translateX(18px)  scaleY(0.55); }
+  75%  { opacity: 0.8; transform: translateX(-9px) scaleY(1.2); }
   100% { opacity: 0; transform: none; }
 }
 
@@ -234,12 +258,55 @@ body.is-glitching .name::after {
   100% { opacity: 0; transform: none; }
 }
 
-/* Parpadeo general muy corto (como si saltara la señal) */
-body.is-glitching .page { animation: glitch-flicker 0.3s steps(2) 1; }
+/* Parpadeo general + corrimiento lateral (como si saltara la señal) */
+body.is-glitching .page {
+  animation: glitch-flicker 0.26s steps(2) 1, page-shift 0.26s steps(3) 1;
+}
 @keyframes glitch-flicker {
   0%, 100% { opacity: 1; filter: none; }
-  25%      { opacity: 0.82; filter: hue-rotate(-12deg) saturate(1.4); }
-  60%      { opacity: 1; filter: none; }
+  22%      { opacity: 0.78; filter: hue-rotate(-14deg) saturate(1.5); }
+  48%      { opacity: 1;    filter: contrast(1.25); }
+  70%      { opacity: 0.9;  filter: none; }
+}
+@keyframes page-shift {
+  0%   { transform: translate3d(0, 0, 0); }
+  30%  { transform: translate3d(-5px, 1px, 0) skewX(0.6deg); }
+  60%  { transform: translate3d(4px, -1px, 0) skewX(-0.4deg); }
+  100% { transform: none; }
+}
+
+/* -----------------------------------------------------------------
+   MICRO-GLITCH: muy corto y sutil, pasa seguido.
+   Mantiene la sensación de "señal inestable" sin robar atención.
+   ----------------------------------------------------------------- */
+body.is-glitching-micro .page { animation: micro-flicker 0.13s steps(2) 1; }
+@keyframes micro-flicker {
+  0%, 100% { opacity: 1;    transform: none; }
+  40%      { opacity: 0.93; transform: translate3d(-1.5px, 0, 0); }
+  70%      { opacity: 1;    transform: translate3d(1px, 0, 0); }
+}
+
+body.is-glitching-micro .glitch { animation: micro-bars 0.13s steps(2) 1; }
+@keyframes micro-bars {
+  0%, 100% { opacity: 0; }
+  50%      { opacity: 0.55; transform: translate3d(-3px, 0, 0); }
+}
+
+body.is-glitching-micro .name::before {
+  color: #ff2d55;
+  animation: micro-split-red 0.13s steps(2) 1;
+}
+body.is-glitching-micro .name::after {
+  color: #22d3ee;
+  animation: micro-split-cyan 0.13s steps(2) 1;
+}
+@keyframes micro-split-red {
+  0%, 100% { opacity: 0; transform: none; }
+  50% { opacity: 0.75; transform: translate(-2px, 0); clip-path: inset(20% 0 45% 0); }
+}
+@keyframes micro-split-cyan {
+  0%, 100% { opacity: 0; transform: none; }
+  50% { opacity: 0.7; transform: translate(2px, 0); clip-path: inset(45% 0 22% 0); }
 }
 
 /* ================= LAYOUT ================= */

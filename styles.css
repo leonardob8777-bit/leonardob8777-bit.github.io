@@ -437,11 +437,12 @@ body {
 /* --- Revelado al hacer scroll / al cambiar de pestaña --- */
 .reveal {
   opacity: 0;
-  transform: translateY(22px) scale(0.97);
+  transform: translateY(14px) scale(0.985);
   transition:
-    opacity 0.6s var(--ease),
-    transform 0.6s var(--ease);
-  transition-delay: calc(var(--i, 0) * 55ms);
+    opacity 0.34s var(--ease),
+    transform 0.34s var(--ease);
+  /* Escalonado corto: se nota la cascada pero no se hace esperar. */
+  transition-delay: calc(var(--i, 0) * 28ms);
 }
 .reveal.is-revealed {
   opacity: 1;

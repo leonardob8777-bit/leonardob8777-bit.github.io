@@ -443,7 +443,9 @@ function iniciarObservador() {
         }
       });
     },
-    { rootMargin: "0px 0px -8% 0px", threshold: 0.05 }
+    // rootMargin positivo abajo = se dispara ANTES de que la tarjeta
+    // entre en pantalla, así nunca se ve un hueco vacío al scrollear.
+    { rootMargin: "0px 0px 35% 0px", threshold: 0 }
   );
 }
 
@@ -551,17 +553,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // es el orden de las pestañas. Mové bloques para reordenar.
   crearNav(SECCIONES);
 
-  // Contador global para que el stagger sea continuo entre secciones
-  let contador = 1;
-
   SECCIONES.forEach((seccion) => {
+    // El escalonado arranca de 0 en cada categoría: como solo se ve una
+    // por vez, así ninguna tarda de más en aparecer.
     // Una sección puede tener `items` (tarjetas) o `pasos` (guía).
     if (seccion.pasos) {
-      contenido.appendChild(crearGuia(seccion, contador));
-      contador += seccion.pasos.length + 1;
+      contenido.appendChild(crearGuia(seccion, 0));
     } else {
-      contenido.appendChild(crearSeccion(seccion, contador));
-      contador += seccion.items.length + 1;
+      contenido.appendChild(crearSeccion(seccion, 0));
     }
   });
 

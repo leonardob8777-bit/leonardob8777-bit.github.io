@@ -634,10 +634,31 @@ function activarBits() {
   if (!capa) return;
 
   const CELDA = 34;      // debe coincidir con la malla del CSS
-  const DENSIDAD = 0.05; // 5% de las celdas tienen un número
+  const DENSIDAD = 0.075; // porcentaje de celdas con número
   const MAX = 220;       // techo, para no recargar el celular
 
   const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /** Un dígito suelto o, a veces, una ráfaga tipo paquete de datos. */
+  function valor() {
+    const r = Math.random();
+    if (r < 0.16) {
+      // Ráfaga: entre 3 y 7 bits seguidos
+      const largo = 3 + Math.floor(Math.random() * 5);
+      let s = "";
+      for (let i = 0; i < largo; i++) s += Math.random() < 0.5 ? "0" : "1";
+      return s;
+    }
+    return Math.random() < 0.5 ? "0" : "1";
+  }
+
+  /** Lo manda a una celda al azar y le cambia el brillo. */
+  function reubicar(b, cols, filas) {
+    b.style.left = Math.floor(Math.random() * cols) * CELDA + 6 + "px";
+    b.style.top = Math.floor(Math.random() * filas) * CELDA + 8 + "px";
+    // 1 de cada 6 aparece resaltado, y se re-sortea en cada salto
+    b.classList.toggle("hot", Math.random() < 0.17);
+  }
 
   function generar() {
     capa.innerHTML = "";
@@ -651,29 +672,19 @@ function activarBits() {
     for (let i = 0; i < total; i++) {
       const b = document.createElement("b");
 
-      // Posición sobre la cuadrícula, con un pelín de desfase
-      const cx = Math.floor(Math.random() * cols);
-      const cy = Math.floor(Math.random() * filas);
-      b.style.left = cx * CELDA + 6 + "px";
-      b.style.top = cy * CELDA + 8 + "px";
-
-      b.textContent = Math.random() < 0.5 ? "0" : "1";
-
-      // 1 de cada 7 brilla más fuerte
-      if (Math.random() < 0.14) b.classList.add("hot");
+      b.textContent = valor();
 
       if (!reducido) {
-        // Ritmo propio: entre 3 y 9 segundos por ciclo
-        b.style.setProperty("--t", (3 + Math.random() * 6).toFixed(2) + "s");
-        b.style.setProperty("--d", (Math.random() * 8).toFixed(2) + "s");
+        // Ritmo propio: entre 1.6 y 5.5 segundos por ciclo
+        b.style.setProperty("--t", (1.6 + Math.random() * 3.9).toFixed(2) + "s");
+        b.style.setProperty("--d", (Math.random() * 6).toFixed(2) + "s");
+        reubicar(b, cols, filas);
 
-        // Al cerrar un ciclo, cambia de valor y a veces de lugar
+        // CADA vez que termina un ciclo salta a otro lugar de la
+        // pantalla con otro valor: nunca reaparece donde estaba.
         b.addEventListener("animationiteration", () => {
-          b.textContent = Math.random() < 0.5 ? "0" : "1";
-          if (Math.random() < 0.25) {
-            b.style.left = Math.floor(Math.random() * cols) * CELDA + 6 + "px";
-            b.style.top = Math.floor(Math.random() * filas) * CELDA + 8 + "px";
-          }
+          reubicar(b, cols, filas);
+          b.textContent = valor();
         });
       } else {
         b.style.opacity = "0.5"; // sin animación: quietos y tenues

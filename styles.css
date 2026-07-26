@@ -267,13 +267,19 @@ body {
 .bh__band {
   position: absolute;
   inset: 0;
-  transform: translateY(8%) scaleY(0.11); /* casi de canto */
-  filter: blur(1.2px) saturate(1.35) contrast(1.15) brightness(1.35);
+  /* Con cuerpo: no es una línea, es una banda de plasma */
+  transform: translateY(8%) scaleY(0.2);
+  filter: blur(3px) saturate(1.4) contrast(1.1) brightness(1.4);
 }
 .bh__band i {
-  /* Bien ancha: se extiende mucho más allá de la esfera */
-  -webkit-mask: radial-gradient(circle, transparent 62%, #000 66%, #000 92%, transparent 97%);
-          mask: radial-gradient(circle, transparent 62%, #000 66%, #000 92%, transparent 97%);
+  /* Máscara con caída SUAVE hacia afuera: denso y brillante cerca de
+     la esfera, desvaneciéndose en los extremos (como en la foto). */
+  -webkit-mask: radial-gradient(circle,
+                transparent 46%, rgba(0,0,0,0.85) 56%, #000 64%,
+                rgba(0,0,0,0.6) 80%, rgba(0,0,0,0.25) 92%, transparent 100%);
+          mask: radial-gradient(circle,
+                transparent 46%, rgba(0,0,0,0.85) 56%, #000 64%,
+                rgba(0,0,0,0.6) 80%, rgba(0,0,0,0.25) 92%, transparent 100%);
 }
 
 /* Núcleo incandescente: más fino, más brillante, encima de la banda.
@@ -329,14 +335,14 @@ body {
 .bh__glow {
   position: absolute;
   inset: 0;
-  transform: translateY(7%) scaleY(0.3);
+  transform: translateY(8%) scaleY(0.34);
   border-radius: 50%;
   background: radial-gradient(
     ellipse at center,
-    rgba(255, 210, 150, 0.55) 0%,
-    rgba(255, 140, 55, 0.42) 32%,
-    rgba(220, 80, 25, 0.22) 58%,
-    transparent 80%
+    rgba(255, 225, 175, 0.75) 0%,
+    rgba(255, 150, 60, 0.58) 30%,
+    rgba(225, 85, 28, 0.32) 55%,
+    transparent 78%
   );
   filter: blur(14px);
   animation: bh-breathe 11s ease-in-out infinite;

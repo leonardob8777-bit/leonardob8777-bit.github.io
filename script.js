@@ -42,6 +42,40 @@
 
 const SECCIONES = [
   /* ---------------------------------------------------------------
+     LIVE  (primera categoría — se muestra en rojo en el menú)
+     --------------------------------------------------------------- */
+  {
+    id: "live",
+    nav: "Live",
+    acento: "live", // pinta la pestaña de rojo con puntito latiendo
+    titulo: "Live",
+    descripcion: "Anti-revoke DNS profile — keeps signed apps working.",
+    items: [
+      {
+        id: "dns-profile",
+        titulo: "Install DNS Profile",
+        subtitulo: "Anti-revoke · iOS",
+        url: "profiles/anti-revoke.mobileconfig",
+        icono: "shield",
+        tipo: "perfil",
+        estado: "live",
+        nota:
+          "Tap → then open <b>Settings → Profile Downloaded → Install</b>. " +
+          "Routes your DNS through Cloudflare Gateway and blocks iOS updates while active.",
+      },
+      {
+        id: "skibiditech",
+        titulo: "Skibidi Tech",
+        subtitulo: "iOS signing & sideloading",
+        url: "https://skibiditech.co/",
+        icono: "spark",
+        tipo: "externo",
+        estado: "live",
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------------------
      APPS / IPAs
      --------------------------------------------------------------- */
   {
@@ -97,49 +131,6 @@ const SECCIONES = [
   },
 
   /* ---------------------------------------------------------------
-     HERRAMIENTAS
-     --------------------------------------------------------------- */
-  {
-    id: "tools",
-    nav: "Tools",
-    titulo: "Tools",
-    descripcion: "Useful utilities before you install anything.",
-    items: [
-      {
-        id: "udid",
-        titulo: "Get UDID",
-        subtitulo: "Find your device ID",
-        url: "https://udid.tech/",
-        icono: "getudid",
-        tipo: "externo",
-        estado: "online",
-        nota: "You need this to buy a certificate.",
-      },
-    ],
-  },
-
-  /* ---------------------------------------------------------------
-     CONTACTO
-     --------------------------------------------------------------- */
-  {
-    id: "contact",
-    nav: "Contact",
-    titulo: "Contact",
-    descripcion: "Questions, certificates or custom requests.",
-    items: [
-      {
-        id: "telegram",
-        titulo: "Telegram",
-        subtitulo: "If you need help, text me",
-        url: "https://t.me/leonardoPhl",
-        icono: "telegram",
-        tipo: "externo",
-        estado: "online",
-      },
-    ],
-  },
-
-  /* ---------------------------------------------------------------
      GUÍA PASO A PASO
      Esta sección usa `pasos` en vez de `items`. Para agregar un paso,
      copiá un bloque { titulo, detalle }. El número se pone solo.
@@ -185,35 +176,44 @@ const SECCIONES = [
   },
 
   /* ---------------------------------------------------------------
-     LIVE  (última categoría — se muestra en rojo en el menú)
+     HERRAMIENTAS
      --------------------------------------------------------------- */
   {
-    id: "live",
-    nav: "Live",
-    acento: "live", // pinta la pestaña de rojo con puntito latiendo
-    titulo: "Live",
-    descripcion: "Anti-revoke DNS profile — keeps signed apps working.",
+    id: "tools",
+    nav: "Tools",
+    titulo: "Tools",
+    descripcion: "Useful utilities before you install anything.",
     items: [
       {
-        id: "dns-profile",
-        titulo: "Install DNS Profile",
-        subtitulo: "Anti-revoke · iOS",
-        url: "profiles/anti-revoke.mobileconfig",
-        icono: "shield",
-        tipo: "perfil",
-        estado: "live",
-        nota:
-          "Tap → then open <b>Settings → Profile Downloaded → Install</b>. " +
-          "Routes your DNS through Cloudflare Gateway and blocks iOS updates while active.",
-      },
-      {
-        id: "skibiditech",
-        titulo: "Skibidi Tech",
-        subtitulo: "iOS signing & sideloading",
-        url: "https://skibiditech.co/",
-        icono: "spark",
+        id: "udid",
+        titulo: "Get UDID",
+        subtitulo: "Find your device ID",
+        url: "https://udid.tech/",
+        icono: "getudid",
         tipo: "externo",
-        estado: "live",
+        estado: "online",
+        nota: "You need this to buy a certificate.",
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------------------
+     CONTACTO
+     --------------------------------------------------------------- */
+  {
+    id: "contact",
+    nav: "Contact",
+    titulo: "Contact",
+    descripcion: "Questions, certificates or custom requests.",
+    items: [
+      {
+        id: "telegram",
+        titulo: "Telegram",
+        subtitulo: "If you need help, text me",
+        url: "https://t.me/leonardoPhl",
+        icono: "telegram",
+        tipo: "externo",
+        estado: "online",
       },
     ],
   },

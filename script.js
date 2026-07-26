@@ -30,14 +30,6 @@ const links = [
     tipo: "install",
   },
   {
-    id: "kravasign",
-    titulo: "KravaSign",
-    subtitulo: "Purchase",
-    url: "https://www.kravasign.com/purchase", // KravaSign
-    icono: "kravasign",
-    tipo: "externo",
-  },
-  {
     id: "udid",
     titulo: "Get UDID",
     subtitulo: "Find your device ID",
@@ -100,9 +92,6 @@ const ICONS = {
       <circle cx="120" cy="120" r="120" fill="url(#mf)"/>
       <path fill="#fff" d="M133 46c5 29 31 41 35 76 4 37-23 66-51 66-29 0-51-23-51-51 0-21 11-33 23-45 0 16 6 27 19 31-13-23-4-53 25-76z"/>
     </svg>`,
-
-  // Logo real de KravaSign (la vaquita): imagen circular.
-  kravasign: `<img class="logo" src="assets/kravasign.png" alt="" />`,
 
   // Logo propio para "Get UDID": huella digital en círculo verde-azulado (SVG).
   getudid: `

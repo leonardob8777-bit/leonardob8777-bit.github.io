@@ -199,8 +199,11 @@ body {
 }
 .catnav__item:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
 
-/* ================= SECCIONES ================= */
-.section { margin-top: 34px; scroll-margin-top: 76px; }
+/* ================= SECCIONES (pestañas) =================
+   Solo se ve la categoría activa. El resto queda oculto, así
+   bajando con el mouse nunca aparece contenido de otra categoría. */
+.section { display: none; margin-top: 28px; }
+.section.is-active { display: block; }
 
 .section__head { margin-bottom: 14px; padding: 0 4px; }
 .section__title {

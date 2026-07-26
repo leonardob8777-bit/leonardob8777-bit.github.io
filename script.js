@@ -361,7 +361,7 @@ function crearGuia(guia, contadorInicial) {
   return sec;
 }
 
-/** Menú de categorías de arriba. */
+/** Menú de categorías de arriba (funcionan como pestañas). */
 function crearNav(entradas) {
   const nav = document.getElementById("catnav");
   if (!nav) return;
@@ -372,30 +372,67 @@ function crearNav(entradas) {
     a.className = "catnav__item animate-in";
     a.style.setProperty("--i", i + 1);
     a.textContent = e.nav;
+    a.setAttribute("role", "tab");
+    a.dataset.target = e.id;
     nav.appendChild(a);
   });
 }
 
-/** Resalta en el menú la sección que estás viendo. */
-function activarScrollSpy() {
+/**
+ * Muestra SOLO la categoría pedida y oculta el resto.
+ * Así cada apartado tiene únicamente lo suyo: bajando con el mouse
+ * nunca aparece el contenido de otra categoría.
+ */
+function mostrarSeccion(id) {
   const secciones = document.querySelectorAll("main .section");
   const enlaces = document.querySelectorAll(".catnav__item");
-  if (!secciones.length || !("IntersectionObserver" in window)) return;
+  if (!secciones.length) return;
 
-  const obs = new IntersectionObserver(
-    (entradas) => {
-      entradas.forEach((entrada) => {
-        if (!entrada.isIntersecting) return;
-        const id = entrada.target.id;
-        enlaces.forEach((a) =>
-          a.classList.toggle("is-active", a.getAttribute("href") === `#${id}`)
-        );
-      });
-    },
-    { rootMargin: "-45% 0px -50% 0px" }
-  );
+  // Si el id no existe, caemos en la primera sección.
+  const existe = [...secciones].some((s) => s.id === id);
+  const objetivo = existe ? id : secciones[0].id;
 
-  secciones.forEach((s) => obs.observe(s));
+  secciones.forEach((s) => {
+    s.classList.toggle("is-active", s.id === objetivo);
+    s.setAttribute("aria-hidden", s.id === objetivo ? "false" : "true");
+  });
+
+  enlaces.forEach((a) => {
+    const activo = a.dataset.target === objetivo;
+    a.classList.toggle("is-active", activo);
+    a.setAttribute("aria-selected", activo ? "true" : "false");
+  });
+
+  // Reinicia la animación de entrada de la sección que se muestra.
+  const activa = document.getElementById(objetivo);
+  if (activa) {
+    activa.querySelectorAll(".animate-in").forEach((el) => {
+      el.style.animation = "none";
+      void el.offsetWidth; // fuerza el reflow para reiniciar
+      el.style.animation = "";
+    });
+  }
+}
+
+/** Conecta los clics del menú y de los enlaces internos (#guide, etc.). */
+function activarPestanas() {
+  document.addEventListener("click", (ev) => {
+    const enlace = ev.target.closest('a[href^="#"]');
+    if (!enlace) return;
+
+    const id = enlace.getAttribute("href").slice(1);
+    if (!id) return;
+
+    ev.preventDefault();
+    mostrarSeccion(id);
+    history.replaceState(null, "", `#${id}`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  // Permite volver atrás / entrar con un enlace directo (#guide).
+  window.addEventListener("hashchange", () => {
+    mostrarSeccion(location.hash.slice(1));
+  });
 }
 
 /** Indicador "live" del hero: resume el estado de todas las tarjetas. */
@@ -439,7 +476,10 @@ document.addEventListener("DOMContentLoaded", () => {
   contenido.appendChild(crearGuia(GUIA, contador));
 
   actualizarEstado();
-  activarScrollSpy();
+  activarPestanas();
+
+  // Abre la categoría del enlace (#guide) o, si no hay, la primera.
+  mostrarSeccion(location.hash.slice(1));
 
   const yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();

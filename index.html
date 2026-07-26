@@ -46,7 +46,7 @@
 
   <!-- El ?v= evita que el navegador use una versión vieja en caché.
        Subí el número cada vez que edites styles.css. -->
-  <link rel="stylesheet" href="styles.css?v=20" />
+  <link rel="stylesheet" href="styles.css?v=21" />
 </head>
 
 <body>
@@ -61,14 +61,15 @@
        Ver el bloque "AGUJERO NEGRO" en styles.css. -->
   <div class="bh" aria-hidden="true">
     <div class="bh__halo"></div>
-    <!-- Cara LEJANA del disco: la gravedad curva su luz y la vemos
-         arcando por encima de la esfera -->
-    <div class="bh__disk bh__disk--back"><i></i></div>
+    <!-- Arcos LENTEADOS: la luz del disco lejano se curva y aparece
+         por encima y por debajo de la esfera (van DETRÁS) -->
+    <div class="bh__arc bh__arc--top"><i></i></div>
+    <div class="bh__arc bh__arc--bottom"><i></i></div>
     <div class="bh__lens"></div>
     <div class="bh__core"></div>
     <div class="bh__ring"></div>
-    <!-- Cara CERCANA: cruza por delante, por debajo de la esfera -->
-    <div class="bh__disk bh__disk--front"><i></i></div>
+    <!-- Banda CERCANA: cruza por delante de la esfera -->
+    <div class="bh__band"><i></i></div>
     <div class="bh__debris">
       <span></span><span></span><span></span><span></span><span></span>
       <span></span><span></span><span></span>
@@ -124,6 +125,6 @@
     </footer>
   </div>
 
-  <script src="script.js?v=20" defer></script>
+  <script src="script.js?v=21" defer></script>
 </body>
 </html>

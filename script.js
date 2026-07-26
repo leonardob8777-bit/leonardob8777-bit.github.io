@@ -674,11 +674,14 @@ function activarBits() {
 
       b.textContent = valor();
 
+      // La posición se asigna SIEMPRE. Si no, los números se apilan
+      // todos en la esquina superior izquierda.
+      reubicar(b, cols, filas);
+
       if (!reducido) {
         // Ritmo propio: entre 1.6 y 5.5 segundos por ciclo
         b.style.setProperty("--t", (1.6 + Math.random() * 3.9).toFixed(2) + "s");
         b.style.setProperty("--d", (Math.random() * 6).toFixed(2) + "s");
-        reubicar(b, cols, filas);
 
         // CADA vez que termina un ciclo salta a otro lugar de la
         // pantalla con otro valor: nunca reaparece donde estaba.
@@ -687,7 +690,12 @@ function activarBits() {
           b.textContent = valor();
         });
       } else {
-        b.style.opacity = "0.5"; // sin animación: quietos y tenues
+        // Sin animaciones CSS: los movemos con un temporizador lento
+        b.style.opacity = "0.55";
+        setInterval(() => {
+          reubicar(b, cols, filas);
+          b.textContent = valor();
+        }, 2500 + Math.random() * 4000);
       }
 
       frag.appendChild(b);

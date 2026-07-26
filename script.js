@@ -1,11 +1,14 @@
 /* =================================================================
    CONFIGURACIÓN DEL SITIO  ← ESTO ES LO ÚNICO QUE EDITAS
    -----------------------------------------------------------------
-   El sitio se arma solo a partir de estos datos. Hay 2 bloques:
+   El sitio se arma solo desde el array SECCIONES. Cada elemento es
+   una CATEGORÍA (una pestaña del menú) y puede ser de 2 tipos:
 
-     1) SECCIONES → las categorías con sus tarjetas (Apps,
-        Certificates, Tools, Contact...).
-     2) GUIA      → los pasos del apartado "Guide".
+     · con `items` → una lista de tarjetas (Apps, Tools, Contact...).
+     · con `pasos` → una guía numerada (el apartado "Guide").
+
+   El ORDEN del array = el orden de las pestañas. Para reordenar,
+   simplemente movés el bloque de lugar.
 
    -----------------------------------------------------------------
    CÓMO AGREGAR UNA TARJETA NUEVA
@@ -135,52 +138,74 @@ const SECCIONES = [
       },
     ],
   },
-];
 
-/* =================================================================
-   GUÍA PASO A PASO  (apartado "Guide")
-   -----------------------------------------------------------------
-   Para agregar un paso: copiá un bloque { titulo, detalle }.
-   El número se pone solo. Podés usar <b>negrita</b> en el detalle.
-   ================================================================= */
-const GUIA = {
-  id: "guide",
-  nav: "Guide",
-  titulo: "After installing KSign",
-  descripcion: "Follow these steps in order. It takes about 3 minutes.",
-  pasos: [
-    {
-      titulo: "Trust the app",
-      detalle:
-        "Go to <b>Settings → General → VPN & Device Management</b>, tap the developer profile and press <b>Trust</b>.",
-    },
-    {
-      titulo: "Get your UDID",
-      detalle:
-        "Open the <b>Get UDID</b> tool above and copy your device ID. You need it to buy a certificate.",
-    },
-    {
-      titulo: "Get a certificate",
-      detalle:
-        "Send me your UDID on <b>Telegram</b> and I'll set you up with a certificate that lasts up to a year.",
-    },
-    {
-      titulo: "Import the certificate into KSign",
-      detalle:
-        "Open KSign → <b>Certificates</b> → import the <b>.p12</b> file and the <b>.mobileprovision</b>, then type the password you were given.",
-    },
-    {
-      titulo: "Sign and install your IPA",
-      detalle:
-        "In KSign, pick the IPA, choose your certificate and tap <b>Sign</b>. When it finishes, tap <b>Install</b>.",
-    },
-    {
-      titulo: "Done",
-      detalle:
-        "The app now opens normally. If it stops working, the certificate was revoked — message me and I'll replace it.",
-    },
-  ],
-};
+  /* ---------------------------------------------------------------
+     GUÍA PASO A PASO
+     Esta sección usa `pasos` en vez de `items`. Para agregar un paso,
+     copiá un bloque { titulo, detalle }. El número se pone solo.
+     Podés usar <b>negrita</b> dentro del detalle.
+     --------------------------------------------------------------- */
+  {
+    id: "guide",
+    nav: "Guide",
+    titulo: "After installing KSign",
+    descripcion: "Follow these steps in order. It takes about 3 minutes.",
+    pasos: [
+      {
+        titulo: "Trust the app",
+        detalle:
+          "Go to <b>Settings → General → VPN & Device Management</b>, tap the developer profile and press <b>Trust</b>.",
+      },
+      {
+        titulo: "Get your UDID",
+        detalle:
+          "Open the <b>Get UDID</b> tool in Tools and copy your device ID. You need it to buy a certificate.",
+      },
+      {
+        titulo: "Get a certificate",
+        detalle:
+          "Send me your UDID on <b>Telegram</b> and I'll set you up with a certificate that lasts up to a year.",
+      },
+      {
+        titulo: "Import the certificate into KSign",
+        detalle:
+          "Open KSign → <b>Certificates</b> → import the <b>.p12</b> file and the <b>.mobileprovision</b>, then type the password you were given.",
+      },
+      {
+        titulo: "Sign and install your IPA",
+        detalle:
+          "In KSign, pick the IPA, choose your certificate and tap <b>Sign</b>. When it finishes, tap <b>Install</b>.",
+      },
+      {
+        titulo: "Done",
+        detalle:
+          "The app now opens normally. If it stops working, the certificate was revoked — message me and I'll replace it.",
+      },
+    ],
+  },
+
+  /* ---------------------------------------------------------------
+     LIVE  (última categoría — se muestra en rojo en el menú)
+     --------------------------------------------------------------- */
+  {
+    id: "live",
+    nav: "Live",
+    acento: "live", // pinta la pestaña de rojo con puntito latiendo
+    titulo: "Live",
+    descripcion: "External signing service — open right now.",
+    items: [
+      {
+        id: "skibiditech",
+        titulo: "Skibidi Tech",
+        subtitulo: "iOS signing & sideloading",
+        url: "https://skibiditech.co/",
+        icono: "spark",
+        tipo: "externo",
+        estado: "live",
+      },
+    ],
+  },
+];
 
 /* =================================================================
    BIBLIOTECA DE ÍCONOS (SVG inline / imágenes, sin librerías)
@@ -229,6 +254,19 @@ const ICONS = {
       </g>
     </svg>`,
 
+  /* Ícono propio para servicios externos de firma (rayo en círculo) */
+  spark: `
+    <svg class="logo" viewBox="0 0 240 240" aria-hidden="true">
+      <defs>
+        <linearGradient id="spk" x1="120" y1="0" x2="120" y2="240" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#fb7185"/>
+          <stop offset="1" stop-color="#dc2626"/>
+        </linearGradient>
+      </defs>
+      <circle cx="120" cy="120" r="120" fill="url(#spk)"/>
+      <path fill="#fff" d="M132 44 78 132h34l-8 64 56-90h-34z"/>
+    </svg>`,
+
   /* Respaldo si el nombre de `icono` no existe */
   link: `
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -250,6 +288,7 @@ const ETIQUETA_ESTADO = {
   online: "Online",
   offline: "Down",
   soon: "Soon",
+  live: "Live", // rojo, con latido
 };
 
 /* =================================================================
@@ -260,7 +299,7 @@ const ETIQUETA_ESTADO = {
 function crearTarjeta(item, indice) {
   const a = document.createElement("a");
   a.href = item.url;
-  a.className = "link animate-in";
+  a.className = "link reveal";
   a.id = `link-${item.id}`;
   a.style.setProperty("--i", indice);
 
@@ -294,6 +333,7 @@ function crearTarjeta(item, indice) {
   const nota = item.nota ? `<p class="link__note">${item.nota}</p>` : "";
 
   a.innerHTML = `
+    <span class="link__shine" aria-hidden="true"></span>
     <span class="link__row">
       <span class="link__icon">${icono}</span>
       <span class="link__text">
@@ -315,7 +355,7 @@ function crearSeccion(seccion, contadorInicial) {
   sec.id = seccion.id;
 
   sec.innerHTML = `
-    <div class="section__head animate-in" style="--i:${contadorInicial}">
+    <div class="section__head reveal" style="--i:${contadorInicial}">
       <h2 class="section__title">${seccion.titulo}</h2>
       ${seccion.descripcion ? `<p class="section__desc">${seccion.descripcion}</p>` : ""}
     </div>
@@ -340,7 +380,7 @@ function crearGuia(guia, contadorInicial) {
   const pasos = guia.pasos
     .map(
       (p, i) => `
-      <li class="step animate-in" style="--i:${contadorInicial + i + 1}">
+      <li class="step reveal" style="--i:${contadorInicial + i + 1}">
         <span class="step__num">${i + 1}</span>
         <div class="step__body">
           <h3 class="step__title">${p.titulo}</h3>
@@ -351,7 +391,7 @@ function crearGuia(guia, contadorInicial) {
     .join("");
 
   sec.innerHTML = `
-    <div class="section__head animate-in" style="--i:${contadorInicial}">
+    <div class="section__head reveal" style="--i:${contadorInicial}">
       <h2 class="section__title">${guia.titulo}</h2>
       ${guia.descripcion ? `<p class="section__desc">${guia.descripcion}</p>` : ""}
     </div>
@@ -374,7 +414,53 @@ function crearNav(entradas) {
     a.textContent = e.nav;
     a.setAttribute("role", "tab");
     a.dataset.target = e.id;
+    // Acento opcional (ej: la categoría "Live" va en rojo con latido)
+    if (e.acento) a.dataset.acento = e.acento;
     nav.appendChild(a);
+  });
+}
+
+/* -----------------------------------------------------------------
+   REVELADO AL HACER SCROLL
+   Cada tarjeta/paso aparece cuando entra en pantalla. Al cambiar de
+   pestaña se reinicia, así la animación se ve de nuevo.
+   ----------------------------------------------------------------- */
+let observador = null;
+
+function iniciarObservador() {
+  if (!("IntersectionObserver" in window)) {
+    // Navegador viejo: mostramos todo sin animar.
+    document.querySelectorAll(".reveal").forEach((el) => el.classList.add("is-revealed"));
+    return;
+  }
+
+  observador = new IntersectionObserver(
+    (entradas) => {
+      entradas.forEach((entrada) => {
+        if (entrada.isIntersecting) {
+          entrada.target.classList.add("is-revealed");
+          observador.unobserve(entrada.target);
+        }
+      });
+    },
+    { rootMargin: "0px 0px -8% 0px", threshold: 0.05 }
+  );
+}
+
+/** Reinicia y vuelve a observar los elementos de una sección. */
+function reiniciarRevelado(seccion) {
+  const elementos = seccion.querySelectorAll(".reveal");
+  elementos.forEach((el) => el.classList.remove("is-revealed"));
+
+  // Doble rAF: garantiza que el navegador registre el estado inicial
+  // antes de volver a animar (si no, el cambio se ve instantáneo).
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      elementos.forEach((el) => {
+        if (observador) observador.observe(el);
+        else el.classList.add("is-revealed");
+      });
+    });
   });
 }
 
@@ -403,14 +489,13 @@ function mostrarSeccion(id) {
     a.setAttribute("aria-selected", activo ? "true" : "false");
   });
 
-  // Reinicia la animación de entrada de la sección que se muestra.
+  // Transición de entrada de la sección + revelado escalonado.
   const activa = document.getElementById(objetivo);
   if (activa) {
-    activa.querySelectorAll(".animate-in").forEach((el) => {
-      el.style.animation = "none";
-      void el.offsetWidth; // fuerza el reflow para reiniciar
-      el.style.animation = "";
-    });
+    activa.classList.remove("is-entering");
+    void activa.offsetWidth; // fuerza el reflow para reiniciar la animación
+    activa.classList.add("is-entering");
+    reiniciarRevelado(activa);
   }
 }
 
@@ -440,7 +525,7 @@ function actualizarEstado() {
   const cont = document.getElementById("status");
   if (!cont) return;
 
-  const items = SECCIONES.flatMap((s) => s.items);
+  const items = SECCIONES.flatMap((s) => s.items || []);
   const caidos = items.filter((i) => i.estado === "offline").length;
   const total = items.length;
 
@@ -462,20 +547,26 @@ function actualizarEstado() {
 document.addEventListener("DOMContentLoaded", () => {
   const contenido = document.getElementById("content");
 
-  // Menú: todas las secciones + la guía
-  crearNav([...SECCIONES, GUIA]);
+  // El menú y las secciones salen del mismo array: el ORDEN del array
+  // es el orden de las pestañas. Mové bloques para reordenar.
+  crearNav(SECCIONES);
 
   // Contador global para que el stagger sea continuo entre secciones
   let contador = 1;
 
   SECCIONES.forEach((seccion) => {
-    contenido.appendChild(crearSeccion(seccion, contador));
-    contador += seccion.items.length + 1;
+    // Una sección puede tener `items` (tarjetas) o `pasos` (guía).
+    if (seccion.pasos) {
+      contenido.appendChild(crearGuia(seccion, contador));
+      contador += seccion.pasos.length + 1;
+    } else {
+      contenido.appendChild(crearSeccion(seccion, contador));
+      contador += seccion.items.length + 1;
+    }
   });
 
-  contenido.appendChild(crearGuia(GUIA, contador));
-
   actualizarEstado();
+  iniciarObservador();
   activarPestanas();
 
   // Abre la categoría del enlace (#guide) o, si no hay, la primera.

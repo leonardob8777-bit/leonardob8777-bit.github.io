@@ -340,6 +340,46 @@ body {
 .badge--offline { color: var(--danger); background: rgba(248, 113, 113, 0.12); border-color: rgba(248, 113, 113, 0.25); }
 .badge--soon    { color: var(--warn);   background: rgba(251, 191, 36, 0.12);  border-color: rgba(251, 191, 36, 0.25); }
 
+/* Chip "LIVE" en rojo, con el punto latiendo */
+.badge--live {
+  color: #ff4d4d;
+  background: rgba(255, 77, 77, 0.14);
+  border-color: rgba(255, 77, 77, 0.35);
+}
+.badge--live .badge__dot {
+  animation: live-blink 1.4s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(255, 77, 77, 0.9);
+}
+@keyframes live-blink {
+  0%, 100% { opacity: 1;   transform: scale(1); }
+  50%      { opacity: 0.35; transform: scale(0.8); }
+}
+
+/* Pestaña "Live" del menú: texto rojo + puntito latiendo */
+.catnav__item[data-acento="live"] {
+  color: #ff5c5c;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.catnav__item[data-acento="live"]::before {
+  content: "";
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #ff4d4d;
+  box-shadow: 0 0 8px rgba(255, 77, 77, 0.9);
+  animation: live-blink 1.4s ease-in-out infinite;
+}
+.catnav__item[data-acento="live"]:hover {
+  color: #ff7b7b;
+  background: rgba(255, 77, 77, 0.12);
+}
+.catnav__item[data-acento="live"].is-active {
+  color: #fff;
+  background: rgba(220, 38, 38, 0.85);
+}
+.catnav__item[data-acento="live"].is-active::before { background: #fff; box-shadow: none; }
+
 /* ================= GUÍA PASO A PASO ================= */
 .steps { list-style: none; display: flex; flex-direction: column; gap: 10px; }
 
@@ -381,7 +421,9 @@ body {
 }
 .footer__note { margin-top: 5px; font-size: 0.7rem; opacity: 0.7; }
 
-/* ================= ANIMACIÓN DE ENTRADA ================= */
+/* ================= ANIMACIONES ================= */
+
+/* --- Entrada del hero y del menú (solo al cargar la página) --- */
 @keyframes enter {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -392,13 +434,127 @@ body {
   animation-delay: calc(var(--i, 0) * var(--stagger));
 }
 
+/* --- Revelado al hacer scroll / al cambiar de pestaña --- */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px) scale(0.97);
+  transition:
+    opacity 0.6s var(--ease),
+    transform 0.6s var(--ease);
+  transition-delay: calc(var(--i, 0) * 55ms);
+}
+.reveal.is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- Transición al cambiar de categoría --- */
+@keyframes section-in {
+  from { opacity: 0; transform: translateX(18px); filter: blur(4px); }
+  to   { opacity: 1; transform: translateX(0);    filter: blur(0); }
+}
+.section.is-entering { animation: section-in 0.45s var(--ease) both; }
+
+/* --- Brillo que recorre la tarjeta --- */
+.link__shine {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: -60%;
+  width: 45%;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.10) 40%,
+    rgba(255, 255, 255, 0.22) 50%,
+    rgba(255, 255, 255, 0.10) 60%,
+    transparent 100%
+  );
+  transform: skewX(-18deg);
+  opacity: 0;
+}
+@keyframes shine-sweep {
+  0%   { left: -60%; opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { left: 130%; opacity: 0; }
+}
+.link:hover .link__shine,
+.link:focus-visible .link__shine {
+  animation: shine-sweep 0.85s var(--ease);
+}
+
+/* --- Logos: rebote al pasar el mouse / al tocar --- */
+.link__icon {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.link:hover .link__icon  { transform: scale(1.14) rotate(-6deg); }
+.link:active .link__icon { transform: scale(0.92) rotate(0deg); }
+
+/* --- Avatar flotando suave --- */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+.avatar-wrap { animation: float 5s ease-in-out infinite; }
+
+/* Halo del avatar respirando */
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.40; transform: scale(1); }
+  50%      { opacity: 0.62; transform: scale(1.08); }
+}
+.avatar-wrap::before { animation: glow-breathe 5s ease-in-out infinite; }
+
+/* --- Título del hero con brillo que pasa --- */
+@keyframes name-shimmer {
+  0%   { background-position: -180% center; }
+  100% { background-position: 180% center; }
+}
+.name {
+  background: linear-gradient(
+    100deg,
+    var(--text) 0%, var(--text) 42%,
+    #ffffff 50%,
+    var(--text) 58%, var(--text) 100%
+  );
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: name-shimmer 6s ease-in-out infinite;
+}
+
+/* --- Pestañas del menú --- */
+.catnav__item {
+  transform-origin: center;
+  transition: background 0.3s var(--ease), color 0.3s var(--ease),
+              transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.catnav__item:active { transform: scale(0.94); }
+.catnav__item.is-active { transform: scale(1.04); }
+
 /* ================= prefers-reduced-motion ================= */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .aurora { animation: none; }
+  .aurora,
+  .avatar-wrap,
+  .avatar-wrap::before,
+  .name,
+  .badge--live .badge__dot,
+  .catnav__item[data-acento="live"]::before { animation: none; }
+  .name {
+    -webkit-text-fill-color: var(--text);
+    background: none;
+  }
   .animate-in { opacity: 1; animation: none; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .section.is-entering { animation: none; }
+  .link:hover .link__shine { animation: none; }
+  .link:hover .link__icon, .link:active .link__icon { transform: none; }
   .status__dot::after { animation: none; opacity: 0; }
   .link:hover, .link:active { transform: none; }
+  .catnav__item:active, .catnav__item.is-active { transform: none; }
   * { transition-duration: 0.01ms !important; }
 }
 

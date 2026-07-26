@@ -1,70 +1,191 @@
 /* =================================================================
-   CONFIGURACIÓN DE ENLACES  ← ESTO ES LO ÚNICO QUE EDITAS
+   CONFIGURACIÓN DEL SITIO  ← ESTO ES LO ÚNICO QUE EDITAS
    -----------------------------------------------------------------
-   Cada botón del sitio es un objeto de este array. Para AGREGAR un
-   botón nuevo, copiá un bloque { ... } y cambiá sus valores. Para
-   QUITAR uno, borrá su bloque. El orden del array = el orden en
-   pantalla.
+   El sitio se arma solo a partir de estos datos. Hay 2 bloques:
 
-   Campos de cada objeto:
-     id        → identificador único (string, sin espacios).
-     titulo    → texto grande del botón.
-     subtitulo → texto chico debajo (opcional; poné "" si no querés).
-     url       → a dónde apunta:
-                   · tipo 'externo'  → una URL (https://...)
-                   · tipo 'descarga' → la ruta al archivo (archivos/...)
-     icono     → nombre de un ícono definido en el objeto ICONS de
-                 más abajo. Podés agregar los tuyos ahí.
-     tipo      → 'externo'  = abre en pestaña nueva.
-                 'descarga' = descarga el archivo (usa download).
+     1) SECCIONES → las categorías con sus tarjetas (Apps,
+        Certificates, Tools, Contact...).
+     2) GUIA      → los pasos del apartado "Guide".
+
+   -----------------------------------------------------------------
+   CÓMO AGREGAR UNA TARJETA NUEVA
+   Buscá la sección donde la querés y copiá un bloque { ... }:
+
+     {
+       id: "nombre-unico",        // sin espacios
+       titulo: "Texto grande",
+       subtitulo: "Texto chico",  // "" si no querés
+       url: "https://...",
+       icono: "telegram",         // nombre del objeto ICONS (más abajo)
+       tipo: "externo",           // externo | install | descarga
+       estado: "online",          // online | offline | soon  (opcional)
+       nota: "",                  // texto extra opcional debajo
+     }
+
+   TIPOS:
+     externo  → abre en pestaña nueva.
+     install  → instalación OTA de iOS (itms-services://). Misma pestaña.
+     descarga → fuerza la descarga del archivo (usa download).
+
+   ESTADOS (el puntito de color de la tarjeta):
+     online  → verde   (funcionando)
+     offline → rojo    (caído / certificado vencido)
+     soon    → ámbar   (próximamente)
+
+   CÓMO AGREGAR UNA SECCIÓN NUEVA
+   Copiá un bloque de SECCIONES entero (con su id, titulo, etc.).
+   El menú de categorías de arriba se actualiza solo.
    ================================================================= */
-const links = [
+
+const SECCIONES = [
+  /* ---------------------------------------------------------------
+     APPS / IPAs
+     --------------------------------------------------------------- */
   {
-    id: "lara",
-    titulo: "Install Lara",
-    subtitulo: "Tap to install (iOS)",
-    // Manifiesto en tu propio dominio (ver nota de KSign). Para instalar de
-    // verdad, subir apps/lara.ipa firmado.
-    url: "itms-services://?action=download-manifest&url=https://leonardob8777-bit.github.io/apps/lara.plist",
-    icono: "lara",
-    tipo: "install",
+    id: "apps",
+    nav: "Apps",
+    titulo: "Apps & IPAs",
+    descripcion: "Tap to install directly on your iPhone (Safari only).",
+    items: [
+      {
+        id: "lara",
+        titulo: "Lara",
+        subtitulo: "Tap to install (iOS)",
+        // Manifiesto alojado en tu propio dominio → instala desde tu página.
+        url: "itms-services://?action=download-manifest&url=https://leonardob8777-bit.github.io/apps/lara.plist",
+        icono: "lara",
+        tipo: "install",
+        estado: "online",
+        nota: "Free version — needs a valid certificate to open.",
+      },
+      {
+        id: "ksign",
+        titulo: "KSign",
+        subtitulo: "IPA signer for iOS",
+        // 👇 CAMBIAR cuando tengas un enlace de instalación nuevo.
+        url: "#guide",
+        icono: "ksign",
+        tipo: "interno",
+        estado: "soon",
+        nota: "Setup guide below.",
+      },
+    ],
   },
+
+  /* ---------------------------------------------------------------
+     CERTIFICADOS
+     --------------------------------------------------------------- */
   {
-    id: "udid",
-    titulo: "Get UDID",
-    subtitulo: "Find your device ID",
-    url: "https://udid.tech/", // udid.tech
-    icono: "getudid",
-    tipo: "externo",
+    id: "certs",
+    nav: "Certificates",
+    titulo: "Certificates",
+    descripcion: "What you need so the apps actually open.",
+    items: [
+      {
+        id: "certificados",
+        titulo: "Download Certificates",
+        subtitulo: "MediaFire folder",
+        url: "https://www.mediafire.com/folder/tfyqtjugh0jtv/Certificate",
+        icono: "mediafire",
+        tipo: "externo",
+        estado: "online",
+      },
+    ],
   },
+
+  /* ---------------------------------------------------------------
+     HERRAMIENTAS
+     --------------------------------------------------------------- */
   {
-    id: "certificados",
-    titulo: "Download Certificates",
-    subtitulo: "MediaFire folder",
-    url: "https://www.mediafire.com/folder/tfyqtjugh0jtv/Certificate", // carpeta MediaFire
-    icono: "mediafire",
-    tipo: "externo", // abre MediaFire en pestaña nueva
+    id: "tools",
+    nav: "Tools",
+    titulo: "Tools",
+    descripcion: "Useful utilities before you install anything.",
+    items: [
+      {
+        id: "udid",
+        titulo: "Get UDID",
+        subtitulo: "Find your device ID",
+        url: "https://udid.tech/",
+        icono: "getudid",
+        tipo: "externo",
+        estado: "online",
+        nota: "You need this to buy a certificate.",
+      },
+    ],
   },
+
+  /* ---------------------------------------------------------------
+     CONTACTO
+     --------------------------------------------------------------- */
   {
-    id: "telegram",
-    titulo: "Telegram",
-    subtitulo: "If you need help, text me",
-    url: "https://t.me/leonardoPhl", // Telegram
-    icono: "telegram",
-    tipo: "externo",
+    id: "contact",
+    nav: "Contact",
+    titulo: "Contact",
+    descripcion: "Questions, certificates or custom requests.",
+    items: [
+      {
+        id: "telegram",
+        titulo: "Telegram",
+        subtitulo: "If you need help, text me",
+        url: "https://t.me/leonardoPhl",
+        icono: "telegram",
+        tipo: "externo",
+        estado: "online",
+      },
+    ],
   },
 ];
 
 /* =================================================================
-   BIBLIOTECA DE ÍCONOS (SVG inline, sin librerías externas)
+   GUÍA PASO A PASO  (apartado "Guide")
    -----------------------------------------------------------------
-   Cada clave devuelve el markup de un <svg>. Para agregar un ícono
-   nuevo: pegá acá el SVG (usá fill="currentColor" o
-   stroke="currentColor" para que herede el color del texto) y
-   referencialo desde el campo `icono` de un enlace.
+   Para agregar un paso: copiá un bloque { titulo, detalle }.
+   El número se pone solo. Podés usar <b>negrita</b> en el detalle.
+   ================================================================= */
+const GUIA = {
+  id: "guide",
+  nav: "Guide",
+  titulo: "After installing KSign",
+  descripcion: "Follow these steps in order. It takes about 3 minutes.",
+  pasos: [
+    {
+      titulo: "Trust the app",
+      detalle:
+        "Go to <b>Settings → General → VPN & Device Management</b>, tap the developer profile and press <b>Trust</b>.",
+    },
+    {
+      titulo: "Get your UDID",
+      detalle:
+        "Open the <b>Get UDID</b> tool above and copy your device ID. You need it to buy a certificate.",
+    },
+    {
+      titulo: "Get a certificate",
+      detalle:
+        "Send me your UDID on <b>Telegram</b> and I'll set you up with a certificate that lasts up to a year.",
+    },
+    {
+      titulo: "Import the certificate into KSign",
+      detalle:
+        "Open KSign → <b>Certificates</b> → import the <b>.p12</b> file and the <b>.mobileprovision</b>, then type the password you were given.",
+    },
+    {
+      titulo: "Sign and install your IPA",
+      detalle:
+        "In KSign, pick the IPA, choose your certificate and tap <b>Sign</b>. When it finishes, tap <b>Install</b>.",
+    },
+    {
+      titulo: "Done",
+      detalle:
+        "The app now opens normally. If it stops working, the certificate was revoked — message me and I'll replace it.",
+    },
+  ],
+};
+
+/* =================================================================
+   BIBLIOTECA DE ÍCONOS (SVG inline / imágenes, sin librerías)
    ================================================================= */
 const ICONS = {
-  // Logo OFICIAL de Telegram, a color, en círculo (SVG => nítido siempre).
   telegram: `
     <svg class="logo" viewBox="0 0 240 240" aria-hidden="true">
       <defs>
@@ -77,10 +198,9 @@ const ICONS = {
       <path fill="#fff" d="M54 118.5c34.9-15.2 58.2-25.2 69.8-30.1 33.2-13.8 40.1-16.2 44.6-16.3 1 0 3.2.2 4.7 1.4 1.2 1 1.5 2.3 1.7 3.3.2 1 .4 3.1.2 4.8-1.8 19.1-9.7 65.4-13.7 86.8-1.7 9-5 12.1-8.2 12.4-7 .6-12.3-4.6-19-9-10.5-6.9-16.4-11.2-26.6-17.9-11.8-7.8-4.2-12.1 2.6-19.1 1.8-1.8 32.5-29.8 33.1-32.3.1-.3.1-1.5-.6-2.1-.7-.6-1.7-.4-2.4-.2-1 .2-17.5 11.1-49.3 32.7-4.7 3.2-8.9 4.8-12.7 4.7-4.2-.1-12.2-2.4-18.2-4.3-7.3-2.4-13.1-3.7-12.6-7.8.3-2.1 3.2-4.3 8.8-6.6z"/>
     </svg>`,
 
-  // Logo real de Lara (la hormiga): imagen circular.
-  lara: `<img class="logo" src="assets/lara.png" alt="" />`,
+  lara: `<img class="logo" src="assets/lara.png" alt="" loading="lazy" />`,
+  ksign: `<img class="logo" src="assets/ksign.png" alt="" loading="lazy" />`,
 
-  // Logo de MediaFire (llama) a color, en círculo (SVG => nítido siempre).
   mediafire: `
     <svg class="logo" viewBox="0 0 240 240" aria-hidden="true">
       <defs>
@@ -93,7 +213,6 @@ const ICONS = {
       <path fill="#fff" d="M133 46c5 29 31 41 35 76 4 37-23 66-51 66-29 0-51-23-51-51 0-21 11-33 23-45 0 16 6 27 19 31-13-23-4-53 25-76z"/>
     </svg>`,
 
-  // Logo propio para "Get UDID": huella digital en círculo verde-azulado (SVG).
   getudid: `
     <svg class="logo" viewBox="0 0 240 240" aria-hidden="true">
       <defs>
@@ -110,27 +229,7 @@ const ICONS = {
       </g>
     </svg>`,
 
-  download: `
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-      <polyline points="7 10 12 15 17 10"/>
-      <line x1="12" y1="15" x2="12" y2="3"/>
-    </svg>`,
-
-  signature: `
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M20 20H4"/>
-      <path d="M4 16c4 0 3-8 6-8s2 5 4 5 2-3 4-3"/>
-    </svg>`,
-
-  apple: `
-    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M16.365 1.43c0 1.14-.417 2.2-1.11 2.98-.79.87-2.07 1.54-3.22 1.45-.13-1.1.42-2.27 1.06-2.98.72-.83 2.02-1.45 3.27-1.45zM20.5 17.06c-.6 1.38-.89 1.99-1.66 3.2-1.07 1.68-2.58 3.77-4.45 3.79-1.66.02-2.09-1.08-4.34-1.07-2.25.01-2.72 1.1-4.38 1.08-1.87-.02-3.3-1.9-4.37-3.58-3-4.72-3.31-10.26-1.46-13.2 1.31-2.09 3.38-3.31 5.33-3.31 1.98 0 3.23 1.09 4.87 1.09 1.59 0 2.56-1.09 4.85-1.09 1.73 0 3.57.94 4.88 2.57-4.29 2.35-3.59 8.47.73 10.14z"/>
-    </svg>`,
-
-  /* Ícono genérico de respaldo si `icono` no coincide con ninguno */
+  /* Respaldo si el nombre de `icono` no existe */
   link: `
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -139,7 +238,6 @@ const ICONS = {
     </svg>`,
 };
 
-/* Flechita a la derecha de cada botón (indicador visual) */
 const ARROW_ICON = `
   <svg class="link__arrow" width="18" height="18" viewBox="0 0 24 24" fill="none"
        stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -147,82 +245,202 @@ const ARROW_ICON = `
     <polyline points="9 18 15 12 9 6"/>
   </svg>`;
 
-/* =================================================================
-   RENDERIZADO: convierte el array `links` en botones del DOM
-   -----------------------------------------------------------------
-   No necesitás tocar nada de acá para abajo para el uso normal.
-   ================================================================= */
-function crearBoton(link, indice) {
-  // Es un <a>: accesible, navegable por teclado y funciona sin JS-clicks.
-  const a = document.createElement("a");
-  a.href = link.url;
-  a.className = "link animate-in";
-  a.id = `link-${link.id}`;
+/* Texto que se muestra al lado del puntito de estado de cada tarjeta */
+const ETIQUETA_ESTADO = {
+  online: "Online",
+  offline: "Down",
+  soon: "Soon",
+};
 
-  // Índice para el stagger (lo lee el CSS con var(--i)).
+/* =================================================================
+   RENDERIZADO — de acá para abajo no hace falta tocar nada
+   ================================================================= */
+
+/** Crea una tarjeta (un <a>) a partir de un item. */
+function crearTarjeta(item, indice) {
+  const a = document.createElement("a");
+  a.href = item.url;
+  a.className = "link animate-in";
+  a.id = `link-${item.id}`;
   a.style.setProperty("--i", indice);
 
-  // Comportamiento según el tipo de enlace.
-  if (link.tipo === "descarga") {
-    // download → fuerza descarga en vez de navegar.
+  if (item.tipo === "descarga") {
     a.setAttribute("download", "");
-  } else if (link.tipo === "install") {
-    // OTA install de iOS (itms-services://). Debe abrir en la MISMA
-    // pestaña, sin target _blank, o iOS no dispara el instalador.
-    // No agregamos ningún atributo extra.
+  } else if (item.tipo === "install" || item.tipo === "interno") {
+    // OTA de iOS y anclas internas → misma pestaña (iOS lo exige en OTA).
   } else {
-    // externo → nueva pestaña + seguridad (rel).
     a.target = "_blank";
     a.rel = "noopener noreferrer";
   }
 
-  // Accesibilidad: etiqueta clara para lectores de pantalla.
   const accion =
-    link.tipo === "descarga" ? "Descargar"
-    : link.tipo === "install" ? "Instalar"
-    : "Abrir";
-  a.setAttribute("aria-label", `${accion}: ${link.titulo}`);
+    item.tipo === "descarga" ? "Download"
+    : item.tipo === "install" ? "Install"
+    : "Open";
+  a.setAttribute("aria-label", `${accion}: ${item.titulo}`);
 
-  // Ícono (con respaldo a "link" si el nombre no existe).
-  const iconoSVG = ICONS[link.icono] || ICONS.link;
-
-  // Subtítulo opcional.
-  const subtituloHTML = link.subtitulo
-    ? `<span class="link__subtitle">${link.subtitulo}</span>`
+  const icono = ICONS[item.icono] || ICONS.link;
+  const subtitulo = item.subtitulo
+    ? `<span class="link__subtitle">${item.subtitulo}</span>`
     : "";
 
+  // Puntito + etiqueta de estado (si el item lo define)
+  const estado = item.estado
+    ? `<span class="badge badge--${item.estado}">
+         <span class="badge__dot"></span>${ETIQUETA_ESTADO[item.estado] || ""}
+       </span>`
+    : "";
+
+  const nota = item.nota ? `<p class="link__note">${item.nota}</p>` : "";
+
   a.innerHTML = `
-    <span class="link__icon">${iconoSVG}</span>
-    <span class="link__text">
-      <span class="link__title">${link.titulo}</span>
-      ${subtituloHTML}
+    <span class="link__row">
+      <span class="link__icon">${icono}</span>
+      <span class="link__text">
+        <span class="link__title">${item.titulo}${estado}</span>
+        ${subtitulo}
+      </span>
+      ${ARROW_ICON}
     </span>
-    ${ARROW_ICON}
+    ${nota}
   `;
 
   return a;
 }
 
-function renderLinks() {
-  const contenedor = document.getElementById("links");
-  if (!contenedor) return;
+/** Crea una sección completa con su título y sus tarjetas. */
+function crearSeccion(seccion, contadorInicial) {
+  const sec = document.createElement("section");
+  sec.className = "section";
+  sec.id = seccion.id;
 
-  const fragmento = document.createDocumentFragment();
-  links.forEach((link, i) => {
-    // +1 para que el perfil (arriba) tenga el turno 0 del stagger si quisieras.
-    fragmento.appendChild(crearBoton(link, i + 1));
+  sec.innerHTML = `
+    <div class="section__head animate-in" style="--i:${contadorInicial}">
+      <h2 class="section__title">${seccion.titulo}</h2>
+      ${seccion.descripcion ? `<p class="section__desc">${seccion.descripcion}</p>` : ""}
+    </div>
+  `;
+
+  const lista = document.createElement("div");
+  lista.className = "links";
+  seccion.items.forEach((item, i) => {
+    lista.appendChild(crearTarjeta(item, contadorInicial + i + 1));
   });
 
-  contenedor.appendChild(fragmento);
+  sec.appendChild(lista);
+  return sec;
+}
+
+/** Crea el apartado de la guía paso a paso. */
+function crearGuia(guia, contadorInicial) {
+  const sec = document.createElement("section");
+  sec.className = "section";
+  sec.id = guia.id;
+
+  const pasos = guia.pasos
+    .map(
+      (p, i) => `
+      <li class="step animate-in" style="--i:${contadorInicial + i + 1}">
+        <span class="step__num">${i + 1}</span>
+        <div class="step__body">
+          <h3 class="step__title">${p.titulo}</h3>
+          <p class="step__detail">${p.detalle}</p>
+        </div>
+      </li>`
+    )
+    .join("");
+
+  sec.innerHTML = `
+    <div class="section__head animate-in" style="--i:${contadorInicial}">
+      <h2 class="section__title">${guia.titulo}</h2>
+      ${guia.descripcion ? `<p class="section__desc">${guia.descripcion}</p>` : ""}
+    </div>
+    <ol class="steps">${pasos}</ol>
+  `;
+
+  return sec;
+}
+
+/** Menú de categorías de arriba. */
+function crearNav(entradas) {
+  const nav = document.getElementById("catnav");
+  if (!nav) return;
+
+  entradas.forEach((e, i) => {
+    const a = document.createElement("a");
+    a.href = `#${e.id}`;
+    a.className = "catnav__item animate-in";
+    a.style.setProperty("--i", i + 1);
+    a.textContent = e.nav;
+    nav.appendChild(a);
+  });
+}
+
+/** Resalta en el menú la sección que estás viendo. */
+function activarScrollSpy() {
+  const secciones = document.querySelectorAll("main .section");
+  const enlaces = document.querySelectorAll(".catnav__item");
+  if (!secciones.length || !("IntersectionObserver" in window)) return;
+
+  const obs = new IntersectionObserver(
+    (entradas) => {
+      entradas.forEach((entrada) => {
+        if (!entrada.isIntersecting) return;
+        const id = entrada.target.id;
+        enlaces.forEach((a) =>
+          a.classList.toggle("is-active", a.getAttribute("href") === `#${id}`)
+        );
+      });
+    },
+    { rootMargin: "-45% 0px -50% 0px" }
+  );
+
+  secciones.forEach((s) => obs.observe(s));
+}
+
+/** Indicador "live" del hero: resume el estado de todas las tarjetas. */
+function actualizarEstado() {
+  const cont = document.getElementById("status");
+  if (!cont) return;
+
+  const items = SECCIONES.flatMap((s) => s.items);
+  const caidos = items.filter((i) => i.estado === "offline").length;
+  const total = items.length;
+
+  let clase = "is-online";
+  let texto = `All systems live · ${total} services`;
+
+  if (caidos > 0) {
+    clase = "is-degraded";
+    texto = `${caidos} of ${total} services down`;
+  }
+
+  cont.classList.add(clase);
+  cont.querySelector(".status__text").textContent = texto;
 }
 
 /* =================================================================
    INICIALIZACIÓN
    ================================================================= */
 document.addEventListener("DOMContentLoaded", () => {
-  renderLinks();
+  const contenido = document.getElementById("content");
 
-  // Año dinámico en el footer.
+  // Menú: todas las secciones + la guía
+  crearNav([...SECCIONES, GUIA]);
+
+  // Contador global para que el stagger sea continuo entre secciones
+  let contador = 1;
+
+  SECCIONES.forEach((seccion) => {
+    contenido.appendChild(crearSeccion(seccion, contador));
+    contador += seccion.items.length + 1;
+  });
+
+  contenido.appendChild(crearGuia(GUIA, contador));
+
+  actualizarEstado();
+  activarScrollSpy();
+
   const yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 });

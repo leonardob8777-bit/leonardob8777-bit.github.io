@@ -163,9 +163,6 @@ body {
 
 /* ================= NAV DE CATEGORÍAS ================= */
 .catnav {
-  position: sticky;
-  top: 10px;
-  z-index: 20;
   display: flex;
   gap: 8px;
   margin: 26px 0 6px;

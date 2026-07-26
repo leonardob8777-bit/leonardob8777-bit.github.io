@@ -158,129 +158,216 @@ body {
 }
 
 /* =================================================================
-   AGUJERO NEGRO (borde inferior)
+   AGUJERO NEGRO (esquina superior)
    -----------------------------------------------------------------
-   Cómo está armado, de atrás hacia adelante:
-     1. .blackhole        → lente gravitacional (resplandor difuso)
-     2. .blackhole__disk  → disco de acreción: un cuadrado con un
-        degradado cónico que GIRA adentro, y el contenedor lo aplasta
-        en vertical → se ve como un disco visto de canto.
-     3. .blackhole__core  → la singularidad: negro puro + el anillo
-        de fotones brillante en el borde.
-   Para moverlo al borde de arriba, mirá la nota al final del bloque.
+   Capas, de atrás hacia adelante:
+     .bh__lens   → DISTORSIÓN real: usa backdrop-filter, así deforma
+                   lo que pasa por detrás (la malla, el barrido de luz).
+                   Son 2 lentes elípticas girando en sentido contrario:
+                   la luz que las cruza se curva y se estira.
+     .bh__disk   → disco de acreción: degradado cónico girando lento.
+     .bh__debris → materia cayendo en espiral hacia el centro.
+     .bh__ring   → anillo de fotones: el borde nítido y brillante.
+     .bh__core   → el vacío: negro absoluto con corte limpio.
+
+   Para pasarlo a la esquina IZQUIERDA: cambiá `right:` por `left:`.
+   Para el borde inferior: cambiá `top:` por `bottom:`.
    ================================================================= */
-.blackhole {
+.bh {
   position: fixed;
-  left: 50%;
-  bottom: clamp(-190px, -22vw, -120px); /* asoma solo la mitad */
-  width: clamp(280px, 92vw, 420px);
+  top: clamp(-170px, -20vw, -100px);
+  right: clamp(-150px, -18vw, -90px);
+  width: clamp(300px, 82vw, 480px);
   aspect-ratio: 1;
-  transform: translateX(-50%);
   z-index: -1;
   pointer-events: none;
+  /* Deriva lentísima: nunca queda del todo quieto */
+  animation: bh-float 26s ease-in-out infinite;
 }
 
-/* Lente gravitacional: la luz que se curva alrededor */
-.blackhole::before {
-  content: "";
+/* --- LENTE GRAVITACIONAL (la distorsión de verdad) --- */
+.bh__lens {
   position: absolute;
-  inset: -22%;
+  inset: -4%;
   border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgba(255, 110, 40, 0.20) 30%,
-    rgba(190, 30, 20, 0.12) 48%,
-    transparent 68%
-  );
-  filter: blur(26px);
-  animation: bh-breathe 6s ease-in-out infinite;
+  /* Deforma, aclara y satura lo que hay DETRÁS del elemento */
+  -webkit-backdrop-filter: blur(7px) saturate(1.7) brightness(1.35) contrast(1.25);
+          backdrop-filter: blur(7px) saturate(1.7) brightness(1.35) contrast(1.25);
+  /* Máscara de anillo: solo distorsiona alrededor del núcleo, no
+     dentro (de adentro no escapa la luz). */
+  -webkit-mask: radial-gradient(ellipse 62% 54% at 50% 50%,
+                transparent 26%, #000 40%, #000 72%, transparent 92%);
+          mask: radial-gradient(ellipse 62% 54% at 50% 50%,
+                transparent 26%, #000 40%, #000 72%, transparent 92%);
+  animation: bh-lens 34s linear infinite;
 }
 
-/* --- Disco de acreción --- */
-.blackhole__disk {
-  position: absolute;
-  inset: 0;
-  transform: scaleY(0.36);   /* aplasta el círculo → disco de canto */
-  filter: blur(9px) saturate(1.4);
+/* Segunda lente, girando al revés y más lenta: al cruzarse generan
+   ondas de distorsión que cambian todo el tiempo. */
+.bh__lens--2 {
+  inset: 2%;
+  -webkit-backdrop-filter: blur(4px) saturate(1.4) brightness(1.2);
+          backdrop-filter: blur(4px) saturate(1.4) brightness(1.2);
+  -webkit-mask: radial-gradient(ellipse 54% 66% at 50% 50%,
+                transparent 24%, #000 38%, #000 70%, transparent 90%);
+          mask: radial-gradient(ellipse 54% 66% at 50% 50%,
+                transparent 24%, #000 38%, #000 70%, transparent 90%);
+  animation: bh-lens-rev 52s linear infinite;
 }
-/* El <i> es el que gira: así el giro no deforma la elipse */
-.blackhole__disk i {
+
+/* --- DISCO DE ACRECIÓN --- */
+.bh__disk {
   position: absolute;
   inset: 0;
-  border-radius: 50%;
+  transform: scaleY(0.88) rotate(-12deg); /* leve inclinación */
+  filter: blur(7px) saturate(1.5);
+}
+.bh__disk i {
+  position: absolute;
+  inset: 0;
   display: block;
+  border-radius: 50%;
   background: conic-gradient(
     from 0deg,
     transparent 0deg,
-    rgba(255, 60, 20, 0.55) 40deg,
-    rgba(255, 170, 60, 0.95) 90deg,
-    rgba(255, 245, 210, 1) 130deg,
-    rgba(255, 120, 40, 0.9) 175deg,
-    rgba(190, 25, 15, 0.5) 230deg,
-    transparent 300deg
+    rgba(255, 70, 25, 0.45) 35deg,
+    rgba(255, 150, 50, 0.9) 80deg,
+    rgba(255, 240, 205, 1) 118deg,
+    rgba(255, 120, 40, 0.85) 158deg,
+    rgba(180, 25, 15, 0.45) 215deg,
+    transparent 290deg
   );
-  /* Recorta el centro: el disco es un anillo, no un círculo lleno */
-  -webkit-mask: radial-gradient(circle, transparent 36%, #000 43%);
-          mask: radial-gradient(circle, transparent 36%, #000 43%);
-  animation: bh-spin 7s linear infinite;
+  -webkit-mask: radial-gradient(circle, transparent 33%, #000 42%, #000 88%, transparent 98%);
+          mask: radial-gradient(circle, transparent 33%, #000 42%, #000 88%, transparent 98%);
+  animation: bh-spin 24s linear infinite; /* lento */
 }
 
-/* --- Singularidad + anillo de fotones --- */
-.blackhole__core {
+/* Anillo interno: gira al revés y más rápido → efecto remolino */
+.bh__disk--inner {
+  inset: 13%;
+  transform: scaleY(0.8) rotate(8deg);
+  filter: blur(4px) saturate(1.6);
+}
+.bh__disk--inner i {
+  background: conic-gradient(
+    from 180deg,
+    transparent 0deg,
+    rgba(255, 200, 120, 0.75) 60deg,
+    rgba(255, 255, 240, 0.95) 105deg,
+    rgba(255, 110, 35, 0.7) 165deg,
+    transparent 250deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 40%, #000 50%, #000 86%, transparent 97%);
+          mask: radial-gradient(circle, transparent 40%, #000 50%, #000 86%, transparent 97%);
+  animation: bh-spin-rev 15s linear infinite;
+}
+
+/* --- MATERIA CAYENDO (la página "siendo tragada") --- */
+.bh__debris {
+  position: absolute;
+  inset: 0;
+}
+.bh__debris span {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 47%;
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+  border-radius: 50%;
+  background: rgba(255, 220, 170, 0.95);
+  box-shadow: 0 0 7px 2px rgba(255, 150, 60, 0.7);
+  opacity: 0;
+  /* Cada partícula arranca en otro ángulo, radio y momento */
+  animation: bh-swallow var(--t, 9s) cubic-bezier(0.5, 0, 0.85, 0.4) infinite;
+  animation-delay: var(--d, 0s);
+}
+.bh__debris span:nth-child(1)  { --a: 12deg;  --r: 47%; --t: 9s;    --d: 0s; }
+.bh__debris span:nth-child(2)  { --a: 58deg;  --r: 52%; --t: 11s;   --d: 1.4s; }
+.bh__debris span:nth-child(3)  { --a: 104deg; --r: 44%; --t: 8.5s;  --d: 2.9s; }
+.bh__debris span:nth-child(4)  { --a: 147deg; --r: 55%; --t: 12s;   --d: 0.7s; }
+.bh__debris span:nth-child(5)  { --a: 193deg; --r: 46%; --t: 10s;   --d: 4.1s; }
+.bh__debris span:nth-child(6)  { --a: 236deg; --r: 50%; --t: 9.5s;  --d: 2.2s; }
+.bh__debris span:nth-child(7)  { --a: 281deg; --r: 43%; --t: 13s;   --d: 5.3s; }
+.bh__debris span:nth-child(8)  { --a: 318deg; --r: 54%; --t: 8s;    --d: 3.6s; }
+.bh__debris span:nth-child(9)  { --a: 35deg;  --r: 58%; --t: 14s;   --d: 6.2s; }
+.bh__debris span:nth-child(10) { --a: 172deg; --r: 60%; --t: 10.5s; --d: 7.4s; }
+.bh__debris span:nth-child(11) { --a: 259deg; --r: 57%; --t: 11.5s; --d: 1.9s; }
+.bh__debris span:nth-child(12) { --a: 345deg; --r: 49%; --t: 9.2s;  --d: 5.8s; }
+
+/* --- ANILLO DE FOTONES (borde nítido) --- */
+.bh__ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46%;
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: #000;
+  border: 1.5px solid rgba(255, 240, 210, 0.95);
   box-shadow:
-    0 0 0 1.5px rgba(255, 220, 170, 0.85),          /* anillo de fotones */
-    0 0 18px 3px rgba(255, 140, 50, 0.55),          /* halo cercano      */
-    0 0 60px 12px rgba(255, 90, 30, 0.28),          /* halo lejano       */
-    inset 0 0 40px 10px #000;                       /* negro absoluto    */
-  animation: bh-ring 4.5s ease-in-out infinite;
+    0 0 14px 2px rgba(255, 170, 70, 0.65),
+    0 0 48px 10px rgba(255, 90, 30, 0.3),
+    inset 0 0 12px 1px rgba(255, 200, 130, 0.5);
+  animation: bh-ring 9s ease-in-out infinite;
 }
 
-@keyframes bh-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+/* --- EL VACÍO --- */
+.bh__core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 45%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  /* Negro absoluto con corte limpio en el borde */
+  background: radial-gradient(circle, #000 62%, rgba(0, 0, 0, 0.92) 88%, transparent 100%);
+  box-shadow: inset 0 0 50px 18px #000;
 }
-@keyframes bh-breathe {
-  0%, 100% { opacity: 0.75; transform: scale(1); }
-  50%      { opacity: 1;    transform: scale(1.06); }
+
+/* --- ANIMACIONES --- */
+@keyframes bh-spin      { from { transform: rotate(0deg); }   to { transform: rotate(360deg); } }
+@keyframes bh-spin-rev  { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+@keyframes bh-lens      { from { transform: rotate(0deg); }   to { transform: rotate(360deg); } }
+@keyframes bh-lens-rev  { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+
+/* Deriva lenta del conjunto */
+@keyframes bh-float {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  33%      { transform: translate3d(-10px, 8px, 0) scale(1.03); }
+  66%      { transform: translate3d(7px, -6px, 0) scale(0.985); }
 }
+
+/* El anillo respira */
 @keyframes bh-ring {
-  0%, 100% {
-    box-shadow:
-      0 0 0 1.5px rgba(255, 220, 170, 0.85),
-      0 0 18px 3px rgba(255, 140, 50, 0.55),
-      0 0 60px 12px rgba(255, 90, 30, 0.28),
-      inset 0 0 40px 10px #000;
+  0%, 100% { opacity: 0.85; filter: brightness(1); }
+  50%      { opacity: 1;    filter: brightness(1.35); }
+}
+
+/* La materia cae en espiral hacia el centro y desaparece */
+@keyframes bh-swallow {
+  0% {
+    opacity: 0;
+    transform: rotate(var(--a)) translateX(var(--r)) scale(1.1);
   }
-  50% {
-    box-shadow:
-      0 0 0 2px rgba(255, 240, 205, 1),
-      0 0 26px 5px rgba(255, 160, 60, 0.7),
-      0 0 80px 18px rgba(255, 90, 30, 0.34),
-      inset 0 0 40px 10px #000;
+  12%  { opacity: 1; }
+  78%  { opacity: 0.9; }
+  100% {
+    opacity: 0;
+    transform: rotate(calc(var(--a) + 320deg)) translateX(4%) scale(0.15);
   }
 }
 
 /* Durante un glitch, el agujero negro también se sacude */
-body.is-glitching .blackhole {
-  animation: bh-jolt var(--gdur) steps(3) 1;
-}
+body.is-glitching .bh { animation: bh-jolt var(--gdur) steps(3) 1; }
 @keyframes bh-jolt {
-  0%   { transform: translateX(-50%) translate3d(0, 0, 0) scale(1); }
-  40%  { transform: translateX(-50%) translate3d(var(--gx), calc(var(--gy) * -1), 0) scale(1.04); }
-  75%  { transform: translateX(-50%) translate3d(calc(var(--gx) * -0.6), 0, 0) scale(0.98); }
-  100% { transform: translateX(-50%); }
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  40%  { transform: translate3d(var(--gx), calc(var(--gy) * -1), 0) scale(1.05); }
+  75%  { transform: translate3d(calc(var(--gx) * -0.6), 0, 0) scale(0.97); }
+  100% { transform: none; }
 }
 
-/* 👉 ¿Lo querés en el borde DE ARRIBA? Cambiá en .blackhole
-   `bottom: clamp(...)` por `top: clamp(-190px, -22vw, -120px);` */
 
 /* =================================================================
    GLITCHES TIPO HACK
@@ -1074,10 +1161,11 @@ body.is-glitching-micro .name::after {
   .aurora,
   .aurora::after,
   .scan,
-  .blackhole,
-  .blackhole::before,
-  .blackhole__disk i,
-  .blackhole__core,
+  .bh,
+  .bh__lens,
+  .bh__disk i,
+  .bh__debris span,
+  .bh__ring,
   .glitch,
   .glitch::before,
   .glitch::after,

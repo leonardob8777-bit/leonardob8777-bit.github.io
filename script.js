@@ -32,8 +32,10 @@
 
    ESTADOS (el puntito de color de la tarjeta):
      online  → verde   (funcionando)
+     hot     → naranja (lo recomendado / destacado)
      offline → rojo    (caído / certificado vencido)
      soon    → ámbar   (próximamente)
+     live    → rojo    (en vivo, con latido)
 
    CÓMO AGREGAR UNA SECCIÓN NUEVA
    Copiá un bloque de SECCIONES entero (con su id, titulo, etc.).
@@ -96,6 +98,18 @@ const SECCIONES = [
         nota: "Free version — needs a valid certificate to open.",
       },
       {
+        id: "lara-ipa",
+        titulo: "Lara — IPA file",
+        subtitulo: "Download & sign it yourself",
+        url: "apps/lara.ipa",
+        icono: "lara",
+        tipo: "descarga",
+        estado: "hot",
+        nota:
+          "The raw <b>.ipa</b> file. Download it, then import it into <b>KSign</b> " +
+          "and sign it with your certificate — that version opens normally and never expires early.",
+      },
+      {
         id: "ksign",
         titulo: "KSign",
         subtitulo: "IPA signer for iOS",
@@ -104,7 +118,7 @@ const SECCIONES = [
         icono: "ksign",
         tipo: "interno",
         estado: "soon",
-        nota: "Setup guide below.",
+        nota: "Setup guide in the Guide tab.",
       },
     ],
   },
@@ -116,16 +130,31 @@ const SECCIONES = [
     id: "certs",
     nav: "Certificates",
     titulo: "Certificates",
-    descripcion: "What you need so the apps actually open.",
+    descripcion:
+      "A certificate is what makes a signed app actually open. Without one, the app installs but iOS blocks it.",
     items: [
       {
+        id: "kravasign",
+        titulo: "Buy a Certificate",
+        subtitulo: "KravaSign · recommended",
+        url: "https://www.kravasign.com/purchase",
+        icono: "kravasign",
+        tipo: "externo",
+        estado: "hot",
+        nota:
+          "Paste your <b>UDID</b> there and complete the purchase. You'll receive a " +
+          "<b>.p12</b> file and a <b>.mobileprovision</b> — those two go into KSign. " +
+          "A paid certificate lasts up to a year.",
+      },
+      {
         id: "certificados",
-        titulo: "Download Certificates",
+        titulo: "Free Certificates",
         subtitulo: "MediaFire folder",
         url: "https://www.mediafire.com/folder/tfyqtjugh0jtv/Certificate",
         icono: "mediafire",
         tipo: "externo",
         estado: "online",
+        nota: "Shared certificates — they work, but Apple revokes them often.",
       },
     ],
   },
@@ -139,38 +168,57 @@ const SECCIONES = [
   {
     id: "guide",
     nav: "Guide",
-    titulo: "After installing KSign",
-    descripcion: "Follow these steps in order. It takes about 3 minutes.",
+    titulo: "How to sign your apps",
+    descripcion:
+      "Full process, from zero to a working app. Takes about 10 minutes — most of it is the purchase.",
     pasos: [
       {
-        titulo: "Trust the app",
+        titulo: "Install KSign",
         detalle:
-          "Go to <b>Settings → General → VPN & Device Management</b>, tap the developer profile and press <b>Trust</b>.",
+          "KSign is the app that signs IPAs directly on your iPhone — no computer needed. " +
+          "Grab it from the <b>Apps</b> tab. After installing, open " +
+          "<b>Settings → General → VPN & Device Management</b> and tap <b>Trust</b> on its profile.",
       },
       {
         titulo: "Get your UDID",
         detalle:
-          "Open the <b>Get UDID</b> tool in Tools and copy your device ID. You need it to buy a certificate.",
+          "Your UDID is your device's unique ID — the certificate gets locked to it. " +
+          "Open <b>Get UDID</b> in the <b>Tools</b> tab from Safari, follow the steps and " +
+          "<b>copy the code</b> it gives you.",
       },
       {
-        titulo: "Get a certificate",
+        titulo: "Buy your certificate",
         detalle:
-          "Send me your UDID on <b>Telegram</b> and I'll set you up with a certificate that lasts up to a year.",
+          "Go to <b>kravasign.com/purchase</b> (also in the <b>Certificates</b> tab), " +
+          "paste the UDID you just copied and complete the purchase. " +
+          "You'll get a <b>.p12</b> file, a <b>.mobileprovision</b> and a <b>password</b>. " +
+          "Save all three — you'll need them in the next step.",
       },
       {
         titulo: "Import the certificate into KSign",
         detalle:
-          "Open KSign → <b>Certificates</b> → import the <b>.p12</b> file and the <b>.mobileprovision</b>, then type the password you were given.",
+          "Open KSign → <b>Certificates</b> → import the <b>.p12</b> and the " +
+          "<b>.mobileprovision</b>, then type the password you were given. " +
+          "The certificate stays saved: you only do this once.",
       },
       {
-        titulo: "Sign and install your IPA",
+        titulo: "Download the IPA",
         detalle:
-          "In KSign, pick the IPA, choose your certificate and tap <b>Sign</b>. When it finishes, tap <b>Install</b>.",
+          "From the <b>Apps</b> tab, download <b>Lara — IPA file</b>. " +
+          "It saves to your Files app. Any other IPA works the same way.",
       },
       {
-        titulo: "Done",
+        titulo: "Sign and install",
         detalle:
-          "The app now opens normally. If it stops working, the certificate was revoked — message me and I'll replace it.",
+          "In KSign, pick the IPA, choose your certificate and tap <b>Sign</b>. " +
+          "When it finishes, tap <b>Install</b> and confirm on the home screen.",
+      },
+      {
+        titulo: "Done — it opens normally",
+        detalle:
+          "Signed with your own certificate, the app just works. " +
+          "If it ever stops opening, the certificate was revoked: buy a new one and " +
+          "re-sign the same IPA. Something not working? Message me on <b>Telegram</b>.",
       },
     ],
   },
@@ -182,7 +230,7 @@ const SECCIONES = [
     id: "tools",
     nav: "Tools",
     titulo: "Tools",
-    descripcion: "Useful utilities before you install anything.",
+    descripcion: "Get your device ID before buying a certificate.",
     items: [
       {
         id: "udid",
@@ -192,7 +240,7 @@ const SECCIONES = [
         icono: "getudid",
         tipo: "externo",
         estado: "online",
-        nota: "You need this to buy a certificate.",
+        nota: "Copy the code it gives you — you'll paste it when buying your certificate.",
       },
     ],
   },
@@ -209,7 +257,7 @@ const SECCIONES = [
       {
         id: "telegram",
         titulo: "Telegram",
-        subtitulo: "If you need help, text me",
+        subtitulo: "Stuck on a step? Text me",
         url: "https://t.me/leonardoPhl",
         icono: "telegram",
         tipo: "externo",
@@ -237,6 +285,7 @@ const ICONS = {
 
   lara: `<img class="logo" src="assets/lara.png" alt="" loading="lazy" />`,
   ksign: `<img class="logo" src="assets/ksign.png" alt="" loading="lazy" />`,
+  kravasign: `<img class="logo" src="assets/kravasign.png" alt="" loading="lazy" />`,
 
   mediafire: `
     <svg class="logo" viewBox="0 0 240 240" aria-hidden="true">
@@ -315,6 +364,7 @@ const ETIQUETA_ESTADO = {
   offline: "Down",
   soon: "Soon",
   live: "Live", // rojo, con latido
+  hot:  "Hot",  // naranja: lo destacado / recomendado
 };
 
 /* =================================================================

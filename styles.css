@@ -265,7 +265,7 @@ body {
 .bh__band {
   position: absolute;
   inset: 0;
-  transform: translateY(4%) scaleY(0.11); /* casi de canto */
+  transform: translateY(8%) scaleY(0.11); /* casi de canto */
   filter: blur(1.2px) saturate(1.35) contrast(1.15) brightness(1.35);
 }
 .bh__band i {
@@ -277,7 +277,7 @@ body {
 /* Núcleo incandescente: más fino, más brillante, encima de la banda.
    Es lo que da el filo blanco que se ve en la foto de referencia. */
 .bh__band--hot {
-  transform: translateY(4%) scaleY(0.05);
+  transform: translateY(8%) scaleY(0.05);
   filter: blur(0.6px) brightness(1.5);
 }
 .bh__band--hot i {
@@ -293,6 +293,26 @@ body {
   );
   -webkit-mask: radial-gradient(circle, transparent 67%, #000 71%, #000 88%, transparent 94%);
           mask: radial-gradient(circle, transparent 67%, #000 71%, #000 88%, transparent 94%);
+}
+
+/* --- NEBLINA DEL DISCO ---
+   Va DETRÁS de la esfera (que le tapa el centro). Es una elipse muy
+   difuminada: las líneas finas de arriba quedan envueltas en plasma
+   en vez de verse como un aro de Saturno. */
+.bh__glow {
+  position: absolute;
+  inset: 0;
+  transform: translateY(7%) scaleY(0.3);
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 210, 150, 0.55) 0%,
+    rgba(255, 140, 55, 0.42) 32%,
+    rgba(220, 80, 25, 0.22) 58%,
+    transparent 80%
+  );
+  filter: blur(14px);
+  animation: bh-breathe 11s ease-in-out infinite;
 }
 
 /* --- LA ESFERA (chica y negra) --- */
@@ -1183,6 +1203,7 @@ body.is-glitching-micro .name::after {
   .scan,
   .bh,
   .bh__halo,
+  .bh__glow,
   .bh__lens,
   .bh__arc i,
   .bh__band i,

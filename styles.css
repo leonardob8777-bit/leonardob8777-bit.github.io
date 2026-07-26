@@ -158,6 +158,131 @@ body {
 }
 
 /* =================================================================
+   AGUJERO NEGRO (borde inferior)
+   -----------------------------------------------------------------
+   Cómo está armado, de atrás hacia adelante:
+     1. .blackhole        → lente gravitacional (resplandor difuso)
+     2. .blackhole__disk  → disco de acreción: un cuadrado con un
+        degradado cónico que GIRA adentro, y el contenedor lo aplasta
+        en vertical → se ve como un disco visto de canto.
+     3. .blackhole__core  → la singularidad: negro puro + el anillo
+        de fotones brillante en el borde.
+   Para moverlo al borde de arriba, mirá la nota al final del bloque.
+   ================================================================= */
+.blackhole {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(-190px, -22vw, -120px); /* asoma solo la mitad */
+  width: clamp(280px, 92vw, 420px);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Lente gravitacional: la luz que se curva alrededor */
+.blackhole::before {
+  content: "";
+  position: absolute;
+  inset: -22%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 110, 40, 0.20) 30%,
+    rgba(190, 30, 20, 0.12) 48%,
+    transparent 68%
+  );
+  filter: blur(26px);
+  animation: bh-breathe 6s ease-in-out infinite;
+}
+
+/* --- Disco de acreción --- */
+.blackhole__disk {
+  position: absolute;
+  inset: 0;
+  transform: scaleY(0.36);   /* aplasta el círculo → disco de canto */
+  filter: blur(9px) saturate(1.4);
+}
+/* El <i> es el que gira: así el giro no deforma la elipse */
+.blackhole__disk i {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  display: block;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(255, 60, 20, 0.55) 40deg,
+    rgba(255, 170, 60, 0.95) 90deg,
+    rgba(255, 245, 210, 1) 130deg,
+    rgba(255, 120, 40, 0.9) 175deg,
+    rgba(190, 25, 15, 0.5) 230deg,
+    transparent 300deg
+  );
+  /* Recorta el centro: el disco es un anillo, no un círculo lleno */
+  -webkit-mask: radial-gradient(circle, transparent 36%, #000 43%);
+          mask: radial-gradient(circle, transparent 36%, #000 43%);
+  animation: bh-spin 7s linear infinite;
+}
+
+/* --- Singularidad + anillo de fotones --- */
+.blackhole__core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 47%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #000;
+  box-shadow:
+    0 0 0 1.5px rgba(255, 220, 170, 0.85),          /* anillo de fotones */
+    0 0 18px 3px rgba(255, 140, 50, 0.55),          /* halo cercano      */
+    0 0 60px 12px rgba(255, 90, 30, 0.28),          /* halo lejano       */
+    inset 0 0 40px 10px #000;                       /* negro absoluto    */
+  animation: bh-ring 4.5s ease-in-out infinite;
+}
+
+@keyframes bh-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes bh-breathe {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.06); }
+}
+@keyframes bh-ring {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1.5px rgba(255, 220, 170, 0.85),
+      0 0 18px 3px rgba(255, 140, 50, 0.55),
+      0 0 60px 12px rgba(255, 90, 30, 0.28),
+      inset 0 0 40px 10px #000;
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px rgba(255, 240, 205, 1),
+      0 0 26px 5px rgba(255, 160, 60, 0.7),
+      0 0 80px 18px rgba(255, 90, 30, 0.34),
+      inset 0 0 40px 10px #000;
+  }
+}
+
+/* Durante un glitch, el agujero negro también se sacude */
+body.is-glitching .blackhole {
+  animation: bh-jolt var(--gdur) steps(3) 1;
+}
+@keyframes bh-jolt {
+  0%   { transform: translateX(-50%) translate3d(0, 0, 0) scale(1); }
+  40%  { transform: translateX(-50%) translate3d(var(--gx), calc(var(--gy) * -1), 0) scale(1.04); }
+  75%  { transform: translateX(-50%) translate3d(calc(var(--gx) * -0.6), 0, 0) scale(0.98); }
+  100% { transform: translateX(-50%); }
+}
+
+/* 👉 ¿Lo querés en el borde DE ARRIBA? Cambiá en .blackhole
+   `bottom: clamp(...)` por `top: clamp(-190px, -22vw, -120px);` */
+
+/* =================================================================
    GLITCHES TIPO HACK
    -----------------------------------------------------------------
    El JS le pone la clase `is-glitching` al <body> cada tantos
@@ -822,6 +947,8 @@ body.is-glitching-micro .name::after {
   font-size: 0.78rem;
   color: var(--text-muted);
   opacity: 0.75;
+  /* Sombra suave: el footer queda justo encima del agujero negro */
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
 }
 .footer__note { margin-top: 5px; font-size: 0.7rem; opacity: 0.7; }
 
@@ -947,6 +1074,10 @@ body.is-glitching-micro .name::after {
   .aurora,
   .aurora::after,
   .scan,
+  .blackhole,
+  .blackhole::before,
+  .blackhole__disk i,
+  .blackhole__core,
   .glitch,
   .glitch::before,
   .glitch::after,

@@ -629,6 +629,10 @@ function actualizarEstado() {
    y cambia de valor (0 ↔ 1) al terminar cada ciclo.
    Para tener más o menos números, tocá DENSIDAD.
    ----------------------------------------------------------------- */
+/* Puente entre los dos sistemas: activarGlitches() llama a esto para
+   corromper los dígitos justo cuando salta un glitch. */
+let corromperBits = null;
+
 function activarBits() {
   const capa = document.getElementById("bits");
   if (!capa) return;
@@ -706,6 +710,32 @@ function activarBits() {
 
   generar();
 
+  /* Cuando salta un glitch, una parte de los dígitos se "corrompe":
+     cambian de valor de golpe, algunos saltan de lugar y se pintan
+     con separación RGB por un instante. */
+  corromperBits = function (fuerte) {
+    const todos = capa.children;
+    if (!todos.length) return;
+
+    const cols = Math.ceil(window.innerWidth / CELDA);
+    const filas = Math.ceil(window.innerHeight / CELDA);
+
+    // En un glitch fuerte se corrompe ~35%; en un micro, ~10%
+    const proporcion = fuerte ? 0.35 : 0.1;
+    const cuantos = Math.round(todos.length * proporcion);
+
+    for (let i = 0; i < cuantos; i++) {
+      const b = todos[Math.floor(Math.random() * todos.length)];
+      b.textContent = valor();
+      b.classList.add("corrupt");
+
+      // En los fuertes, algunos además se teletransportan
+      if (fuerte && Math.random() < 0.3) reubicar(b, cols, filas);
+
+      setTimeout(() => b.classList.remove("corrupt"), 90 + Math.random() * 220);
+    }
+  };
+
   // Rehacer la grilla si cambia el tamaño de la ventana (sin exagerar)
   let temporizador;
   window.addEventListener("resize", () => {
@@ -776,6 +806,9 @@ function activarGlitches() {
     cuerpo.classList.remove(...VARIANTES);
     cuerpo.classList.add(`gv-${elegir(6)}`, "is-glitching");
 
+    // Los números del fondo también se corrompen
+    if (corromperBits) corromperBits(true);
+
     setTimeout(() => {
       cuerpo.classList.remove("is-glitching", ...VARIANTES);
     }, duracion);
@@ -789,6 +822,8 @@ function activarGlitches() {
 
     cuerpo.classList.remove(...MICRO_VARIANTES);
     cuerpo.classList.add(`mv-${elegir(3)}`, "is-glitching-micro");
+
+    if (corromperBits && Math.random() < 0.5) corromperBits(false);
 
     setTimeout(() => {
       cuerpo.classList.remove("is-glitching-micro", ...MICRO_VARIANTES);

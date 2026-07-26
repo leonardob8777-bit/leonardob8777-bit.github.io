@@ -72,7 +72,8 @@ body {
     linear-gradient(var(--mesh) 1px, transparent 1px),
     linear-gradient(90deg, var(--mesh) 1px, transparent 1px);
   background-size: 34px 34px, 34px 34px;
-  animation: mesh-drift 16s linear infinite;
+  /* Viaja en diagonal hacia la esquina inferior derecha */
+  animation: mesh-drift 5s linear infinite;
 }
 
 /* Rejilla micro (más fina y tenue, se mueve al revés = profundidad) */
@@ -84,7 +85,8 @@ body {
     linear-gradient(var(--mesh-fine) 1px, transparent 1px),
     linear-gradient(90deg, var(--mesh-fine) 1px, transparent 1px);
   background-size: 8px 8px, 8px 8px;
-  animation: mesh-drift 9s linear infinite reverse;
+  /* Misma dirección pero más lenta = sensación de profundidad (parallax) */
+  animation: mesh-drift-fine 3.2s linear infinite;
 }
 
 /* Resplandor rojo + viñeta para dar contraste al contenido */
@@ -99,9 +101,15 @@ body {
   animation: glow-pulse 7s ease-in-out infinite;
 }
 
+/* Recorre 2 celdas por ciclo: el bucle es invisible porque la rejilla
+   se repite, pero el movimiento se percibe bien. */
 @keyframes mesh-drift {
   from { background-position: 0 0, 0 0; }
-  to   { background-position: 34px 34px, 34px 34px; }
+  to   { background-position: 68px 68px, 68px 68px; }
+}
+@keyframes mesh-drift-fine {
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: 16px 16px, 16px 16px; }
 }
 @keyframes glow-pulse {
   0%, 100% { opacity: 0.85; }

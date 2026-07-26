@@ -25,7 +25,10 @@ const links = [
     subtitulo: "Tap to install (iOS)",
     // Instalación OTA de iOS: el .plist va envuelto en itms-services://
     // para que iPhone muestre el instalador en vez de abrir el XML.
-    url: "itms-services://?action=download-manifest&url=https://signtools.ipaomtk.com/output/Ksign-signed-4042826097807ab171c2.plist",
+    // Manifiesto alojado en TU propio dominio → la instalación se dispara
+    // desde tu página, sin redirigir. Para que instale de verdad hay que
+    // subir apps/ksign.ipa firmado (con certificado válido).
+    url: "itms-services://?action=download-manifest&url=https://leonardob8777-bit.github.io/apps/ksign.plist",
     icono: "ksign",
     tipo: "install", // enlace OTA: misma pestaña, sin target _blank (iOS lo exige)
   },
@@ -33,8 +36,9 @@ const links = [
     id: "lara",
     titulo: "Install Lara",
     subtitulo: "Tap to install (iOS)",
-    // Instalación OTA de iOS (mismo esquema que KSign).
-    url: "itms-services://?action=download-manifest&url=https://signtools.ipaomtk.com/output/lara-signed-e6068e62d5475dfbeabd.plist",
+    // Manifiesto en tu propio dominio (ver nota de KSign). Para instalar de
+    // verdad, subir apps/lara.ipa firmado.
+    url: "itms-services://?action=download-manifest&url=https://leonardob8777-bit.github.io/apps/lara.plist",
     icono: "lara",
     tipo: "install",
   },

@@ -160,63 +160,66 @@ body {
 /* =================================================================
    AGUJERO NEGRO (esquina superior) — estilo "Gargantua"
    -----------------------------------------------------------------
-   GEOMETRÍA (todo es % del ancho W del contenedor .bh):
-     · Esfera negra ....... radio 0.21W
-     · Anillo de fotones .. justo en el borde de la esfera
-     · Arcos lenteados .... anillo casi circular de radio 0.31–0.36W,
-       aplastado a 0.86 → su borde llega a 0.27W, o sea POR ENCIMA
-       de la esfera. Por eso se ve el arco de luz arqueándose arriba
-       (y su espejo abajo). Van DETRÁS de la esfera.
-     · Banda cercana ...... el mismo anillo pero aplastado a 0.15 y
-       corrido hacia abajo → cruza POR DELANTE de la esfera y se
-       extiende a los costados.
+   PROPORCIONES (todo en % del ancho W del contenedor .bh).
+   La clave del look de la foto es que la ESFERA ES CHICA y el disco
+   es MUY ANCHO y MUY FINO:
+     · Esfera .......... radio 0.15W   (chica)
+     · Anillo fotones .. pegado a la esfera, 1.5px blanco
+     · Arcos lenteados . radio 0.365–0.40W aplastados a 0.80
+                         → llegan a 0.32W, MUY por encima de la
+                           esfera (0.15W) → se ve el arco de luz
+     · Banda cercana ... radio 0.35–0.45W aplastada a 0.10
+                         → línea finísima que cruza por delante y se
+                           extiende 3x el diámetro de la esfera
 
-   ⚠️ Regla clave: para que un arco asome por encima de la esfera,
-   su radio × su aplastado tiene que ser MAYOR que 0.21W.
+   ⚠️ Regla: radio × aplastado tiene que ser > 0.15W para que un arco
+   asome por encima de la esfera.
 
-   Para pasarlo a la esquina IZQUIERDA: cambiá `right:` por `left:`.
+   Para la esquina IZQUIERDA: cambiá `right:` por `left:`.
    Para el borde inferior: cambiá `top:` por `bottom:`.
    ================================================================= */
 .bh {
   position: fixed;
-  top: clamp(-150px, -17vw, -85px);
-  right: clamp(-130px, -15vw, -75px);
-  width: clamp(300px, 80vw, 460px);
+  /* Poco recorte: así se ve la esfera completa Y el arco de arriba */
+  top: clamp(-50px, -5vw, -20px);
+  right: clamp(-70px, -8vw, -35px);
+  width: clamp(260px, 58vw, 380px);
   aspect-ratio: 1;
   z-index: -1;
   pointer-events: none;
   animation: bh-float 28s ease-in-out infinite;
 }
 
-/* --- Resplandor general --- */
+/* --- Resplandor general (tenue, solo para ambientar) --- */
 .bh__halo {
   position: absolute;
-  inset: -8%;
+  inset: 6%;
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(255, 160, 70, 0.18) 24%,
-    rgba(215, 65, 20, 0.10) 40%,
-    transparent 62%
+    rgba(255, 170, 90, 0.13) 18%,
+    rgba(200, 70, 25, 0.07) 34%,
+    transparent 56%
   );
-  filter: blur(20px);
+  filter: blur(18px);
   animation: bh-breathe 9s ease-in-out infinite;
 }
 
-/* --- LENTE: aro fino que distorsiona el fondo real --- */
+/* --- LENTE: aro finito que distorsiona el fondo real --- */
 .bh__lens {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  -webkit-backdrop-filter: blur(2.5px) saturate(1.7) brightness(1.35);
-          backdrop-filter: blur(2.5px) saturate(1.7) brightness(1.35);
-  /* Banda angosta pegada al borde de la esfera */
-  -webkit-mask: radial-gradient(circle, transparent 21%, #000 24%, #000 31%, transparent 36%);
-          mask: radial-gradient(circle, transparent 21%, #000 24%, #000 31%, transparent 36%);
+  -webkit-backdrop-filter: blur(2px) saturate(1.6) brightness(1.3);
+          backdrop-filter: blur(2px) saturate(1.6) brightness(1.3);
+  -webkit-mask: radial-gradient(circle, transparent 15%, #000 17%, #000 23%, transparent 27%);
+          mask: radial-gradient(circle, transparent 15%, #000 17%, #000 23%, transparent 27%);
   animation: bh-lens 26s linear infinite;
 }
 
-/* =========== DISCO: color y giro compartidos =========== */
+/* =========== DISCO: color y giro compartidos ===========
+   Blanco incandescente en el punto más caliente, cayendo a ámbar y
+   luego a marrón oscuro (así se ve en la foto, no naranja plano). */
 .bh__arc i,
 .bh__band i {
   position: absolute;
@@ -225,13 +228,14 @@ body {
   border-radius: 50%;
   background: conic-gradient(
     from 0deg,
-    rgba(255, 128, 30, 0.75) 0deg,
-    rgba(255, 196, 96, 0.98) 40deg,
-    rgba(255, 252, 236, 1) 88deg,
-    rgba(255, 214, 130, 1) 140deg,
-    rgba(255, 132, 38, 0.85) 205deg,
-    rgba(206, 52, 16, 0.6) 275deg,
-    rgba(255, 128, 30, 0.75) 360deg
+    rgba(120, 45, 12, 0.55) 0deg,
+    rgba(228, 126, 40, 0.9) 35deg,
+    rgba(255, 205, 130, 1) 70deg,
+    rgba(255, 252, 242, 1) 100deg,
+    rgba(255, 216, 150, 1) 132deg,
+    rgba(234, 132, 45, 0.92) 180deg,
+    rgba(150, 58, 18, 0.6) 250deg,
+    rgba(120, 45, 12, 0.55) 360deg
   );
   animation: bh-spin 26s linear infinite;
 }
@@ -240,66 +244,84 @@ body {
 .bh__arc {
   position: absolute;
   inset: 0;
-  filter: blur(1.6px) saturate(1.45);
+  filter: blur(1px) saturate(1.35) contrast(1.15) brightness(1.25);
 }
 .bh__arc i {
-  /* Aro fino de radio 0.31–0.36W */
-  -webkit-mask: radial-gradient(circle, transparent 60%, #000 64%, #000 71%, transparent 76%);
-          mask: radial-gradient(circle, transparent 60%, #000 64%, #000 71%, transparent 76%);
+  /* Aro FINO de radio 0.365–0.40W */
+  -webkit-mask: radial-gradient(circle, transparent 70%, #000 73%, #000 80%, transparent 84%);
+          mask: radial-gradient(circle, transparent 70%, #000 73%, #000 80%, transparent 84%);
 }
-/* Arco de ARRIBA: casi circular (0.86) → asoma sobre la esfera */
 .bh__arc--top {
-  transform: scaleY(0.86);
-  clip-path: inset(0 0 52% 0);
+  transform: scaleY(0.8);
+  clip-path: inset(0 0 51% 0);
 }
-/* Su espejo de ABAJO, apenas más tenue */
 .bh__arc--bottom {
-  transform: scaleY(0.86);
-  clip-path: inset(52% 0 0 0);
-  opacity: 0.8;
+  transform: scaleY(0.8);
+  clip-path: inset(51% 0 0 0);
+  opacity: 0.75;
 }
 
-/* --- BANDA CERCANA (por delante de la esfera) --- */
+/* --- BANDA CERCANA: línea finísima por delante de la esfera --- */
 .bh__band {
   position: absolute;
   inset: 0;
-  /* Aplastada y corrida hacia abajo: cruza la parte baja de la esfera */
-  transform: translateY(7%) scaleY(0.15);
-  filter: blur(1.4px) saturate(1.5);
+  transform: translateY(4%) scaleY(0.11); /* casi de canto */
+  filter: blur(1.2px) saturate(1.35) contrast(1.15) brightness(1.35);
 }
 .bh__band i {
-  /* Un poco más ancha que los arcos: sobresale a los costados */
-  -webkit-mask: radial-gradient(circle, transparent 58%, #000 63%, #000 76%, transparent 82%);
-          mask: radial-gradient(circle, transparent 58%, #000 63%, #000 76%, transparent 82%);
+  /* Bien ancha: se extiende mucho más allá de la esfera */
+  -webkit-mask: radial-gradient(circle, transparent 62%, #000 66%, #000 92%, transparent 97%);
+          mask: radial-gradient(circle, transparent 62%, #000 66%, #000 92%, transparent 97%);
 }
 
-/* --- LA ESFERA (el vacío) --- */
+/* Núcleo incandescente: más fino, más brillante, encima de la banda.
+   Es lo que da el filo blanco que se ve en la foto de referencia. */
+.bh__band--hot {
+  transform: translateY(4%) scaleY(0.05);
+  filter: blur(0.6px) brightness(1.5);
+}
+.bh__band--hot i {
+  background: conic-gradient(
+    from 0deg,
+    rgba(255, 190, 110, 0.5) 0deg,
+    rgba(255, 236, 195, 0.95) 45deg,
+    rgba(255, 255, 252, 1) 95deg,
+    rgba(255, 240, 205, 0.98) 140deg,
+    rgba(255, 175, 90, 0.7) 200deg,
+    rgba(190, 90, 35, 0.35) 270deg,
+    rgba(255, 190, 110, 0.5) 360deg
+  );
+  -webkit-mask: radial-gradient(circle, transparent 67%, #000 71%, #000 88%, transparent 94%);
+          mask: radial-gradient(circle, transparent 67%, #000 71%, #000 88%, transparent 94%);
+}
+
+/* --- LA ESFERA (chica y negra) --- */
 .bh__core {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 42%;
+  width: 30%;
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
   background: #000;
-  box-shadow: 0 0 26px 8px rgba(0, 0, 0, 0.9);
+  box-shadow: 0 0 30px 10px rgba(0, 0, 0, 0.95);
 }
 
-/* --- ANILLO DE FOTONES: el "horizonte brillante" --- */
+/* --- ANILLO DE FOTONES: el borde brillante que define la esfera --- */
 .bh__ring {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 42.4%;
+  width: 30.6%;
   aspect-ratio: 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  border: 1px solid rgba(255, 250, 238, 1);
+  border: 1.5px solid rgba(255, 251, 242, 1);
   box-shadow:
-    0 0 5px 1px rgba(255, 226, 172, 0.95),
-    0 0 16px 3px rgba(255, 168, 66, 0.62),
-    0 0 42px 9px rgba(255, 105, 32, 0.26);
+    0 0 4px 1px rgba(255, 236, 196, 1),
+    0 0 12px 2px rgba(255, 180, 90, 0.75),
+    0 0 34px 7px rgba(255, 120, 40, 0.3);
   animation: bh-ring 8s ease-in-out infinite;
 }
 
@@ -309,24 +331,24 @@ body {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 2px;
-  height: 2px;
-  margin: -1px 0 0 -1px;
+  width: 1.5px;
+  height: 1.5px;
+  margin: -0.75px 0 0 -0.75px;
   border-radius: 50%;
-  background: rgba(255, 238, 208, 0.95);
-  box-shadow: 0 0 6px 2px rgba(255, 155, 65, 0.6);
+  background: rgba(255, 242, 220, 0.95);
+  box-shadow: 0 0 5px 1.5px rgba(255, 165, 75, 0.55);
   opacity: 0;
   animation: bh-swallow var(--t, 10s) cubic-bezier(0.5, 0, 0.85, 0.4) infinite;
   animation-delay: var(--d, 0s);
 }
-.bh__debris span:nth-child(1) { --a: 18deg;  --r: 40%; --t: 11s;   --d: 0s; }
-.bh__debris span:nth-child(2) { --a: 76deg;  --r: 46%; --t: 13s;   --d: 2.1s; }
-.bh__debris span:nth-child(3) { --a: 134deg; --r: 38%; --t: 10s;   --d: 4.4s; }
-.bh__debris span:nth-child(4) { --a: 192deg; --r: 48%; --t: 14s;   --d: 1.2s; }
-.bh__debris span:nth-child(5) { --a: 245deg; --r: 42%; --t: 12s;   --d: 6.3s; }
-.bh__debris span:nth-child(6) { --a: 298deg; --r: 50%; --t: 9.5s;  --d: 3.5s; }
-.bh__debris span:nth-child(7) { --a: 340deg; --r: 44%; --t: 15s;   --d: 7.8s; }
-.bh__debris span:nth-child(8) { --a: 108deg; --r: 52%; --t: 12.5s; --d: 5.1s; }
+.bh__debris span:nth-child(1) { --a: 18deg;  --r: 38%; --t: 11s;   --d: 0s; }
+.bh__debris span:nth-child(2) { --a: 76deg;  --r: 44%; --t: 13s;   --d: 2.1s; }
+.bh__debris span:nth-child(3) { --a: 134deg; --r: 36%; --t: 10s;   --d: 4.4s; }
+.bh__debris span:nth-child(4) { --a: 192deg; --r: 46%; --t: 14s;   --d: 1.2s; }
+.bh__debris span:nth-child(5) { --a: 245deg; --r: 40%; --t: 12s;   --d: 6.3s; }
+.bh__debris span:nth-child(6) { --a: 298deg; --r: 48%; --t: 9.5s;  --d: 3.5s; }
+.bh__debris span:nth-child(7) { --a: 340deg; --r: 42%; --t: 15s;   --d: 7.8s; }
+.bh__debris span:nth-child(8) { --a: 108deg; --r: 50%; --t: 12.5s; --d: 5.1s; }
 
 /* --- ANIMACIONES --- */
 @keyframes bh-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -334,16 +356,16 @@ body {
 
 @keyframes bh-float {
   0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-  33%      { transform: translate3d(-8px, 6px, 0) scale(1.02); }
+  33%      { transform: translate3d(-7px, 5px, 0) scale(1.02); }
   66%      { transform: translate3d(5px, -4px, 0) scale(0.99); }
 }
 @keyframes bh-breathe {
-  0%, 100% { opacity: 0.82; transform: scale(1); }
-  50%      { opacity: 1;    transform: scale(1.04); }
+  0%, 100% { opacity: 0.8; transform: scale(1); }
+  50%      { opacity: 1;   transform: scale(1.04); }
 }
 @keyframes bh-ring {
-  0%, 100% { opacity: 0.92; filter: brightness(1); }
-  50%      { opacity: 1;    filter: brightness(1.28); }
+  0%, 100% { opacity: 0.94; filter: brightness(1); }
+  50%      { opacity: 1;    filter: brightness(1.22); }
 }
 @keyframes bh-swallow {
   0% {
@@ -354,7 +376,7 @@ body {
   80%  { opacity: 0.85; }
   100% {
     opacity: 0;
-    transform: rotate(calc(var(--a) + 300deg)) translateX(5%) scale(0.15);
+    transform: rotate(calc(var(--a) + 300deg)) translateX(4%) scale(0.15);
   }
 }
 

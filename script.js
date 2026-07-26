@@ -20,19 +20,6 @@
    ================================================================= */
 const links = [
   {
-    id: "ksign",
-    titulo: "Install KSign",
-    subtitulo: "Tap to install (iOS)",
-    // Instalación OTA de iOS: el .plist va envuelto en itms-services://
-    // para que iPhone muestre el instalador en vez de abrir el XML.
-    // Manifiesto alojado en TU propio dominio → la instalación se dispara
-    // desde tu página, sin redirigir. Para que instale de verdad hay que
-    // subir apps/ksign.ipa firmado (con certificado válido).
-    url: "itms-services://?action=download-manifest&url=https://leonardob8777-bit.github.io/apps/ksign.plist",
-    icono: "ksign",
-    tipo: "install", // enlace OTA: misma pestaña, sin target _blank (iOS lo exige)
-  },
-  {
     id: "lara",
     titulo: "Install Lara",
     subtitulo: "Tap to install (iOS)",
@@ -97,9 +84,6 @@ const ICONS = {
       <circle cx="120" cy="120" r="120" fill="url(#tg)"/>
       <path fill="#fff" d="M54 118.5c34.9-15.2 58.2-25.2 69.8-30.1 33.2-13.8 40.1-16.2 44.6-16.3 1 0 3.2.2 4.7 1.4 1.2 1 1.5 2.3 1.7 3.3.2 1 .4 3.1.2 4.8-1.8 19.1-9.7 65.4-13.7 86.8-1.7 9-5 12.1-8.2 12.4-7 .6-12.3-4.6-19-9-10.5-6.9-16.4-11.2-26.6-17.9-11.8-7.8-4.2-12.1 2.6-19.1 1.8-1.8 32.5-29.8 33.1-32.3.1-.3.1-1.5-.6-2.1-.7-.6-1.7-.4-2.4-.2-1 .2-17.5 11.1-49.3 32.7-4.7 3.2-8.9 4.8-12.7 4.7-4.2-.1-12.2-2.4-18.2-4.3-7.3-2.4-13.1-3.7-12.6-7.8.3-2.1 3.2-4.3 8.8-6.6z"/>
     </svg>`,
-
-  // Logo real de KSign: imagen circular. Reemplazá assets/ksign.png por el tuyo.
-  ksign: `<img class="logo" src="assets/ksign.png" alt="" />`,
 
   // Logo real de Lara (la hormiga): imagen circular.
   lara: `<img class="logo" src="assets/lara.png" alt="" />`,

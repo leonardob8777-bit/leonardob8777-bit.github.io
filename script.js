@@ -377,6 +377,15 @@ function crearTarjeta(item, indice) {
     ${nota}
   `;
 
+  // Si un logo no carga (archivo borrado o sin internet), lo cambiamos
+  // por el ícono genérico en vez de mostrar la imagen rota.
+  a.querySelectorAll("img.logo").forEach((img) => {
+    img.addEventListener("error", () => {
+      const cont = img.parentElement;
+      if (cont) cont.innerHTML = ICONS.link;
+    });
+  });
+
   return a;
 }
 
@@ -385,6 +394,9 @@ function crearSeccion(seccion, contadorInicial) {
   const sec = document.createElement("section");
   sec.className = "section";
   sec.id = seccion.id;
+  // Panel de la pestaña (accesibilidad)
+  sec.setAttribute("role", "tabpanel");
+  sec.setAttribute("aria-label", seccion.nav);
 
   sec.innerHTML = `
     <div class="section__head reveal" style="--i:${contadorInicial}">
@@ -408,6 +420,8 @@ function crearGuia(guia, contadorInicial) {
   const sec = document.createElement("section");
   sec.className = "section";
   sec.id = guia.id;
+  sec.setAttribute("role", "tabpanel");
+  sec.setAttribute("aria-label", guia.nav);
 
   const pasos = guia.pasos
     .map(
@@ -445,6 +459,7 @@ function crearNav(entradas) {
     a.style.setProperty("--i", i + 1);
     a.textContent = e.nav;
     a.setAttribute("role", "tab");
+    a.setAttribute("aria-controls", e.id); // enlaza pestaña ↔ panel
     a.dataset.target = e.id;
     // Acento opcional (ej: la categoría "Live" va en rojo con latido)
     if (e.acento) a.dataset.acento = e.acento;
@@ -521,6 +536,9 @@ function mostrarSeccion(id) {
     const activo = a.dataset.target === objetivo;
     a.classList.toggle("is-active", activo);
     a.setAttribute("aria-selected", activo ? "true" : "false");
+    // Solo la pestaña activa recibe el foco con Tab; entre pestañas
+    // se navega con las flechas (patrón estándar de accesibilidad).
+    a.setAttribute("tabindex", activo ? "0" : "-1");
   });
 
   // Transición de entrada de la sección + revelado escalonado.
@@ -542,11 +560,39 @@ function activarPestanas() {
     const id = enlace.getAttribute("href").slice(1);
     if (!id) return;
 
+    // Solo interceptamos si apunta a una categoría real; así otros
+    // enlaces internos (como "Skip to content") siguen funcionando.
+    const destino = document.getElementById(id);
+    if (!destino || !destino.classList.contains("section")) return;
+
     ev.preventDefault();
     mostrarSeccion(id);
     history.replaceState(null, "", `#${id}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
+
+  // Navegación con teclado entre pestañas (flechas, Inicio y Fin).
+  const nav = document.getElementById("catnav");
+  if (nav) {
+    nav.addEventListener("keydown", (ev) => {
+      const teclas = ["ArrowRight", "ArrowLeft", "Home", "End"];
+      if (!teclas.includes(ev.key)) return;
+
+      const items = [...nav.querySelectorAll(".catnav__item")];
+      const actual = items.findIndex((a) => a.classList.contains("is-active"));
+      let siguiente = actual;
+
+      if (ev.key === "ArrowRight") siguiente = (actual + 1) % items.length;
+      if (ev.key === "ArrowLeft") siguiente = (actual - 1 + items.length) % items.length;
+      if (ev.key === "Home") siguiente = 0;
+      if (ev.key === "End") siguiente = items.length - 1;
+
+      ev.preventDefault();
+      const destino = items[siguiente];
+      mostrarSeccion(destino.dataset.target);
+      destino.focus();
+    });
+  }
 
   // Permite volver atrás / entrar con un enlace directo (#guide).
   window.addEventListener("hashchange", () => {

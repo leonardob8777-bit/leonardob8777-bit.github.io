@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- viewport-fit=cover: permite usar toda la pantalla del iPhone
+       (incluida la zona de la muesca / isla dinámica). -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <link rel="canonical" href="https://leonardob8777-bit.github.io/" />
 
   <!-- ============================================================= -->
   <!-- BASIC SEO                                                     -->
@@ -43,14 +46,27 @@
 
   <!-- El ?v= evita que el navegador use una versión vieja en caché.
        Subí el número cada vez que edites styles.css. -->
-  <link rel="stylesheet" href="styles.css?v=16" />
+  <link rel="stylesheet" href="styles.css?v=17" />
 </head>
 
 <body>
-  <!-- Fondo: malla cyber animada + barrido tipo escáner -->
+  <!-- Fondo: malla cyber animada + resplandor + barrido + glitches -->
+  <div class="mesh" aria-hidden="true"></div>
   <div class="aurora" aria-hidden="true"></div>
   <div class="scan" aria-hidden="true"></div>
   <div class="glitch" aria-hidden="true"></div>
+
+  <!-- Si el JavaScript no carga, la página quedaría vacía: este aviso
+       evita que el visitante vea una pantalla en blanco. -->
+  <noscript>
+    <div class="noscript">
+      <h1>Leonardo Bt</h1>
+      <p>This page needs JavaScript enabled. Please turn it on and reload.</p>
+      <p><a href="https://t.me/leonardoPhl">Contact me on Telegram</a></p>
+    </div>
+  </noscript>
+
+  <a class="skip" href="#content">Skip to content</a>
 
   <div class="page">
     <!-- ================= HERO / PERFIL ================= -->
@@ -87,6 +103,6 @@
     </footer>
   </div>
 
-  <script src="script.js?v=16" defer></script>
+  <script src="script.js?v=17" defer></script>
 </body>
 </html>

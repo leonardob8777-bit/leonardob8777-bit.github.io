@@ -1,219 +1,200 @@
-# Link in Bio 🔗
+# Leonardo Bt · iOS Hub
 
-Sitio web estático tipo "link in bio" (estilo Linktree, pero 100% propio).
-Hecho con **HTML + CSS + JavaScript vanilla**. Sin frameworks, sin backend,
-sin base de datos y sin build step: funciona abriendo `index.html` en el
-navegador y se puede alojar gratis en **GitHub Pages**.
+Sitio web estático con estética *cyber / liquid glass*: categorías en
+pestañas, malla animada de fondo, glitches aleatorios e instalación de
+apps iOS (OTA) desde el propio dominio.
 
-## 📁 Estructura del proyecto
+Hecho con **HTML + CSS + JavaScript vanilla**. Sin frameworks, sin
+backend, sin base de datos y sin build step. Alojado gratis en
+**GitHub Pages**: <https://leonardob8777-bit.github.io/>
+
+---
+
+## 📁 Estructura
 
 ```
 link-in-bio/
-├── index.html          → esqueleto + meta tags (SEO, Open Graph, Twitter)
-├── styles.css          → todo el diseño; las variables de tema están arriba
-├── script.js           → el array `links` (tus botones) + el renderizado
+├── index.html      → esqueleto + meta tags (SEO, Open Graph, Twitter)
+├── styles.css      → todo el diseño; variables de tema arriba de todo
+├── script.js       → CONFIGURACIÓN (lo único que editás) + motor
 ├── assets/
-│   ├── avatar.jpg      → tu foto de perfil (reemplazá el placeholder)
-│   ├── favicon.svg     → ícono de la pestaña del navegador
-│   └── og-image.jpg    → imagen que se ve al compartir el link (1200x630)
-└── archivos/
-    └── certificados.zip → el archivo descargable (reemplazá el placeholder)
+│   ├── avatar.jpg      → foto de perfil
+│   ├── favicon.svg     → ícono de la pestaña
+│   ├── og-image.jpg    → imagen al compartir el link (1200x630)
+│   ├── lara.png        → logo de la app Lara
+│   ├── ksign.png       → logo de KSign
+│   └── bg.jpg          → (sin usar; era el fondo de foto anterior)
+├── apps/
+│   ├── lara.ipa        → la app
+│   └── lara.plist      → manifiesto de instalación OTA
+└── profiles/
+    └── anti-revoke.mobileconfig  → perfil DNS
 ```
-
-Para verlo en tu compu, simplemente hacé doble clic en `index.html`.
 
 ---
 
-## a) 🚀 Cómo subirlo a GitHub Pages (desde cero)
+## a) ➕ Agregar una tarjeta o una categoría
 
-GitHub Pages sirve tu sitio gratis en una URL pública. Pasos:
+Todo sale del array `SECCIONES` al principio de **`script.js`**.
+Cada elemento del array es **una pestaña**. El orden del array es el
+orden del menú: para reordenar, movés el bloque de lugar.
 
-### 1. Crear una cuenta y un repositorio
+### Tarjeta nueva
 
-1. Entrá a [github.com](https://github.com) y creá una cuenta (si no tenés).
-2. Arriba a la derecha, clic en **+** → **New repository**.
-3. **Repository name**: elegí un nombre. Tenés dos opciones:
-   - **`TU-USUARIO.github.io`** → tu sitio quedará en
-     `https://TU-USUARIO.github.io/` (URL más corta, recomendado para bio).
-   - Cualquier otro nombre (ej. `links`) → quedará en
-     `https://TU-USUARIO.github.io/links/`.
-4. Marcá el repositorio como **Public**.
-5. Clic en **Create repository**.
-
-### 2. Subir los archivos
-
-**Opción fácil (sin instalar nada), desde la web:**
-
-1. En la página del repo recién creado, clic en **uploading an existing file**
-   (o **Add file** → **Upload files**).
-2. Arrastrá **todo el contenido** de la carpeta `link-in-bio` (el
-   `index.html`, `styles.css`, `script.js` y las carpetas `assets/` y
-   `archivos/`). ⚠️ Subí los archivos y carpetas, no la carpeta contenedora.
-3. Abajo, clic en **Commit changes**.
-
-**Opción con Git (si lo tenés instalado):**
-
-```bash
-cd link-in-bio
-git init
-git add .
-git commit -m "Primer commit: link in bio"
-git branch -M main
-git remote add origin https://github.com/TU-USUARIO/TU-REPO.git
-git push -u origin main
-```
-
-### 3. Activar GitHub Pages
-
-1. En el repo, andá a **Settings** (arriba).
-2. En el menú de la izquierda, clic en **Pages**.
-3. En **Source**, elegí **Deploy from a branch**.
-4. En **Branch**, elegí **main** y carpeta **/ (root)**. Clic en **Save**.
-5. Esperá 1–2 minutos y recargá. Arriba va a aparecer tu URL pública:
-   `https://TU-USUARIO.github.io/TU-REPO/` 🎉
-
-### 4. Ajustar las URLs de las meta tags
-
-Una vez que sepas tu URL final, abrí `index.html` y actualizá estas líneas
-del `<head>` con tu dirección real (importante para que la tarjeta al
-compartir se vea bien):
-
-```html
-<meta property="og:url" content="https://TU-USUARIO.github.io/TU-REPO/" />
-<meta property="og:image" content="https://TU-USUARIO.github.io/TU-REPO/assets/og-image.jpg" />
-<meta name="twitter:image" content="https://TU-USUARIO.github.io/TU-REPO/assets/og-image.jpg" />
-```
-
-> 💡 Para la imagen de compartir (Open Graph), conviene usar la **URL
-> absoluta completa**. Servicios como WhatsApp o Telegram no siempre
-> resuelven las rutas relativas.
-
----
-
-## b) ➕ Cómo agregar un botón nuevo
-
-Todo se maneja desde el array `links` en **`script.js`**. No tocás el HTML.
-
-1. Abrí `script.js`.
-2. Encontrá el array `const links = [ ... ]` (está arriba de todo).
-3. Copiá un bloque `{ ... }` y agregalo donde quieras (el orden del array =
-   el orden en pantalla). Ejemplo:
+Buscá la categoría y copiá un bloque `{ ... }`:
 
 ```js
 {
-  id: "instagram",              // identificador único, sin espacios
-  titulo: "Instagram",          // texto grande del botón
-  subtitulo: "Seguime acá",     // texto chico (o "" si no querés)
-  url: "https://instagram.com/tuusuario",
-  icono: "link",                // nombre de un ícono del objeto ICONS
-  tipo: "externo",              // 'externo' (nueva pestaña) o 'descarga'
-},
-```
-
-4. Guardá y recargá. Listo.
-
-### ¿Y si quiero un ícono propio?
-
-En `script.js`, buscá el objeto `ICONS` y agregá tu SVG con una clave nueva:
-
-```js
-const ICONS = {
-  // ...los que ya están...
-  instagram: `<svg viewBox="0 0 24 24" ...>...</svg>`,
-};
-```
-
-- Usá `fill="currentColor"` o `stroke="currentColor"` en el SVG para que
-  tome automáticamente el color del texto del botón.
-- Después referencialo con `icono: "instagram"` en tu enlace.
-- Si ponés un nombre de ícono que no existe, se usa un ícono genérico de
-  respaldo (no rompe nada).
-
----
-
-## c) 📄 Cómo reemplazar el archivo de certificados
-
-El botón "Descargar Certificados" apunta a `archivos/certificados.zip`.
-
-**Opción simple (mismo nombre):**
-
-1. Borrá el `certificados.zip` de ejemplo que está en la carpeta `archivos/`.
-2. Poné tu `.zip` real ahí con **exactamente el mismo nombre**
-   (`certificados.zip`). No hace falta tocar nada más.
-
-**Si querés otro nombre o formato (ej. un PDF):**
-
-1. Poné tu archivo en `archivos/` (ej. `archivos/mis-certificados.pdf`).
-2. En `script.js`, en el objeto del botón, cambiá la `url`:
-
-```js
-url: "archivos/mis-certificados.pdf",
-```
-
-> El atributo `download` que fuerza la descarga se agrega solo cuando
-> `tipo: "descarga"`. Dejalo así para que el archivo se baje en vez de
-> abrirse en el navegador.
-
----
-
-## d) 🎨 Cómo cambiar los colores del tema
-
-Todos los colores salen de las **variables CSS** al principio de
-`styles.css`, dentro del bloque `:root`. Cambiás ahí y se actualiza todo el
-sitio.
-
-```css
-:root {
-  --bg: #0b0d1a;          /* fondo base (lo más oscuro) */
-
-  --aurora-1: #6d28d9;    /* violeta ─┐                          */
-  --aurora-2: #2563eb;    /* azul    ─┤ el gradiente animado     */
-  --aurora-3: #db2777;    /* rosa    ─┘ del fondo                */
-
-  --text:       #f4f5fb;  /* texto principal    */
-  --text-muted: #a9b0c9;  /* texto secundario   */
-
-  --glass-bg:     rgba(255,255,255,0.06);  /* relleno de los botones */
-  --glass-border: rgba(255,255,255,0.14);  /* borde de 1px           */
-  --glass-blur:   18px;                     /* intensidad del blur    */
-
-  --radius-card: 24px;    /* redondez de la tarjeta */
-  --radius-btn:  20px;    /* redondez de los botones */
+  id: "nombre-unico",        // sin espacios
+  titulo: "Texto grande",
+  subtitulo: "Texto chico",  // "" si no querés
+  url: "https://...",
+  icono: "telegram",         // nombre del objeto ICONS
+  tipo: "externo",
+  estado: "online",          // opcional
+  nota: "",                  // texto extra opcional
 }
 ```
 
-**Ideas rápidas:**
+**Tipos disponibles:**
 
-- **Tema más frío (azul/cyan):** `--aurora-1: #0ea5e9; --aurora-2: #6366f1; --aurora-3: #06b6d4;`
-- **Tema atardecer (naranja/rosa):** `--aurora-1: #f59e0b; --aurora-2: #ef4444; --aurora-3: #ec4899;`
-- **Menos brillo del fondo:** bajá el `opacity` de `.aurora` (más abajo en el CSS).
-- **Botones más/menos transparentes:** subí o bajá el último número (el alpha)
-  de `--glass-bg`.
+| tipo | qué hace |
+|---|---|
+| `externo` | abre en pestaña nueva |
+| `install` | instalación OTA de iOS (`itms-services://`) |
+| `perfil`  | perfil de configuración `.mobileconfig` |
+| `descarga`| fuerza la descarga del archivo |
+| `interno` | salta a otra categoría (ej. `url: "#guide"`) |
 
-Recordá cambiar también el color del favicon (`assets/favicon.svg`) y de la
-`--avatar-glow` si querés que todo combine.
+**Estados** (el chip de color): `online` verde · `offline` rojo ·
+`soon` ámbar · `live` rojo con latido.
+
+### Categoría nueva
+
+Copiá un bloque entero de `SECCIONES`. El menú se actualiza solo.
+Si le agregás `acento: "live"`, la pestaña se pinta de rojo.
+
+### Paso nuevo en la guía
+
+La categoría `guide` usa `pasos` en vez de `items`. Agregás
+`{ titulo, detalle }` y el número se pone solo. Podés usar `<b>`.
+
+### Ícono nuevo
+
+En el objeto `ICONS` agregás tu SVG (con `fill="currentColor"`) o una
+imagen: `milogo: '<img class="logo" src="assets/milogo.png" alt="" />'`.
+Si el nombre no existe, cae en un ícono genérico (no rompe nada).
 
 ---
 
-## ♿ Accesibilidad y rendimiento
+## b) 📲 Actualizar la app instalable (IPA)
 
-Este sitio ya viene con:
+El botón instala desde tu propio dominio usando `apps/lara.plist`.
 
-- HTML semántico (`<main>`, `<header>`, `<nav>`, `<footer>`).
-- `aria-label` en cada botón y `aria-hidden` en lo decorativo.
-- Navegación por teclado (Tab + Enter) con foco visible.
-- Respeto por `prefers-reduced-motion` (apaga animaciones si el usuario lo pidió).
-- Carga rápida: fuente con `preconnect`, imagen con dimensiones fijas.
+**Cuando el certificado se vence** (la app instala pero no abre):
+
+1. Volvés a firmar la app y conseguís el `.ipa` nuevo.
+2. Lo ponés en `apps/` **con el mismo nombre** (`lara.ipa`).
+3. Commit + push. **No hay que tocar el `.plist` ni el botón.**
+
+**Para agregar otra app**: copiás `apps/lara.plist` como
+`apps/otra.plist`, cambiás dentro la URL del `.ipa`, el
+`bundle-identifier` y el `title`; después agregás la tarjeta con
+`tipo: "install"` apuntando a:
+
+```
+itms-services://?action=download-manifest&url=https://leonardob8777-bit.github.io/apps/otra.plist
+```
+
+> ⚠️ GitHub bloquea archivos de más de 100 MB.
 
 ---
 
-## 🛠️ Probar cambios localmente
+## c) 🎨 Cambiar los colores
 
-Abrí `index.html` con doble clic. Si algún navegador bloquea la carga del
-`.js` por seguridad al abrir archivos locales, levantá un servidor simple:
+Todo sale del bloque `:root` al principio de `styles.css`:
+
+```css
+--bg: #05060a;                          /* fondo base */
+--mesh:      rgba(255, 45, 45, 0.16);   /* rejilla principal */
+--mesh-fine: rgba(255, 45, 45, 0.055);  /* rejilla micro */
+--mesh-glow: rgba(220, 30, 30, 0.22);   /* resplandor */
+--text:       #f6f7fc;
+--text-muted: #b3b9d1;
+--glass-bg:   rgba(255,255,255,0.055);  /* vidrio de las tarjetas */
+--glass-blur: 22px;
+```
+
+Para pasar la malla a **verde matrix**: cambiá los tres `--mesh*` a
+tonos verdes (ej. `rgba(45, 255, 130, 0.16)`).
+
+---
+
+## d) ⚡ Calibrar los glitches
+
+En `script.js`, dentro de `activarGlitches()`, está el bloque `CONFIG`:
+
+```js
+fuerteMin: 2200,  // espera mínima entre glitches fuertes (ms)
+fuerteMax: 5200,  // espera máxima
+fuerteDur: 260,
+replica: 0.55,    // probabilidad de una segunda sacudida
+microMin: 800,    // micro-glitches (sutiles)
+microMax: 2200,
+```
+
+Hay **6 variantes** de movimiento (`gv-1` … `gv-6` en el CSS) y
+**3 micro** (`mv-1` … `mv-3`). El JS elige una al azar y además
+sortea distancia, dirección, duración y ruido en cada disparo, para
+que ningún glitch se repita.
+
+---
+
+## e) 🚀 Publicar los cambios
+
+El repo ya está conectado a GitHub Pages (rama `main`, carpeta raíz).
+
+1. Abrís **GitHub Desktop**.
+2. Escribís un resumen del cambio abajo a la izquierda → **Commit to main**.
+3. Botón **Push origin** (arriba).
+4. En 1–2 minutos se actualiza el sitio.
+
+### ⚠️ Importante: la caché
+
+Si cambiás `styles.css` o `script.js`, **subí el número de versión**
+en `index.html`:
+
+```html
+<link rel="stylesheet" href="styles.css?v=17" />
+<script src="script.js?v=17" defer></script>
+```
+
+Si no lo hacés, los visitantes que ya entraron pueden seguir viendo la
+versión vieja guardada en su navegador.
+
+---
+
+## 🛠️ Probar antes de publicar
+
+Doble clic en `index.html`, o desde la terminal:
 
 ```bash
 python -m http.server 8000
 ```
 
-Y entrá a `http://localhost:8000`.
+y entrás a `http://localhost:8000`.
+
+> Los enlaces de instalación de iOS (`itms-services://`) **solo
+> funcionan desde el Safari de un iPhone y por HTTPS** — en la compu no
+> hacen nada, es normal.
+
+---
+
+## ♿ Accesibilidad y rendimiento
+
+- Pestañas con `role="tab"` / `tabpanel` y navegación por flechas.
+- Enlace "Skip to content" para teclado.
+- Aviso visible si el visitante tiene JavaScript desactivado.
+- Respeta `prefers-reduced-motion` (apaga malla, glitches y animaciones).
+- Animaciones de fondo con `transform` (aceleradas por GPU).
+- Respeta las zonas seguras del iPhone (muesca y barra inferior).

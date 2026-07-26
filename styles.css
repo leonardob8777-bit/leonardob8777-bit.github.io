@@ -62,31 +62,59 @@ body {
    y una viñeta oscura para que el contenido se lea bien.
    Para cambiar el color, tocá --mesh y --mesh-glow en :root.
    ================================================================= */
+/* Contenedor de la malla. Es el que "salta" durante los glitches.
+   Sus dos capas hijas viajan con transform (acelerado por GPU): así
+   el navegador NO repinta la pantalla en cada cuadro. */
+.mesh {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background-color: var(--bg);
+}
+
+/* Rejilla principal */
+.mesh::before,
+.mesh::after {
+  content: "";
+  position: absolute;
+  /* Más grande que la pantalla para que al desplazarse nunca se
+     vean los bordes de la capa. */
+  inset: -60px;
+  will-change: transform;
+}
+.mesh::before {
+  background-image:
+    linear-gradient(var(--mesh) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mesh) 1px, transparent 1px);
+  background-size: 34px 34px;
+  animation: mesh-travel 5s linear infinite;
+}
+/* Rejilla micro: misma dirección, más lenta = profundidad (parallax) */
+.mesh::after {
+  background-image:
+    linear-gradient(var(--mesh-fine) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mesh-fine) 1px, transparent 1px);
+  background-size: 8px 8px;
+  animation: mesh-travel-fine 3.2s linear infinite;
+}
+
+/* Al desplazarse exactamente una celda, el bucle es invisible */
+@keyframes mesh-travel {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(34px, 34px, 0); }
+}
+@keyframes mesh-travel-fine {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(8px, 8px, 0); }
+}
+
+/* Capa de resplandor y viñeta (encima de la malla) */
 .aurora {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background-color: var(--bg);
-  /* Rejilla principal */
-  background-image:
-    linear-gradient(var(--mesh) 1px, transparent 1px),
-    linear-gradient(90deg, var(--mesh) 1px, transparent 1px);
-  background-size: 34px 34px, 34px 34px;
-  /* Viaja en diagonal hacia la esquina inferior derecha */
-  animation: mesh-drift 5s linear infinite;
-}
-
-/* Rejilla micro (más fina y tenue, se mueve al revés = profundidad) */
-.aurora::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(var(--mesh-fine) 1px, transparent 1px),
-    linear-gradient(90deg, var(--mesh-fine) 1px, transparent 1px);
-  background-size: 8px 8px, 8px 8px;
-  /* Misma dirección pero más lenta = sensación de profundidad (parallax) */
-  animation: mesh-drift-fine 3.2s linear infinite;
+  pointer-events: none;
 }
 
 /* Resplandor rojo + viñeta para dar contraste al contenido */
@@ -101,16 +129,6 @@ body {
   animation: glow-pulse 7s ease-in-out infinite;
 }
 
-/* Recorre 2 celdas por ciclo: el bucle es invisible porque la rejilla
-   se repite, pero el movimiento se percibe bien. */
-@keyframes mesh-drift {
-  from { background-position: 0 0, 0 0; }
-  to   { background-position: 68px 68px, 68px 68px; }
-}
-@keyframes mesh-drift-fine {
-  from { background-position: 0 0, 0 0; }
-  to   { background-position: 16px 16px, 16px 16px; }
-}
 @keyframes glow-pulse {
   0%, 100% { opacity: 0.85; }
   50%      { opacity: 1; }
@@ -369,12 +387,8 @@ body.gv-6.is-glitching .page {
 }
 
 /* La malla del fondo también se sacude distinto según la variante */
-body.is-glitching .aurora {
-  animation: mesh-drift 5s linear infinite, mesh-jolt var(--gdur) steps(3) 1;
-}
-body.gv-2.is-glitching .aurora {
-  animation: mesh-drift 5s linear infinite, mesh-jolt-v var(--gdur) steps(3) 1;
-}
+body.is-glitching .mesh { animation: mesh-jolt var(--gdur) steps(3) 1; }
+body.gv-2.is-glitching .mesh { animation: mesh-jolt-v var(--gdur) steps(3) 1; }
 @keyframes mesh-jolt-v {
   0%   { transform: translate3d(0, 0, 0); }
   40%  { transform: translate3d(0, calc(var(--gy) * -5), 0); }
@@ -435,8 +449,43 @@ body.is-glitching-micro .name::after {
   width: 100%;
   max-width: 480px;      /* mobile-first */
   margin: 0 auto;
-  padding: clamp(28px, 6vh, 56px) 20px 48px;
+  /* env(safe-area-*) respeta la muesca y la barra inferior del iPhone
+     para que nada quede tapado ni pegado al borde. */
+  padding:
+    calc(clamp(24px, 5vh, 48px) + env(safe-area-inset-top, 0px))
+    calc(20px + env(safe-area-inset-right, 0px))
+    calc(48px + env(safe-area-inset-bottom, 0px))
+    calc(20px + env(safe-area-inset-left, 0px));
 }
+
+/* Enlace para saltar al contenido (solo visible al navegar con Tab) */
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: 0 0 12px 0;
+  background: #fff;
+  color: #111;
+  font-weight: 600;
+  text-decoration: none;
+}
+.skip:focus { left: 0; }
+
+/* Aviso cuando el navegador tiene JavaScript desactivado */
+.noscript {
+  max-width: 420px;
+  margin: 18vh auto;
+  padding: 26px 22px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  text-align: center;
+}
+.noscript h1 { font-size: 1.4rem; margin-bottom: 8px; }
+.noscript p  { color: var(--text-muted); font-size: 0.9rem; margin-top: 6px; }
+.noscript a  { color: #7cc4ff; }
 
 /* ================= HERO ================= */
 .hero {
@@ -893,12 +942,14 @@ body.is-glitching-micro .name::after {
 /* ================= prefers-reduced-motion ================= */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .mesh::before,
+  .mesh::after,
   .aurora,
-  .aurora::before,
   .aurora::after,
   .scan,
   .glitch,
   .glitch::before,
+  .glitch::after,
   .avatar-wrap,
   .avatar-wrap::before,
   .name,

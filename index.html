@@ -43,13 +43,14 @@
 
   <!-- El ?v= evita que el navegador use una versión vieja en caché.
        Subí el número cada vez que edites styles.css. -->
-  <link rel="stylesheet" href="styles.css?v=13" />
+  <link rel="stylesheet" href="styles.css?v=14" />
 </head>
 
 <body>
   <!-- Fondo: malla cyber animada + barrido tipo escáner -->
   <div class="aurora" aria-hidden="true"></div>
   <div class="scan" aria-hidden="true"></div>
+  <div class="glitch" aria-hidden="true"></div>
 
   <div class="page">
     <!-- ================= HERO / PERFIL ================= -->
@@ -59,7 +60,8 @@
              alt="Leonardo Bt profile photo" width="112" height="112" fetchpriority="high" />
       </div>
 
-      <h1 class="name">Leonardo Bt</h1>
+      <!-- data-text = el mismo texto: lo usan las capas del glitch -->
+      <h1 class="name" data-text="Leonardo Bt">Leonardo Bt</h1>
       <p class="handle">@leonardo.bt4</p>
 
       <!-- Indicador "live": el punto late y el texto lo pone el JS -->
@@ -85,6 +87,6 @@
     </footer>
   </div>
 
-  <script src="script.js?v=13" defer></script>
+  <script src="script.js?v=14" defer></script>
 </body>
 </html>

@@ -575,6 +575,40 @@ function actualizarEstado() {
   cont.querySelector(".status__text").textContent = texto;
 }
 
+/* -----------------------------------------------------------------
+   GLITCHES ALEATORIOS
+   Cada tantos segundos (al azar) le ponemos la clase `is-glitching`
+   al <body> por un instante. El CSS se encarga del efecto visual.
+   A veces dispara 2 o 3 seguidos, como una interferencia real.
+   ----------------------------------------------------------------- */
+function activarGlitches() {
+  // Respeta a quien pidió menos animaciones en su dispositivo.
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const cuerpo = document.body;
+
+  const disparar = () => {
+    cuerpo.classList.add("is-glitching");
+    setTimeout(() => cuerpo.classList.remove("is-glitching"), 300);
+  };
+
+  const programar = () => {
+    // Entre 3 y 9 segundos hasta el próximo glitch.
+    const espera = 3000 + Math.random() * 6000;
+
+    setTimeout(() => {
+      disparar();
+
+      // 40% de las veces, una segunda sacudida rápida.
+      if (Math.random() < 0.4) setTimeout(disparar, 380 + Math.random() * 220);
+
+      programar();
+    }, espera);
+  };
+
+  programar();
+}
+
 /* =================================================================
    INICIALIZACIÓN
    ================================================================= */
@@ -599,6 +633,7 @@ document.addEventListener("DOMContentLoaded", () => {
   actualizarEstado();
   iniciarObservador();
   activarPestanas();
+  activarGlitches();
 
   // Abre la categoría del enlace (#guide) o, si no hay, la primera.
   mostrarSeccion(location.hash.slice(1));

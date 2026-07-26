@@ -139,6 +139,109 @@ body {
   100% { transform: translateY(115vh); }
 }
 
+/* =================================================================
+   GLITCHES TIPO HACK
+   -----------------------------------------------------------------
+   El JS le pone la clase `is-glitching` al <body> cada tantos
+   segundos (al azar) y la saca enseguida. Todo lo de abajo solo se
+   activa durante ese instante, así el fallo se siente impredecible.
+   ================================================================= */
+.glitch {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  mix-blend-mode: screen;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 0, 60, 0.14) 0 2px,
+    transparent 2px 6px
+  );
+}
+
+/* Banda que "se corta" y se desplaza, como una imagen rota */
+.glitch::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  top: 34%;
+  height: 12%;
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 0 1px rgba(255, 60, 60, 0.25);
+  opacity: 0;
+}
+
+body.is-glitching .glitch { animation: glitch-bars 0.3s steps(3) 1; }
+body.is-glitching .glitch::before { animation: glitch-tear 0.3s steps(2) 1; }
+
+@keyframes glitch-bars {
+  0%   { opacity: 0;    transform: translate3d(0, 0, 0); }
+  15%  { opacity: 1;    transform: translate3d(-7px, 2px, 0); }
+  40%  { opacity: 0.45; transform: translate3d(6px, -3px, 0); }
+  70%  { opacity: 0.9;  transform: translate3d(-4px, 1px, 0); }
+  100% { opacity: 0;    transform: none; }
+}
+@keyframes glitch-tear {
+  0%   { opacity: 0; transform: translateX(0) scaleY(1); }
+  30%  { opacity: 1; transform: translateX(-14px) scaleY(1.4); }
+  60%  { opacity: 1; transform: translateX(11px) scaleY(0.7); }
+  100% { opacity: 0; transform: none; }
+}
+
+/* Tirón de la malla del fondo */
+body.is-glitching .aurora {
+  animation: mesh-drift 5s linear infinite, mesh-jolt 0.3s steps(3) 1;
+}
+@keyframes mesh-jolt {
+  0%   { transform: translate3d(0, 0, 0); }
+  35%  { transform: translate3d(-9px, 4px, 0); }
+  70%  { transform: translate3d(7px, -3px, 0); }
+  100% { transform: none; }
+}
+
+/* El nombre se parte en rojo/cian (aberración cromática) */
+.name { position: relative; }
+.name::before,
+.name::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%;
+  opacity: 0;
+  pointer-events: none;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+body.is-glitching .name::before {
+  color: #ff2d55;
+  animation: glitch-red 0.3s steps(2) 1;
+}
+body.is-glitching .name::after {
+  color: #22d3ee;
+  animation: glitch-cyan 0.3s steps(2) 1;
+}
+@keyframes glitch-red {
+  0%   { opacity: 0; transform: none; clip-path: inset(0 0 100% 0); }
+  30%  { opacity: 0.9; transform: translate(-3px, -1px); clip-path: inset(8% 0 55% 0); }
+  65%  { opacity: 0.7; transform: translate(2px, 1px);  clip-path: inset(60% 0 12% 0); }
+  100% { opacity: 0; transform: none; }
+}
+@keyframes glitch-cyan {
+  0%   { opacity: 0; transform: none; clip-path: inset(100% 0 0 0); }
+  30%  { opacity: 0.85; transform: translate(3px, 1px);  clip-path: inset(50% 0 18% 0); }
+  65%  { opacity: 0.6;  transform: translate(-2px, -1px); clip-path: inset(15% 0 62% 0); }
+  100% { opacity: 0; transform: none; }
+}
+
+/* Parpadeo general muy corto (como si saltara la señal) */
+body.is-glitching .page { animation: glitch-flicker 0.3s steps(2) 1; }
+@keyframes glitch-flicker {
+  0%, 100% { opacity: 1; filter: none; }
+  25%      { opacity: 0.82; filter: hue-rotate(-12deg) saturate(1.4); }
+  60%      { opacity: 1; filter: none; }
+}
+
 /* ================= LAYOUT ================= */
 .page {
   width: 100%;
@@ -606,6 +709,8 @@ body {
   .aurora::before,
   .aurora::after,
   .scan,
+  .glitch,
+  .glitch::before,
   .avatar-wrap,
   .avatar-wrap::before,
   .name,

@@ -192,8 +192,20 @@ const SECCIONES = [
     nav: "Live",
     acento: "live", // pinta la pestaña de rojo con puntito latiendo
     titulo: "Live",
-    descripcion: "External signing service — open right now.",
+    descripcion: "Anti-revoke DNS profile — keeps signed apps working.",
     items: [
+      {
+        id: "dns-profile",
+        titulo: "Install DNS Profile",
+        subtitulo: "Anti-revoke · iOS",
+        url: "profiles/anti-revoke.mobileconfig",
+        icono: "shield",
+        tipo: "perfil",
+        estado: "live",
+        nota:
+          "Tap → then open <b>Settings → Profile Downloaded → Install</b>. " +
+          "Routes your DNS through Cloudflare Gateway and blocks iOS updates while active.",
+      },
       {
         id: "skibiditech",
         titulo: "Skibidi Tech",
@@ -254,6 +266,20 @@ const ICONS = {
       </g>
     </svg>`,
 
+  /* Escudo en círculo rojo — para el perfil DNS anti-revoke */
+  shield: `
+    <svg class="logo" viewBox="0 0 240 240" aria-hidden="true">
+      <defs>
+        <linearGradient id="shd" x1="120" y1="0" x2="120" y2="240" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#f87171"/>
+          <stop offset="1" stop-color="#b91c1c"/>
+        </linearGradient>
+      </defs>
+      <circle cx="120" cy="120" r="120" fill="url(#shd)"/>
+      <path fill="#fff" d="M120 48l50 22v46c0 34-21 62-50 76-29-14-50-42-50-76V70l50-22z"/>
+      <path fill="#b91c1c" d="M108 132l-18-18-10 10 28 28 52-52-10-10z"/>
+    </svg>`,
+
   /* Ícono propio para servicios externos de firma (rayo en círculo) */
   spark: `
     <svg class="logo" viewBox="0 0 240 240" aria-hidden="true">
@@ -305,7 +331,13 @@ function crearTarjeta(item, indice) {
 
   if (item.tipo === "descarga") {
     a.setAttribute("download", "");
-  } else if (item.tipo === "install" || item.tipo === "interno") {
+  } else if (
+    item.tipo === "install" ||
+    item.tipo === "interno" ||
+    item.tipo === "perfil"
+  ) {
+    // perfil (.mobileconfig) → misma pestaña y SIN download, para que
+    // iOS lo tome como perfil de configuración y no como archivo suelto.
     // OTA de iOS y anclas internas → misma pestaña (iOS lo exige en OTA).
   } else {
     a.target = "_blank";
@@ -314,7 +346,7 @@ function crearTarjeta(item, indice) {
 
   const accion =
     item.tipo === "descarga" ? "Download"
-    : item.tipo === "install" ? "Install"
+    : item.tipo === "install" || item.tipo === "perfil" ? "Install"
     : "Open";
   a.setAttribute("aria-label", `${accion}: ${item.titulo}`);
 

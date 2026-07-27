@@ -24,6 +24,8 @@ targets:
 
     sources:
       - path: Sources
+        excludes:
+          - "Info.plist"     # se usa como INFOPLIST_FILE, no como recurso
       - path: Resources
 
     settings:
@@ -43,3 +45,15 @@ targets:
         CODE_SIGNING_REQUIRED: NO
         CODE_SIGNING_ALLOWED: NO
         CODE_SIGN_IDENTITY: ""
+
+# El esquema se declara a mano: así `xcodebuild -scheme LB` siempre
+# lo encuentra, sin depender de lo que autogenere la herramienta.
+schemes:
+  LB:
+    build:
+      targets:
+        LB: all
+    run:
+      config: Release
+    archive:
+      config: Release

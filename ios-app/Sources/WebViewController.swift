@@ -124,8 +124,12 @@ final class WebViewController: UIViewController {
         boton.titleLabel?.font = .systemFont(ofSize: 15, weight: .semibold)
         boton.backgroundColor = Config.colorMarca
         boton.layer.cornerRadius = 22
-        boton.contentEdgeInsets = UIEdgeInsets(top: 12, left: 28, bottom: 12, right: 28)
         boton.addTarget(self, action: #selector(recargar), for: .touchUpInside)
+        boton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            boton.widthAnchor.constraint(equalToConstant: 140),
+            boton.heightAnchor.constraint(equalToConstant: 44),
+        ])
 
         let pila = UIStackView(arrangedSubviews: [titulo, detalle, boton])
         pila.axis = .vertical

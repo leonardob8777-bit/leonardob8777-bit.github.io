@@ -51,8 +51,23 @@ const SECCIONES = [
     nav: "Live",
     acento: "live", // pinta la pestaña de rojo con puntito latiendo
     titulo: "Live",
-    descripcion: "Anti-revoke DNS profile — keeps signed apps working.",
+    descripcion: "Start here — install the app and keep your signed apps alive.",
     items: [
+      {
+        id: "homescreen",
+        titulo: "Get the App",
+        subtitulo: "Add this hub to your home screen",
+        url: "profiles/homescreen-app.mobileconfig",
+        icono: "appicon",
+        tipo: "perfil",
+        estado: "hot",
+        destacado: true,        // ← se dibuja con el estilo llamativo
+        cinta: "Recommended",   // ← texto de la cintita de arriba
+        nota:
+          "One tap and it lives on your home screen with its own icon, full screen — " +
+          "no need to remember the link. Tap → <b>Settings → Profile Downloaded → Install</b>. " +
+          "Removable any time from <b>Settings → General → VPN & Device Management</b>.",
+      },
       {
         id: "dns-profile",
         titulo: "Install DNS Profile",
@@ -235,19 +250,6 @@ const SECCIONES = [
     descripcion: "Get your device ID before buying a certificate.",
     items: [
       {
-        id: "homescreen",
-        titulo: "Install as App",
-        subtitulo: "One tap · adds it to your home screen",
-        url: "profiles/homescreen-app.mobileconfig",
-        icono: "appicon",
-        tipo: "perfil",
-        estado: "hot",
-        nota:
-          "Adds this hub to your home screen with its own icon, full screen. " +
-          "Tap → <b>Settings → Profile Downloaded → Install</b>. " +
-          "You can remove it any time from <b>Settings → General → VPN & Device Management</b>.",
-      },
-      {
         id: "udid",
         titulo: "Get UDID",
         subtitulo: "Find your device ID",
@@ -406,7 +408,9 @@ const ETIQUETA_ESTADO = {
 function crearTarjeta(item, indice) {
   const a = document.createElement("a");
   a.href = item.url;
-  a.className = "link reveal";
+  // `destacado: true` en el item → estilo llamativo (borde de color,
+  // latido, barrido de luz continuo y cintita).
+  a.className = "link reveal" + (item.destacado ? " link--featured" : "");
   a.id = `link-${item.id}`;
   a.style.setProperty("--i", indice);
 
@@ -445,8 +449,14 @@ function crearTarjeta(item, indice) {
 
   const nota = item.nota ? `<p class="link__note">${item.nota}</p>` : "";
 
+  // Cintita opcional arriba a la derecha ("Recommended", "New"...)
+  const cinta = item.cinta
+    ? `<span class="link__ribbon">${item.cinta}</span>`
+    : "";
+
   a.innerHTML = `
     <span class="link__shine" aria-hidden="true"></span>
+    ${cinta}
     <span class="link__row">
       <span class="link__icon">${icono}</span>
       <span class="link__text">

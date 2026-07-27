@@ -386,6 +386,9 @@ body {
 body.no-fx .bits,
 body.no-fx .scan,
 body.no-fx .glitch { display: none !important; }
+body.no-fx .link--featured,
+body.no-fx .link--featured .link__shine,
+body.no-fx .link--featured .link__arrow,
 body.no-fx .mesh::before,
 body.no-fx .mesh::after,
 body.no-fx .aurora::after,
@@ -1097,6 +1100,83 @@ body.is-glitching-micro .name::after {
 .link:active { transform: scale(0.978); }
 .link:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
 
+/* =================================================================
+   TARJETA DESTACADA  (item con `destacado: true`)
+   -----------------------------------------------------------------
+   Pensada para que se note antes que el resto sin romper la estética:
+   borde con degradado del color del tema, latido suave, barrido de
+   luz permanente (no solo al pasar el mouse) y cintita.
+   ================================================================= */
+.link--featured {
+  padding: 19px 18px;
+  border: 1px solid transparent;
+  /* Doble fondo: relleno de vidrio + borde degradado del tema */
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.03)) padding-box,
+    linear-gradient(135deg, var(--avatar-glow), rgba(255, 255, 255, 0.22) 55%, transparent) border-box;
+  animation: featured-pulse 3s ease-in-out infinite;
+}
+
+/* El borde especular normal estorba acá: lo apagamos */
+.link--featured::before { display: none; }
+
+/* Latido del resplandor: llama la atención sin ser molesto */
+@keyframes featured-pulse {
+  0%, 100% {
+    box-shadow:
+      0 8px 30px rgba(0, 0, 0, 0.45),
+      0 0 0 0 rgba(255, 255, 255, 0),
+      inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  }
+  50% {
+    box-shadow:
+      0 10px 38px rgba(0, 0, 0, 0.5),
+      0 0 26px -4px var(--avatar-glow),
+      inset 0 1px 0 rgba(255, 255, 255, 0.34);
+  }
+}
+
+/* Barrido de luz SIEMPRE activo (en las normales solo va al hover) */
+.link--featured .link__shine {
+  animation: shine-sweep 3.4s ease-in-out infinite;
+}
+
+/* Ícono más grande y con halo */
+.link--featured .link__icon { width: 42px; height: 42px; }
+.link--featured .link__icon .logo {
+  width: 42px;
+  height: 42px;
+  box-shadow: 0 0 14px -2px var(--avatar-glow), 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+.link--featured .link__title { font-size: 1.08rem; }
+.link--featured .link__arrow { opacity: 0.85; }
+
+/* La flecha invita a tocar: se mueve sola */
+.link--featured .link__arrow {
+  animation: nudge 1.8s ease-in-out infinite;
+}
+@keyframes nudge {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(4px); }
+}
+
+/* --- Cintita ("Recommended") --- */
+.link__ribbon {
+  position: absolute;
+  top: 0;
+  right: 16px;
+  z-index: 3;
+  padding: 3px 10px 4px;
+  border-radius: 0 0 8px 8px;
+  background: var(--avatar-glow);
+  color: #04120b;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: 0 3px 12px -2px var(--avatar-glow);
+}
+
 /* ---- Chip de estado dentro de la tarjeta ---- */
 .badge {
   display: inline-flex;
@@ -1352,6 +1432,9 @@ body.is-glitching-micro .name::after {
   .reveal { opacity: 1; transform: none; transition: none; }
   .section.is-entering { animation: none; }
   .link:hover .link__shine { animation: none; }
+  .link--featured,
+  .link--featured .link__shine,
+  .link--featured .link__arrow { animation: none; }
   .link:hover .link__icon, .link:active .link__icon { transform: none; }
   .status__dot::after { animation: none; opacity: 0; }
   .link:hover, .link:active { transform: none; }

@@ -55,8 +55,8 @@ const SECCIONES = [
     items: [
       {
         id: "homescreen",
-        titulo: "Get the App",
-        subtitulo: "Add this hub to your home screen",
+        titulo: "Get SIGN HUB",
+        subtitulo: "Your home screen shortcut to everything",
         url: "profiles/homescreen-app.mobileconfig",
         icono: "appicon",
         tipo: "perfil",
@@ -64,8 +64,8 @@ const SECCIONES = [
         destacado: true,        // ← se dibuja con el estilo llamativo
         cinta: "Recommended",   // ← texto de la cintita de arriba
         nota:
-          "One tap and it lives on your home screen with its own icon, full screen — " +
-          "no need to remember the link. Tap → <b>Settings → Profile Downloaded → Install</b>. " +
+          "One tap and <b>SIGN HUB</b> lives on your home screen — its own neon icon, " +
+          "full screen, no link to remember. Tap → <b>Settings → Profile Downloaded → Install</b>. " +
           "Removable any time from <b>Settings → General → VPN & Device Management</b>.",
       },
       {
@@ -332,20 +332,33 @@ const ICONS = {
       </g>
     </svg>`,
 
-  /* Ícono de "app": cuadrado redondeado con una flecha entrando */
+  /* Igual al ícono que queda en la pantalla de inicio: terminal neón */
   appicon: `
     <svg class="logo" viewBox="0 0 240 240" aria-hidden="true">
       <defs>
-        <linearGradient id="apk" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#3affa0"/>
-          <stop offset="1" stop-color="#0b9f5c"/>
-        </linearGradient>
+        <radialGradient id="agl" cx="50%" cy="50%" r="52%">
+          <stop offset="0" stop-color="#28ff82" stop-opacity="0.35"/>
+          <stop offset="1" stop-color="#28ff82" stop-opacity="0"/>
+        </radialGradient>
       </defs>
-      <rect x="8" y="8" width="224" height="224" rx="54" fill="url(#apk)"/>
-      <path fill="none" stroke="#04160d" stroke-width="18" stroke-linecap="round"
-            stroke-linejoin="round" d="M120 58v78m0 0l-30-30m30 30l30-30"/>
-      <path fill="none" stroke="#04160d" stroke-width="18" stroke-linecap="round"
-            d="M68 158v14a12 12 0 0 0 12 12h80a12 12 0 0 0 12-12v-14"/>
+      <rect width="240" height="240" rx="52" fill="#020906"/>
+      <g stroke="#28ff82" stroke-opacity="0.13" stroke-width="1">
+        <path d="M40 0v240M80 0v240M120 0v240M160 0v240M200 0v240"/>
+        <path d="M0 40h240M0 80h240M0 120h240M0 160h240M0 200h240"/>
+      </g>
+      <rect width="240" height="240" rx="52" fill="url(#agl)"/>
+      <g fill="none" stroke="#28ff82" stroke-width="26" stroke-linecap="round"
+         stroke-linejoin="round" opacity="0.45">
+        <path d="M74 78l40 36-40 36"/>
+        <path d="M132 152h44"/>
+      </g>
+      <g fill="none" stroke="#dfffe9" stroke-width="15" stroke-linecap="round"
+         stroke-linejoin="round">
+        <path d="M74 78l40 36-40 36"/>
+        <path d="M132 152h44"/>
+      </g>
+      <rect x="4" y="4" width="232" height="232" rx="50"
+            fill="none" stroke="#28ff82" stroke-opacity="0.45" stroke-width="4"/>
     </svg>`,
 
   /* Escudo en círculo rojo — para el perfil DNS anti-revoke */

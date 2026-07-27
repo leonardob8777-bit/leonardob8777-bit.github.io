@@ -78,6 +78,30 @@ enum ModoApp {
       }
       setTimeout(avisar, 300);
 
+      // Le mandamos a la app los pasos de la GUÍA (tomados del array
+      // SECCIONES del sitio) para que arme el carrusel nativo. Así la
+      // guía tiene una sola fuente de verdad: si editás el sitio, el
+      // carrusel se actualiza solo en el próximo build.
+      function enviarGuia() {
+        try {
+          if (typeof SECCIONES === 'undefined') return false;
+          var g = SECCIONES.filter(function (s) { return s.id === 'guide'; })[0];
+          if (!g || !g.pasos) return false;
+          var mh = window.webkit && webkit.messageHandlers && webkit.messageHandlers.\(canal);
+          if (!mh) return false;
+          mh.postMessage({
+            tipo: 'guia',
+            titulo: g.titulo || 'Guide',
+            descripcion: g.descripcion || '',
+            pasos: g.pasos.map(function (p) {
+              return { titulo: p.titulo || '', detalle: p.detalle || '' };
+            })
+          });
+          return true;
+        } catch (e) { return false; }
+      }
+      if (!enviarGuia()) { setTimeout(enviarGuia, 500); }
+
       // La app llama esto al tocar una pestaña de la barra inferior.
       window.LBApp = {
         show: function (id) {

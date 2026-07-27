@@ -24,6 +24,7 @@ final class WebViewController: UIViewController {
     private var webView: WKWebView!
     private let barra = UITabBar()
     private let barraFondo = UIView()
+    private let guia = GuiaViewController()   // carrusel nativo de la guía
     private let refresco = UIRefreshControl()
     private lazy var vistaSinConexion = crearVistaSinConexion()
     private let cargando = UIActivityIndicatorView(style: .medium)
@@ -39,6 +40,7 @@ final class WebViewController: UIViewController {
 
         configurarWebView()
         configurarBarra()
+        configurarGuia()
         configurarCargando()
         cargarSitio()
     }
@@ -163,6 +165,44 @@ final class WebViewController: UIViewController {
         }
     }
 
+    // MARK: - Guía nativa (carrusel)
+
+    private func configurarGuia() {
+        addChild(guia)
+        guia.view.isHidden = true
+        guia.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(guia.view)
+        guia.didMove(toParent: self)
+
+        // El botón final del carrusel salta a la pestaña Apps.
+        guia.alPedirSeccion = { [weak self] id in
+            self?.cambiarSeccion(id: id, hapticar: false)
+        }
+
+        NSLayoutConstraint.activate([
+            guia.view.topAnchor.constraint(equalTo: view.topAnchor),
+            guia.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            guia.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            guia.view.bottomAnchor.constraint(equalTo: barra.topAnchor),
+        ])
+    }
+
+    /// Cambia de sección desde la barra. Si es "guide" muestra el
+    /// carrusel nativo por encima del sitio; para el resto, oculta el
+    /// carrusel y le pide al sitio que muestre esa sección.
+    private func cambiarSeccion(id: String, hapticar: Bool) {
+        if hapticar { toque.impactOccurred() }
+        seleccionarPestana(id: id)
+
+        let esGuia = (id == "guide")
+        guia.view.isHidden = !esGuia
+        if esGuia {
+            view.bringSubviewToFront(guia.view)
+        } else {
+            webView.evaluateJavaScript("window.LBApp && LBApp.show('\(id)')", completionHandler: nil)
+        }
+    }
+
     // MARK: - Indicador de carga
 
     private func configurarCargando() {
@@ -271,9 +311,7 @@ extension WebViewController: UITabBarDelegate {
 
     func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
         guard item.tag < ModoApp.pestanas.count else { return }
-        let id = ModoApp.pestanas[item.tag].id
-        toque.impactOccurred()
-        webView.evaluateJavaScript("window.LBApp && LBApp.show('\(id)')", completionHandler: nil)
+        cambiarSeccion(id: ModoApp.pestanas[item.tag].id, hapticar: true)
     }
 }
 
@@ -286,8 +324,28 @@ extension WebViewController: WKScriptMessageHandler {
         guard message.name == ModoApp.canal,
               let cuerpo = message.body as? [String: Any] else { return }
 
-        if cuerpo["tipo"] as? String == "seccion", let id = cuerpo["id"] as? String {
-            seleccionarPestana(id: id)
+        switch cuerpo["tipo"] as? String {
+        case "seccion":
+            // El sitio nos dice qué sección quedó activa → sincronizamos
+            // la pestaña. (No tocamos el sitio para no hacer un bucle.)
+            if let id = cuerpo["id"] as? String {
+                seleccionarPestana(id: id)
+                if id != "guide" { guia.view.isHidden = true }
+            }
+
+        case "guia":
+            // Llegaron los pasos de la guía desde el sitio → armamos el carrusel.
+            let titulo = cuerpo["titulo"] as? String ?? "Guide"
+            let descripcion = cuerpo["descripcion"] as? String ?? ""
+            let crudos = cuerpo["pasos"] as? [[String: Any]] ?? []
+            let pasos = crudos.map {
+                PasoGuia(titulo: $0["titulo"] as? String ?? "",
+                         detalle: $0["detalle"] as? String ?? "")
+            }
+            guia.cargar(titulo: titulo, descripcion: descripcion, pasos: pasos)
+
+        default:
+            break
         }
     }
 }

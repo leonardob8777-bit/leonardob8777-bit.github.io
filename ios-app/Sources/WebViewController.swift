@@ -2,27 +2,34 @@
 //  WebViewController.swift
 //  LB — iOS Hub
 //
-//  Pantalla única: un WKWebView a pantalla completa con el sitio.
+//  Pantalla principal: un WKWebView con el sitio + una BARRA DE PESTAÑAS
+//  NATIVA abajo. La barra reemplaza al menú de categorías del sitio, así
+//  la navegación se siente de app y no de página web.
 //
 //  ⚠️ LO MÁS IMPORTANTE DE ESTE ARCHIVO
-//  iOS NO permite instalar perfiles de configuración (.mobileconfig)
-//  desde dentro de una app: solo funcionan abiertos en Safari.
-//  Lo mismo pasa con los enlaces de instalación `itms-services://`.
-//  Por eso, cuando el usuario toca esos botones, los mandamos AFUERA
-//  con UIApplication.open en vez de intentar cargarlos acá dentro.
-//  Si no se hiciera esto, los botones principales del sitio no
-//  funcionarían dentro de la app.
+//  iOS NO permite instalar perfiles (.mobileconfig) ni enlaces
+//  `itms-services://` desde dentro de una app: solo funcionan en Safari.
+//  Por eso esos se mandan AFUERA (UIApplication.open). En cambio, los
+//  enlaces web comunes (KravaSign, MediaFire...) se abren en una hoja
+//  deslizable DENTRO de la app (SFSafariViewController), que se siente
+//  mucho más nativa que patear a Safari.
 //
 
 import UIKit
 import WebKit
+import SafariServices
 
 final class WebViewController: UIViewController {
 
     private var webView: WKWebView!
+    private let barra = UITabBar()
+    private let barraFondo = UIView()
     private let refresco = UIRefreshControl()
     private lazy var vistaSinConexion = crearVistaSinConexion()
     private let cargando = UIActivityIndicatorView(style: .medium)
+
+    /// Genera la vibración corta al tocar una pestaña.
+    private let toque = UIImpactFeedbackGenerator(style: .light)
 
     // MARK: - Ciclo de vida
 
@@ -31,6 +38,7 @@ final class WebViewController: UIViewController {
         view.backgroundColor = Config.colorFondo
 
         configurarWebView()
+        configurarBarra()
         configurarCargando()
         cargarSitio()
     }
@@ -38,15 +46,33 @@ final class WebViewController: UIViewController {
     /// Barra de estado en blanco (el sitio es oscuro).
     override var preferredStatusBarStyle: UIStatusBarStyle { .lightContent }
 
-    /// Deja que el contenido llegue hasta los bordes de la pantalla.
-    override var prefersHomeIndicatorAutoHidden: Bool { false }
-
-    // MARK: - Armado
+    // MARK: - Armado del WebView
 
     private func configurarWebView() {
+        let contenido = WKUserContentController()
+
+        // 1) Canal por el que el sitio le avisa a la app qué sección
+        //    está activa (para sincronizar la barra).
+        contenido.add(self, name: ModoApp.canal)
+
+        // 2) Inyectamos el CSS de "modo app" apenas empieza a cargar.
+        let cssJS = "(function(){var s=document.createElement('style');"
+            + "s.textContent=`\(ModoApp.css)`;"
+            + "(document.head||document.documentElement).appendChild(s);})();"
+        contenido.addUserScript(WKUserScript(
+            source: cssJS, injectionTime: .atDocumentStart, forMainFrameOnly: true))
+
+        // 3) Y el puente JS cuando el DOM ya está armado.
+        contenido.addUserScript(WKUserScript(
+            source: ModoApp.js, injectionTime: .atDocumentEnd, forMainFrameOnly: true))
+
         let config = WKWebViewConfiguration()
+        config.userContentController = contenido
         config.allowsInlineMediaPlayback = true
         config.defaultWebpagePreferences.allowsContentJavaScript = true
+        // Deja una marca en el User-Agent para que el sitio sepa que
+        // corre dentro de la app (además del `in-app` que inyectamos).
+        config.applicationNameForUserAgent = Config.userAgentApp
 
         webView = WKWebView(frame: .zero, configuration: config)
         webView.navigationDelegate = self
@@ -64,13 +90,80 @@ final class WebViewController: UIViewController {
 
         webView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(webView)
+    }
+
+    // MARK: - Barra de pestañas nativa
+
+    private func configurarBarra() {
+        // Fondo que tapa la zona del indicador de inicio con el color de
+        // la marca, para que no quede una franja clara abajo.
+        barraFondo.backgroundColor = Config.colorFondo
+        barraFondo.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(barraFondo)
+
+        barra.items = ModoApp.pestanas.enumerated().map { indice, p in
+            let item = UITabBarItem(
+                title: p.titulo,
+                image: UIImage(systemName: p.simbolo),
+                tag: indice)
+            return item
+        }
+        barra.selectedItem = barra.items?.first
+        barra.delegate = self
+        barra.translatesAutoresizingMaskIntoConstraints = false
+        aplicarEstiloBarra()
+        view.addSubview(barra)
+
         NSLayoutConstraint.activate([
             webView.topAnchor.constraint(equalTo: view.topAnchor),
-            webView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            webView.bottomAnchor.constraint(equalTo: barra.topAnchor),
+
+            barra.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            barra.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            barra.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+
+            barraFondo.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            barraFondo.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            barraFondo.topAnchor.constraint(equalTo: barra.topAnchor),
+            barraFondo.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
+
+    private func aplicarEstiloBarra() {
+        let gris = UIColor(white: 0.55, alpha: 1)
+        barra.tintColor = Config.colorMarca
+        barra.unselectedItemTintColor = gris
+        barra.isTranslucent = false
+        barra.barTintColor = Config.colorFondo
+
+        if #available(iOS 15.0, *) {
+            let ap = UITabBarAppearance()
+            ap.configureWithOpaqueBackground()
+            ap.backgroundColor = Config.colorFondo
+            for estilo in [ap.stackedLayoutAppearance, ap.inlineLayoutAppearance, ap.compactInlineLayoutAppearance] {
+                estilo.normal.iconColor = gris
+                estilo.normal.titleTextAttributes = [.foregroundColor: gris]
+                estilo.selected.iconColor = Config.colorMarca
+                estilo.selected.titleTextAttributes = [.foregroundColor: Config.colorMarca]
+            }
+            barra.standardAppearance = ap
+            barra.scrollEdgeAppearance = ap
+        }
+    }
+
+    /// Deja seleccionada la pestaña que corresponde a una sección, SIN
+    /// llamar al delegate (así no se dispara otro cambio en el sitio).
+    private func seleccionarPestana(id: String) {
+        guard let idx = ModoApp.pestanas.firstIndex(where: { $0.id == id }),
+              let items = barra.items, idx < items.count else { return }
+        if barra.selectedItem !== items[idx] {
+            barra.selectedItem = items[idx]
+        }
+    }
+
+    // MARK: - Indicador de carga
 
     private func configurarCargando() {
         cargando.color = Config.colorMarca
@@ -78,15 +171,13 @@ final class WebViewController: UIViewController {
         cargando.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(cargando)
         NSLayoutConstraint.activate([
-            cargando.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            cargando.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            cargando.centerXAnchor.constraint(equalTo: webView.centerXAnchor),
+            cargando.centerYAnchor.constraint(equalTo: webView.centerYAnchor),
         ])
         cargando.startAnimating()
     }
 
     private func cargarSitio() {
-        // `reloadIgnoringLocalCacheData` evita que quede pegada una
-        // versión vieja de la página en el caché de la app.
         var pedido = URLRequest(url: Config.sitio)
         pedido.cachePolicy = .reloadRevalidatingCacheData
         webView.load(pedido)
@@ -142,7 +233,7 @@ final class WebViewController: UIViewController {
 
         NSLayoutConstraint.activate([
             caja.topAnchor.constraint(equalTo: view.topAnchor),
-            caja.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            caja.bottomAnchor.constraint(equalTo: barra.topAnchor),
             caja.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             caja.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             pila.centerXAnchor.constraint(equalTo: caja.centerXAnchor),
@@ -157,9 +248,51 @@ final class WebViewController: UIViewController {
         vistaSinConexion.isHidden = !mostrar
         if mostrar { view.bringSubviewToFront(vistaSinConexion) }
     }
+
+    // MARK: - Abrir enlaces
+
+    /// Enlace web común → hoja deslizable DENTRO de la app.
+    private func abrirEnApp(_ url: URL) {
+        let vc = SFSafariViewController(url: url)
+        vc.preferredControlTintColor = Config.colorMarca
+        vc.dismissButtonStyle = .close
+        present(vc, animated: true)
+    }
+
+    /// Perfiles, itms-services y apps nativas → afuera (Safari / sistema).
+    private func abrirAfuera(_ url: URL) {
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
 }
 
-// MARK: - Navegación
+// MARK: - Barra de pestañas
+
+extension WebViewController: UITabBarDelegate {
+
+    func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+        guard item.tag < ModoApp.pestanas.count else { return }
+        let id = ModoApp.pestanas[item.tag].id
+        toque.impactOccurred()
+        webView.evaluateJavaScript("window.LBApp && LBApp.show('\(id)')", completionHandler: nil)
+    }
+}
+
+// MARK: - Mensajes del sitio → app
+
+extension WebViewController: WKScriptMessageHandler {
+
+    func userContentController(_ userContentController: WKUserContentController,
+                              didReceive message: WKScriptMessage) {
+        guard message.name == ModoApp.canal,
+              let cuerpo = message.body as? [String: Any] else { return }
+
+        if cuerpo["tipo"] as? String == "seccion", let id = cuerpo["id"] as? String {
+            seleccionarPestana(id: id)
+        }
+    }
+}
+
+// MARK: - Navegación del WebView
 
 extension WebViewController: WKNavigationDelegate {
 
@@ -184,20 +317,23 @@ extension WebViewController: WKNavigationDelegate {
         }
 
         // 2) Perfiles de configuración: SOLO se instalan desde Safari.
-        //    Es la razón por la que hay que sacarlos de la app.
         if url.pathExtension.lowercased() == "mobileconfig" {
             abrirAfuera(url)
             decisionHandler(.cancel)
             return
         }
 
-        // 3) Enlaces a otros sitios (Telegram, MediaFire, KravaSign…)
-        //    → afuera, así se abren en su app nativa si existe.
         let anfitrion = url.host ?? ""
         let esPropio = Config.dominiosPropios.contains { anfitrion.hasSuffix($0) }
 
+        // 3) Enlaces a otros sitios.
         if !esPropio && navigationAction.navigationType == .linkActivated {
-            abrirAfuera(url)
+            // Telegram y compañía → su app nativa. El resto → hoja in-app.
+            if Config.dominiosApp.contains(where: { anfitrion.hasSuffix($0) }) {
+                abrirAfuera(url)
+            } else {
+                abrirEnApp(url)
+            }
             decisionHandler(.cancel)
             return
         }
@@ -227,18 +363,12 @@ extension WebViewController: WKNavigationDelegate {
         if (error as NSError).code == NSURLErrorCancelled { return }
         mostrarSinConexion(true)
     }
-
-    private func abrirAfuera(_ url: URL) {
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
-    }
 }
 
-// MARK: - Ventanas emergentes
+// MARK: - Ventanas emergentes (target="_blank")
 
 extension WebViewController: WKUIDelegate {
 
-    /// Los enlaces con target="_blank" no abren ventana nueva dentro
-    /// de la app: los mandamos afuera.
     func webView(
         _ webView: WKWebView,
         createWebViewWith configuration: WKWebViewConfiguration,
@@ -246,7 +376,12 @@ extension WebViewController: WKUIDelegate {
         windowFeatures: WKWindowFeatures
     ) -> WKWebView? {
         if let url = navigationAction.request.url {
-            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            let esquema = (url.scheme ?? "").lowercased()
+            if esquema == "http" || esquema == "https" {
+                abrirEnApp(url)
+            } else {
+                abrirAfuera(url)
+            }
         }
         return nil
     }

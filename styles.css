@@ -382,6 +382,60 @@ body {
   color: var(--text-muted);
 }
 
+/* -----------------------------------------------------------------
+   PAUSA EN SEGUNDO PLANO
+   Cuando la pestaña no se ve, el JS pone `is-paused` y todas las
+   animaciones de fondo se detienen. Sirve para dos cosas: ahorra
+   batería y evita el "estallido" de animaciones acumuladas al volver.
+   ----------------------------------------------------------------- */
+body.is-paused .mesh::before,
+body.is-paused .mesh::after,
+body.is-paused .aurora::after,
+body.is-paused .scan,
+body.is-paused .bits b,
+body.is-paused .avatar-wrap,
+body.is-paused .avatar-wrap::before,
+body.is-paused .name,
+body.is-paused .link--featured,
+body.is-paused .link--featured .link__shine,
+body.is-paused .link--featured .link__arrow,
+body.is-paused .badge__dot,
+body.is-paused .badge--ultra::after,
+body.is-paused .status__dot::after { animation-play-state: paused !important; }
+
+/* -----------------------------------------------------------------
+   MODO ALTO CONTRASTE  (opción nueva del panel)
+   El fondo animado es lindo pero al sol, en un celular, cuesta leer.
+   Este modo apaga el ruido visual y sube la opacidad de las tarjetas
+   sin cambiar el diseño: mismo sitio, mucho más legible.
+   ----------------------------------------------------------------- */
+body.hi-contrast .mesh::before { opacity: 0.35; }
+body.hi-contrast .mesh::after  { opacity: 0.15; }
+body.hi-contrast .bits         { opacity: 0.3; }
+body.hi-contrast .scan         { display: none; }
+
+body.hi-contrast .aurora::after {
+  background:
+    radial-gradient(60% 42% at 50% 0%, var(--mesh-glow) 0%, transparent 70%),
+    radial-gradient(120% 85% at 50% 45%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.94) 100%);
+}
+
+body.hi-contrast {
+  --text-muted: #d7dce9;              /* texto secundario más claro */
+  --glass-bg: rgba(16, 22, 19, 0.82); /* tarjetas casi opacas */
+  --glass-bg-hover: rgba(22, 30, 26, 0.9);
+}
+body.hi-contrast .link,
+body.hi-contrast .step,
+body.hi-contrast .catnav,
+body.hi-contrast .status,
+body.hi-contrast .viewers {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+body.hi-contrast .link__note,
+body.hi-contrast .step__detail { color: #cdd4e3; }
+body.hi-contrast .footer { opacity: 1; }
+
 /* Modo "efectos apagados": el fondo queda quieto y limpio */
 body.no-fx .bits,
 body.no-fx .scan,

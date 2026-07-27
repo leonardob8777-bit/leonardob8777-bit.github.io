@@ -63,7 +63,7 @@
 
   <!-- El ?v= evita que el navegador use una versión vieja en caché.
        Subí el número cada vez que edites styles.css. -->
-  <link rel="stylesheet" href="styles.css?v=40" />
+  <link rel="stylesheet" href="styles.css?v=42" />
 
   <!-- Datos estructurados: ayuda a Google a entender de quién es -->
   <script type="application/ld+json">
@@ -125,6 +125,10 @@
     <p class="panel__title">Display</p>
     <button class="toggle" id="fx-toggle" type="button" aria-pressed="true">
       <span>Background effects</span>
+      <span class="toggle__switch" aria-hidden="true"></span>
+    </button>
+    <button class="toggle" id="contrast-toggle" type="button" aria-pressed="false">
+      <span>High contrast</span>
       <span class="toggle__switch" aria-hidden="true"></span>
     </button>
     <button class="toggle" id="share-btn" type="button" hidden>
@@ -195,6 +199,6 @@
     </footer>
   </div>
 
-  <script src="script.js?v=41" defer></script>
+  <script src="script.js?v=42" defer></script>
 </body>
 </html>

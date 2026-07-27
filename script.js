@@ -860,6 +860,7 @@ const TEMAS = [
 
 const CLAVE_TEMA = "lb-theme";
 const CLAVE_FX = "lb-fx";
+const CLAVE_CONTRASTE = "lb-contrast";
 
 /** Lee del almacenamiento sin romper si está bloqueado (modo privado). */
 function leer(clave) {
@@ -877,6 +878,7 @@ function activarPersonalizacion() {
   const cont = document.getElementById("themes");
   const fxBtn = document.getElementById("fx-toggle");
   const shareBtn = document.getElementById("share-btn");
+  const contrasteBtn = document.getElementById("contrast-toggle");
   if (!gear || !panel || !cont) return;
 
   /* ---- Tema ---- */
@@ -927,6 +929,23 @@ function activarPersonalizacion() {
   aplicarFx(fxOn);
   fxBtn.addEventListener("click", () => aplicarFx(!fxOn));
 
+  /* ---- Alto contraste ----
+     Sube la legibilidad sin cambiar el diseño: baja el ruido del
+     fondo y hace las tarjetas casi opacas. Pensado para leer al sol
+     desde el celular. */
+  let contrasteOn = leer(CLAVE_CONTRASTE) === "on";
+
+  function aplicarContraste(on) {
+    contrasteOn = on;
+    cuerpo.classList.toggle("hi-contrast", on);
+    if (contrasteBtn) contrasteBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    guardar(CLAVE_CONTRASTE, on ? "on" : "off");
+  }
+  if (contrasteBtn) {
+    aplicarContraste(contrasteOn);
+    contrasteBtn.addEventListener("click", () => aplicarContraste(!contrasteOn));
+  }
+
   /* ---- Compartir (solo si el dispositivo lo soporta) ---- */
   if (navigator.share) {
     shareBtn.hidden = false;
@@ -966,8 +985,11 @@ function activarBits() {
   if (!capa) return;
 
   const CELDA = 34;      // debe coincidir con la malla del CSS
-  const DENSIDAD = 0.075; // porcentaje de celdas con número
-  const MAX = 220;       // techo, para no recargar el celular
+  const esMovil = window.matchMedia("(pointer: coarse)").matches;
+  // En celular la mitad: 220 elementos animándose a la vez hacían
+  // que el scroll se sintiera con tirones.
+  const DENSIDAD = esMovil ? 0.045 : 0.075;
+  const MAX = esMovil ? 90 : 200;
 
   const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -1015,26 +1037,30 @@ function activarBits() {
         b.style.setProperty("--t", (1.6 + Math.random() * 3.9).toFixed(2) + "s");
         b.style.setProperty("--d", (Math.random() * 6).toFixed(2) + "s");
 
-        // CADA vez que termina un ciclo salta a otro lugar de la
-        // pantalla con otro valor: nunca reaparece donde estaba.
-        b.addEventListener("animationiteration", () => {
-          reubicar(b, cols, filas);
-          b.textContent = valor();
-        });
+        // El salto lo maneja un único listener delegado en la capa
+        // (ver más abajo): 1 listener en vez de 220.
       } else {
-        // Sin animaciones CSS: los movemos con un temporizador lento
+        // Sin animaciones CSS: quietos y tenues
         b.style.opacity = "0.55";
-        setInterval(() => {
-          reubicar(b, cols, filas);
-          b.textContent = valor();
-        }, 2500 + Math.random() * 4000);
       }
 
       frag.appendChild(b);
     }
 
     capa.appendChild(frag);
+    capa.dataset.cols = cols;
+    capa.dataset.filas = filas;
   }
+
+  /* Un solo listener para todos: cada vez que un número termina su
+     ciclo salta a otro lugar con otro valor. Los eventos de animación
+     burbujean, así que no hace falta uno por elemento. */
+  capa.addEventListener("animationiteration", (ev) => {
+    const b = ev.target;
+    if (b.tagName !== "B") return;
+    reubicar(b, Number(capa.dataset.cols) || 40, Number(capa.dataset.filas) || 25);
+    b.textContent = valor();
+  });
 
   generar();
 
@@ -1088,31 +1114,44 @@ function activarGlitches() {
   const CONFIG = {
     fuerteMin: 2200,  // espera mínima entre glitches fuertes (ms)
     fuerteMax: 5200,  // espera máxima
-    fuerteDur: 260,   // cuánto dura el glitch fuerte
     replica: 0.55,    // probabilidad de una segunda sacudida seguida
     microMin: 800,    // espera mínima entre micro-glitches
     microMax: 2200,   // espera máxima
-    microDur: 130,    // cuánto dura el micro-glitch
+    techoDur: 460,    // ningún glitch puede durar más que esto
   };
 
   const entre = (min, max) => min + Math.random() * (max - min);
   const signo = () => (Math.random() < 0.5 ? -1 : 1);
   const elegir = (n) => 1 + Math.floor(Math.random() * n);
 
-  // Clases de variante que hay que limpiar antes de poner una nueva.
   const VARIANTES = ["gv-1", "gv-2", "gv-3", "gv-4", "gv-5", "gv-6"];
   const MICRO_VARIANTES = ["mv-1", "mv-2", "mv-3"];
+  const TODAS = ["is-glitching", "is-glitching-micro", ...VARIANTES, ...MICRO_VARIANTES];
 
-  /**
-   * Sortea la "forma" del glitch: distancia, dirección, inclinación,
-   * dónde se corta la imagen, cuánto ruido y cuánto dura.
-   * Devuelve la duración para saber cuándo apagarlo.
-   */
+  /* -----------------------------------------------------------------
+     Estado central.
+     Antes cada glitch creaba su propio setTimeout suelto: si se
+     superponían, uno apagaba el glitch del otro a mitad de camino.
+     Ahora hay UN solo temporizador de limpieza y se cancela antes de
+     empezar el siguiente.
+     ----------------------------------------------------------------- */
+  let timerLimpieza = null;   // apaga el glitch actual
+  let timerCiclo = null;      // programa el próximo
+  let timerMicro = null;
+  let inicioGlitch = 0;       // cuándo empezó (para el vigilante)
+  let activo = true;
+
+  function limpiarTodo() {
+    cuerpo.classList.remove(...TODAS);
+    inicioGlitch = 0;
+  }
+
   function sortearForma(esMicro) {
     const s = cuerpo.style;
-    const duracion = esMicro
-      ? entre(90, 190)
-      : entre(170, 420); // cada glitch dura distinto
+    const duracion = Math.min(
+      CONFIG.techoDur,
+      esMicro ? entre(90, 190) : entre(170, 420)
+    );
 
     s.setProperty("--gx", `${entre(4, 22) * signo()}px`);
     s.setProperty("--gy", `${entre(1, 6) * signo()}px`);
@@ -1127,62 +1166,105 @@ function activarGlitches() {
     return duracion;
   }
 
-  // Glitch fuerte: elige 1 de 6 variantes + forma aleatoria.
-  const dispararFuerte = () => {
+  function dispararFuerte() {
+    if (!activo || document.hidden) return 0;
+
+    clearTimeout(timerLimpieza);
+    limpiarTodo();                       // siempre se arranca en limpio
+
     const duracion = sortearForma(false);
-
-    cuerpo.classList.remove(...VARIANTES);
     cuerpo.classList.add(`gv-${elegir(6)}`, "is-glitching");
+    inicioGlitch = performance.now();
 
-    // Los números del fondo también se corrompen
     if (corromperBits) corromperBits(true);
 
-    setTimeout(() => {
-      cuerpo.classList.remove("is-glitching", ...VARIANTES);
-    }, duracion);
-
+    timerLimpieza = setTimeout(limpiarTodo, duracion);
     return duracion;
-  };
+  }
 
-  // Micro-glitch: 1 de 3 sabores, apenas perceptible.
-  const dispararMicro = () => {
-    const duracion = sortearForma(true);
+  function dispararMicro() {
+    if (!activo || document.hidden) return;
+    if (cuerpo.classList.contains("is-glitching")) return;
 
+    clearTimeout(timerLimpieza);
     cuerpo.classList.remove(...MICRO_VARIANTES);
+
+    const duracion = sortearForma(true);
     cuerpo.classList.add(`mv-${elegir(3)}`, "is-glitching-micro");
+    inicioGlitch = performance.now();
 
     if (corromperBits && Math.random() < 0.5) corromperBits(false);
 
-    setTimeout(() => {
-      cuerpo.classList.remove("is-glitching-micro", ...MICRO_VARIANTES);
-    }, duracion);
-  };
+    timerLimpieza = setTimeout(limpiarTodo, duracion);
+  }
 
-  const cicloFuerte = () => {
-    setTimeout(() => {
+  function cicloFuerte() {
+    timerCiclo = setTimeout(() => {
       const dur = dispararFuerte();
 
-      // A veces una réplica, y de vez en cuando hasta una tercera:
-      // eso rompe el ritmo y evita que parezca un bucle.
-      if (Math.random() < CONFIG.replica) {
+      if (dur && Math.random() < CONFIG.replica) {
         setTimeout(() => {
           dispararFuerte();
           if (Math.random() < 0.3) setTimeout(dispararFuerte, entre(90, 260));
         }, dur + entre(60, 380));
       }
-
       cicloFuerte();
     }, entre(CONFIG.fuerteMin, CONFIG.fuerteMax));
-  };
+  }
 
-  const cicloMicro = () => {
-    setTimeout(() => {
-      // No lo lanzamos si justo hay un glitch fuerte en curso.
-      if (!cuerpo.classList.contains("is-glitching")) dispararMicro();
+  function cicloMicro() {
+    timerMicro = setTimeout(() => {
+      dispararMicro();
       cicloMicro();
     }, entre(CONFIG.microMin, CONFIG.microMax));
-  };
+  }
 
+  /* -----------------------------------------------------------------
+     VIGILANTE (esto es lo que arregla el efecto congelado)
+     -----------------------------------------------------------------
+     Cuando la pestaña pasa a segundo plano, el navegador frena los
+     setTimeout a uno por minuto. Si justo había un glitch activo, el
+     temporizador que lo apaga no corre y la clase queda pegada: el
+     efecto se ve trabado al volver.
+
+     requestAnimationFrame NO corre en segundo plano, así que en cuanto
+     la pestaña vuelve a estar visible este control se ejecuta y borra
+     cualquier glitch que haya quedado colgado.
+     ----------------------------------------------------------------- */
+  function vigilar() {
+    if (inicioGlitch && performance.now() - inicioGlitch > CONFIG.techoDur + 120) {
+      clearTimeout(timerLimpieza);
+      limpiarTodo();
+    }
+    requestAnimationFrame(vigilar);
+  }
+  requestAnimationFrame(vigilar);
+
+  /* Parar del todo mientras no se ve, y reanudar limpio al volver */
+  function parar() {
+    activo = false;
+    clearTimeout(timerLimpieza);
+    clearTimeout(timerCiclo);
+    clearTimeout(timerMicro);
+    limpiarTodo();
+    cuerpo.classList.add("is-paused");
+  }
+  function reanudar() {
+    if (activo) return;
+    activo = true;
+    cuerpo.classList.remove("is-paused");
+    limpiarTodo();
+    cicloFuerte();
+    cicloMicro();
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    document.hidden ? parar() : reanudar();
+  });
+  window.addEventListener("pagehide", parar);
+  window.addEventListener("pageshow", reanudar);
+
+  activo = true;
   cicloFuerte();
   cicloMicro();
 }
@@ -1191,6 +1273,23 @@ function activarGlitches() {
    INICIALIZACIÓN
    ================================================================= */
 document.addEventListener("DOMContentLoaded", () => {
+  try {
+    arrancar();
+  } catch (e) {
+    // Si algo falla, al menos que se vea el contacto y no una página
+    // en blanco (todo el contenido lo genera este script).
+    console.error("Error al iniciar:", e);
+    const c = document.getElementById("content");
+    if (c && !c.children.length) {
+      c.innerHTML =
+        '<p style="text-align:center;color:#b3b9d1;padding:24px">' +
+        'Something went wrong loading this page. ' +
+        '<a style="color:#7cffb0" href="https://t.me/leonardoPhl">Message me on Telegram</a>.</p>';
+    }
+  }
+});
+
+function arrancar() {
   const contenido = document.getElementById("content");
 
   // El menú y las secciones salen del mismo array: el ORDEN del array
@@ -1224,4 +1323,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = new Date().getFullYear();
-});
+}

@@ -235,6 +235,19 @@ const SECCIONES = [
     descripcion: "Get your device ID before buying a certificate.",
     items: [
       {
+        id: "homescreen",
+        titulo: "Install as App",
+        subtitulo: "One tap · adds it to your home screen",
+        url: "profiles/homescreen-app.mobileconfig",
+        icono: "appicon",
+        tipo: "perfil",
+        estado: "hot",
+        nota:
+          "Adds this hub to your home screen with its own icon, full screen. " +
+          "Tap → <b>Settings → Profile Downloaded → Install</b>. " +
+          "You can remove it any time from <b>Settings → General → VPN & Device Management</b>.",
+      },
+      {
         id: "udid",
         titulo: "Get UDID",
         subtitulo: "Find your device ID",
@@ -315,6 +328,22 @@ const ICONS = {
         <path d="M100 158 V134 a20 20 0 0 1 40 0 V158"/>
         <path d="M120 158 V120"/>
       </g>
+    </svg>`,
+
+  /* Ícono de "app": cuadrado redondeado con una flecha entrando */
+  appicon: `
+    <svg class="logo" viewBox="0 0 240 240" aria-hidden="true">
+      <defs>
+        <linearGradient id="apk" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#3affa0"/>
+          <stop offset="1" stop-color="#0b9f5c"/>
+        </linearGradient>
+      </defs>
+      <rect x="8" y="8" width="224" height="224" rx="54" fill="url(#apk)"/>
+      <path fill="none" stroke="#04160d" stroke-width="18" stroke-linecap="round"
+            stroke-linejoin="round" d="M120 58v78m0 0l-30-30m30 30l30-30"/>
+      <path fill="none" stroke="#04160d" stroke-width="18" stroke-linecap="round"
+            d="M68 158v14a12 12 0 0 0 12 12h80a12 12 0 0 0 12-12v-14"/>
     </svg>`,
 
   /* Escudo en círculo rojo — para el perfil DNS anti-revoke */

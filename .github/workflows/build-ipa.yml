@@ -44,12 +44,19 @@ jobs:
         working-directory: ios-app
         run: xcodegen generate
 
-      - name: Ver versión de Xcode y esquemas del proyecto
+      # Paso solo informativo: NO debe cortar la compilación si falla.
+      - name: Ver qué generó XcodeGen
         working-directory: ios-app
+        continue-on-error: true
         run: |
-          xcodebuild -version
+          echo "--- contenido de ios-app ---"
+          ls -la
+          echo "--- proyectos encontrados ---"
+          ls -d *.xcodeproj 2>/dev/null || echo "NO hay ningún .xcodeproj"
+          echo "--- versión de Xcode ---"
+          xcodebuild -version || true
           echo "--- esquemas y targets ---"
-          xcodebuild -list -project LB.xcodeproj
+          xcodebuild -list -project LB.xcodeproj || true
 
       - name: Compilar (sin firmar)
         working-directory: ios-app

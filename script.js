@@ -55,7 +55,7 @@ const SECCIONES = [
     items: [
       {
         id: "homescreen",
-        titulo: "Get SIGN HUB",
+        titulo: "Get the LB App",
         subtitulo: "Your home screen shortcut to everything",
         url: "profiles/homescreen-app.mobileconfig",
         icono: "appicon",
@@ -64,7 +64,7 @@ const SECCIONES = [
         destacado: true,        // ← se dibuja con el estilo llamativo
         cinta: "Recommended",   // ← texto de la cintita de arriba
         nota:
-          "One tap and <b>SIGN HUB</b> lives on your home screen — its own neon icon, " +
+          "One tap and <b>LB</b> lives on your home screen — its own icon, " +
           "full screen, no link to remember. Tap → <b>Settings → Profile Downloaded → Install</b>. " +
           "Removable any time from <b>Settings → General → VPN & Device Management</b>.",
       },
@@ -332,34 +332,9 @@ const ICONS = {
       </g>
     </svg>`,
 
-  /* Igual al ícono que queda en la pantalla de inicio: terminal neón */
-  appicon: `
-    <svg class="logo" viewBox="0 0 240 240" aria-hidden="true">
-      <defs>
-        <radialGradient id="agl" cx="50%" cy="50%" r="52%">
-          <stop offset="0" stop-color="#28ff82" stop-opacity="0.35"/>
-          <stop offset="1" stop-color="#28ff82" stop-opacity="0"/>
-        </radialGradient>
-      </defs>
-      <rect width="240" height="240" rx="52" fill="#020906"/>
-      <g stroke="#28ff82" stroke-opacity="0.13" stroke-width="1">
-        <path d="M40 0v240M80 0v240M120 0v240M160 0v240M200 0v240"/>
-        <path d="M0 40h240M0 80h240M0 120h240M0 160h240M0 200h240"/>
-      </g>
-      <rect width="240" height="240" rx="52" fill="url(#agl)"/>
-      <g fill="none" stroke="#28ff82" stroke-width="26" stroke-linecap="round"
-         stroke-linejoin="round" opacity="0.45">
-        <path d="M74 78l40 36-40 36"/>
-        <path d="M132 152h44"/>
-      </g>
-      <g fill="none" stroke="#dfffe9" stroke-width="15" stroke-linecap="round"
-         stroke-linejoin="round">
-        <path d="M74 78l40 36-40 36"/>
-        <path d="M132 152h44"/>
-      </g>
-      <rect x="4" y="4" width="232" height="232" rx="50"
-            fill="none" stroke="#28ff82" stroke-opacity="0.45" stroke-width="4"/>
-    </svg>`,
+  /* El mismo logo que queda en la pantalla de inicio (cuadrado
+     redondeado, como un ícono de app real) */
+  appicon: `<img class="logo logo--squircle" src="assets/lb-icon.png" alt="" loading="lazy" />`,
 
   /* Escudo en círculo rojo — para el perfil DNS anti-revoke */
   shield: `

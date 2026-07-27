@@ -10,9 +10,9 @@
   "theme_color": "#030806",
   "icons": [
     {
-      "src": "assets/avatar.jpg",
-      "sizes": "400x400",
-      "type": "image/jpeg",
+      "src": "assets/lb-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any"
     },
     {

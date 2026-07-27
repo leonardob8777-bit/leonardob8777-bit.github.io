@@ -45,25 +45,41 @@ jobs:
         run: xcodegen generate
 
       # Paso solo informativo: NO debe cortar la compilación si falla.
+      # Vuelca lo que XcodeGen generó tanto al Summary como a anotaciones
+      # (::warning::), que se pueden leer por la API pública sin login.
       - name: Ver qué generó XcodeGen
         working-directory: ios-app
         continue-on-error: true
         run: |
-          echo "--- contenido de ios-app ---"
-          ls -la
-          echo "--- proyectos encontrados ---"
-          ls -d *.xcodeproj 2>/dev/null || echo "NO hay ningún .xcodeproj"
-          echo "--- versión de Xcode ---"
-          xcodebuild -version || true
-          echo "--- esquemas y targets ---"
-          xcodebuild -list -project LB.xcodeproj || true
+          {
+            echo "## 🔎 Diagnóstico XcodeGen"
+            echo '### Contenido de ios-app'
+            echo '```'; ls -la; echo '```'
+            echo '### Proyectos .xcodeproj encontrados'
+            echo '```'; ls -d *.xcodeproj 2>/dev/null || echo "NINGUNO"; echo '```'
+            echo '### Versiones'
+            echo '```'; xcodebuild -version 2>&1 || true; xcodegen --version 2>&1 || true; echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          PROJ=$(ls -d *.xcodeproj 2>/dev/null | tr '\n' ' ')
+          echo "::warning::[diag] xcodeproj: ${PROJ:-NINGUNO}"
+          echo "::warning::[diag] ios-app: $(ls -1 | tr '\n' ' ')"
+          echo "::warning::[diag] $(xcodebuild -version 2>&1 | tr '\n' ' ')"
+          echo "::warning::[diag] xcodegen $(xcodegen --version 2>&1 | tr '\n' ' ')"
 
       - name: Compilar (sin firmar)
         working-directory: ios-app
         run: |
           set -o pipefail
+          # Auto-detectar el nombre real del proyecto en vez de asumirlo.
+          PROJ=$(ls -d *.xcodeproj 2>/dev/null | head -1)
+          if [ -z "$PROJ" ]; then
+            echo "::error::XcodeGen no generó ningún .xcodeproj en ios-app"
+            exit 1
+          fi
+          echo "Compilando proyecto: $PROJ"
           xcodebuild \
-            -project LB.xcodeproj \
+            -project "$PROJ" \
             -scheme LB \
             -configuration Release \
             -sdk iphoneos \

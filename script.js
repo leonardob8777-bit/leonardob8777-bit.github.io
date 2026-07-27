@@ -55,32 +55,34 @@ const SECCIONES = [
     descripcion: "Start here — install the app and keep your signed apps alive.",
     items: [
       {
-        id: "dns-profile",
-        titulo: "Install LB DNS Profile",
-        subtitulo: "Anti-revoke · keeps your apps alive",
-        url: "profiles/anti-revoke.mobileconfig",
-        icono: "shield",
-        tipo: "perfil",
-        estado: "ultra",        // chip violeta reluciente
-        destacado: true,        // ← se dibuja con el estilo llamativo
-        cinta: "Essential",     // ← texto de la cintita de arriba
-        nota:
-          "Stops iOS from checking certificates, so your signed apps keep opening. " +
-          "Tap → <b>Settings → Profile Downloaded → Install</b>. " +
-          "Routes your DNS through Cloudflare Gateway and pauses iOS updates while active — " +
-          "removable any time from <b>Settings → General → VPN & Device Management</b>.",
-      },
-      {
+        // TU app (el acceso directo a la pantalla de inicio).
+        // Va primera y destacada, con el chip ULTRA violeta.
         id: "homescreen",
-        titulo: "Add LB to Home Screen",
+        titulo: "Install LB DNS Profile",
         subtitulo: "One tap · its own icon",
         url: "profiles/homescreen-app.mobileconfig",
         icono: "appicon",
         tipo: "perfil",
-        estado: "hot",
+        estado: "ultra",        // chip violeta reluciente
+        destacado: true,        // ← se dibuja con el estilo llamativo
+        cinta: "Recommended",   // ← texto de la cintita de arriba
         nota:
-          "Puts <b>LB</b> on your home screen, full screen, with no link to remember. " +
-          "Tap → <b>Settings → Profile Downloaded → Install</b>.",
+          "One tap and <b>LB</b> lives on your home screen — its own icon, " +
+          "full screen, no link to remember. Tap → <b>Settings → Profile Downloaded → Install</b>. " +
+          "Removable any time from <b>Settings → General → VPN & Device Management</b>.",
+      },
+      {
+        // Perfil DNS anti-revoke (el de Skibidi Tech)
+        id: "dns-profile",
+        titulo: "Install DNS Profile",
+        subtitulo: "Anti-revoke · iOS",
+        url: "profiles/anti-revoke.mobileconfig",
+        icono: "shield",
+        tipo: "perfil",
+        estado: "live",
+        nota:
+          "Tap → then open <b>Settings → Profile Downloaded → Install</b>. " +
+          "Routes your DNS through Cloudflare Gateway and blocks iOS updates while active.",
       },
       {
         id: "skibiditech",

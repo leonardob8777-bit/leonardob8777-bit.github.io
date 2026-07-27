@@ -263,3 +263,23 @@ Desde la ruedita también se pueden **apagar los efectos de fondo**
 Cuando están apagados, el JS ni siquiera los genera.
 
 El sitio también respeta `prefers-reduced-motion` del sistema.
+
+---
+
+## i) 📱 App nativa para iPhone
+
+En la carpeta `ios-app/` está el proyecto de una app que muestra el
+sitio a pantalla completa. Se compila **en GitHub, sin necesidad de
+tener una Mac**, y se firma después con KSign.
+
+Los pasos están en [`ios-app/README.md`](ios-app/README.md). En corto:
+
+1. Push a GitHub.
+2. Pestaña **Actions** → **Build iOS app (.ipa)** → **Run workflow**.
+3. Descargar el `.ipa` desde **Artifacts**.
+4. Firmarlo con KSign en el iPhone.
+
+> El `.ipa` sale **sin firmar** a propósito: firmarlo requiere un
+> certificado, y eso se hace en el teléfono con el mismo proceso que
+> explica la guía del sitio.
+

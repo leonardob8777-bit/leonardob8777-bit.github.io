@@ -1,0 +1,85 @@
+# =====================================================================
+# COMPILA LA APP Y GENERA EL .ipa  (sin necesidad de tener una Mac)
+# ---------------------------------------------------------------------
+# GitHub presta máquinas con macOS y Xcode ya instalado. Este flujo:
+#   1. genera el proyecto de Xcode a partir de ios-app/project.yml
+#   2. compila la app SIN firmar
+#   3. la empaqueta como .ipa
+#   4. la deja lista para descargar
+#
+# El .ipa sale sin firmar a propósito: se firma después con KSign en el
+# iPhone, usando tu certificado — el mismo proceso de la guía del sitio.
+#
+# CÓMO EJECUTARLO:
+#   Pestaña "Actions" del repo → "Build iOS app (.ipa)" → "Run workflow"
+#   Cuando termine, el .ipa aparece abajo en "Artifacts".
+# =====================================================================
+
+name: Build iOS app (.ipa)
+
+on:
+  # Botón manual en la pestaña Actions
+  workflow_dispatch:
+
+  # Y automático cuando se toca algo de la app
+  push:
+    paths:
+      - "ios-app/**"
+      - ".github/workflows/build-ipa.yml"
+
+jobs:
+  build:
+    name: Compilar IPA sin firmar
+    runs-on: macos-14
+    timeout-minutes: 25
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Instalar XcodeGen
+        run: brew install xcodegen
+
+      - name: Generar el proyecto de Xcode
+        working-directory: ios-app
+        run: xcodegen generate
+
+      - name: Compilar (sin firmar)
+        working-directory: ios-app
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project LB.xcodeproj \
+            -scheme LB \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Empaquetar como .ipa
+        working-directory: ios-app
+        run: |
+          APP="build/Build/Products/Release-iphoneos/LB.app"
+          if [ ! -d "$APP" ]; then
+            echo "No se generó la app en $APP"
+            ls -R build/Build/Products || true
+            exit 1
+          fi
+          rm -rf Payload
+          mkdir -p Payload
+          cp -R "$APP" Payload/
+          zip -qry LB-unsigned.ipa Payload
+          echo "IPA listo:"
+          ls -lh LB-unsigned.ipa
+
+      - name: Publicar el .ipa para descargar
+        uses: actions/upload-artifact@v4
+        with:
+          name: LB-unsigned-ipa
+          path: ios-app/LB-unsigned.ipa
+          retention-days: 30
+          if-no-files-found: error

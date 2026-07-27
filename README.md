@@ -70,8 +70,8 @@ Buscá la categoría y copiá un bloque `{ ... }`:
 | `descarga`| fuerza la descarga del archivo |
 | `interno` | salta a otra categoría (ej. `url: "#guide"`) |
 
-**Estados** (el chip de color): `online` verde · `offline` rojo ·
-`soon` ámbar · `live` rojo con latido.
+**Estados** (el chip de color): `online` verde · `hot` naranja ·
+`offline` rojo · `soon` ámbar · `live` rojo con latido.
 
 ### Categoría nueva
 
@@ -119,18 +119,19 @@ itms-services://?action=download-manifest&url=https://leonardob8777-bit.github.i
 Todo sale del bloque `:root` al principio de `styles.css`:
 
 ```css
---bg: #05060a;                          /* fondo base */
---mesh:      rgba(255, 45, 45, 0.16);   /* rejilla principal */
---mesh-fine: rgba(255, 45, 45, 0.055);  /* rejilla micro */
---mesh-glow: rgba(220, 30, 30, 0.22);   /* resplandor */
+--bg: #030806;                          /* fondo base */
+--mesh:      rgba(40, 255, 130, 0.15);  /* rejilla principal */
+--mesh-fine: rgba(40, 255, 130, 0.05);  /* rejilla micro */
+--mesh-glow: rgba(20, 210, 110, 0.18);  /* resplandor */
+--bit:       rgba(80, 255, 150, 0.85);  /* los 1 y 0 */
 --text:       #f6f7fc;
 --text-muted: #b3b9d1;
 --glass-bg:   rgba(255,255,255,0.055);  /* vidrio de las tarjetas */
 --glass-blur: 22px;
 ```
 
-Para pasar la malla a **verde matrix**: cambiá los tres `--mesh*` a
-tonos verdes (ej. `rgba(45, 255, 130, 0.16)`).
+Eso cambia el tema **por defecto**. Si querés que el visitante pueda
+elegir entre varios, mirá la sección (f) Temas de color.
 
 ---
 

@@ -279,12 +279,28 @@ const SECCIONES = [
     id: "contact",
     nav: "Contact",
     titulo: "Contact",
-    descripcion: "Questions, certificates or custom requests.",
+    descripcion: "Join the channel for updates, or message me directly.",
     items: [
+      {
+        // Canal de soporte: primero y destacado
+        id: "support-channel",
+        titulo: "Support Channel",
+        subtitulo: "Updates, help & new releases",
+        url: "https://t.me/LBsignapp",
+        icono: "telegram",
+        tipo: "externo",
+        estado: "hot",
+        destacado: true,        // estilo llamativo
+        cinta: "Recommended",
+        nota:
+          "The fastest way to stay updated: new IPAs, certificate alerts and " +
+          "fixes get posted here first. Join before asking — most questions are " +
+          "already answered in the channel.",
+      },
       {
         id: "telegram",
         titulo: "Telegram",
-        subtitulo: "Stuck on a step? Text me",
+        subtitulo: "Private message · stuck on a step?",
         url: "https://t.me/leonardoPhl",
         icono: "telegram",
         tipo: "externo",

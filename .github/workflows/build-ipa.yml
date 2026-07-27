@@ -44,6 +44,13 @@ jobs:
         working-directory: ios-app
         run: xcodegen generate
 
+      - name: Ver versión de Xcode y esquemas del proyecto
+        working-directory: ios-app
+        run: |
+          xcodebuild -version
+          echo "--- esquemas y targets ---"
+          xcodebuild -list -project LB.xcodeproj
+
       - name: Compilar (sin firmar)
         working-directory: ios-app
         run: |
@@ -58,7 +65,26 @@ jobs:
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            build
+            build 2>&1 | tee compilacion.log
+
+      # Si falla, dejamos los errores bien a la vista al final del
+      # registro, en vez de tener que bucear entre miles de líneas.
+      - name: Mostrar los errores
+        if: failure()
+        working-directory: ios-app
+        run: |
+          echo "============= ERRORES ENCONTRADOS ============="
+          grep -E "error:|fatal error:|The following build commands failed" compilacion.log | head -40 || true
+          echo "============= ÚLTIMAS 60 LÍNEAS =============="
+          tail -60 compilacion.log || true
+
+      - name: Guardar el registro completo
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: registro-de-compilacion
+          path: ios-app/compilacion.log
+          if-no-files-found: ignore
 
       - name: Empaquetar como .ipa
         working-directory: ios-app

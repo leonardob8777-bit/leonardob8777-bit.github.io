@@ -63,7 +63,7 @@
 
   <!-- El ?v= evita que el navegador use una versión vieja en caché.
        Subí el número cada vez que edites styles.css. -->
-  <link rel="stylesheet" href="styles.css?v=37" />
+  <link rel="stylesheet" href="styles.css?v=38" />
 
   <!-- Datos estructurados: ayuda a Google a entender de quién es -->
   <script type="application/ld+json">
@@ -155,10 +155,24 @@
       <h1 class="name" data-text="Leonardo Bt">Leonardo Bt</h1>
       <p class="handle">@leonardo.bt4</p>
 
-      <!-- Indicador "live": el punto late y el texto lo pone el JS -->
-      <div class="status" id="status" role="status">
-        <span class="status__dot" aria-hidden="true"></span>
-        <span class="status__text">Checking status…</span>
+      <div class="meta">
+        <!-- Indicador "live": el punto late y el texto lo pone el JS -->
+        <div class="status" id="status" role="status">
+          <span class="status__dot" aria-hidden="true"></span>
+          <span class="status__text">Checking status…</span>
+        </div>
+
+        <!-- Contador de visitantes. Tocalo y aparece la palabra. -->
+        <button class="viewers" id="viewers" type="button"
+                aria-label="Visitors browsing right now">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M1.5 12S5 5.5 12 5.5 22.5 12 22.5 12 19 18.5 12 18.5 1.5 12 1.5 12z"/>
+            <circle cx="12" cy="12" r="3.2"/>
+          </svg>
+          <span class="viewers__n" id="viewers-n">—</span>
+          <span class="viewers__label">visitors</span>
+        </button>
       </div>
 
       <p class="bio">Signed IPAs, certificates and guides — everything in one place.</p>
@@ -181,6 +195,6 @@
     </footer>
   </div>
 
-  <script src="script.js?v=37" defer></script>
+  <script src="script.js?v=38" defer></script>
 </body>
 </html>

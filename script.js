@@ -33,6 +33,7 @@
    ESTADOS (el puntito de color de la tarjeta):
      online  → verde   (funcionando)
      hot     → naranja (lo recomendado / destacado)
+     ultra   → violeta reluciente (lo más importante de todo)
      offline → rojo    (caído / certificado vencido)
      soon    → ámbar   (próximamente)
      live    → rojo    (en vivo, con latido)
@@ -54,31 +55,32 @@ const SECCIONES = [
     descripcion: "Start here — install the app and keep your signed apps alive.",
     items: [
       {
+        id: "dns-profile",
+        titulo: "Install LB DNS Profile",
+        subtitulo: "Anti-revoke · keeps your apps alive",
+        url: "profiles/anti-revoke.mobileconfig",
+        icono: "shield",
+        tipo: "perfil",
+        estado: "ultra",        // chip violeta reluciente
+        destacado: true,        // ← se dibuja con el estilo llamativo
+        cinta: "Essential",     // ← texto de la cintita de arriba
+        nota:
+          "Stops iOS from checking certificates, so your signed apps keep opening. " +
+          "Tap → <b>Settings → Profile Downloaded → Install</b>. " +
+          "Routes your DNS through Cloudflare Gateway and pauses iOS updates while active — " +
+          "removable any time from <b>Settings → General → VPN & Device Management</b>.",
+      },
+      {
         id: "homescreen",
-        titulo: "Get the LB App",
-        subtitulo: "Your home screen shortcut to everything",
+        titulo: "Add LB to Home Screen",
+        subtitulo: "One tap · its own icon",
         url: "profiles/homescreen-app.mobileconfig",
         icono: "appicon",
         tipo: "perfil",
         estado: "hot",
-        destacado: true,        // ← se dibuja con el estilo llamativo
-        cinta: "Recommended",   // ← texto de la cintita de arriba
         nota:
-          "One tap and <b>LB</b> lives on your home screen — its own icon, " +
-          "full screen, no link to remember. Tap → <b>Settings → Profile Downloaded → Install</b>. " +
-          "Removable any time from <b>Settings → General → VPN & Device Management</b>.",
-      },
-      {
-        id: "dns-profile",
-        titulo: "Install DNS Profile",
-        subtitulo: "Anti-revoke · iOS",
-        url: "profiles/anti-revoke.mobileconfig",
-        icono: "shield",
-        tipo: "perfil",
-        estado: "live",
-        nota:
-          "Tap → then open <b>Settings → Profile Downloaded → Install</b>. " +
-          "Routes your DNS through Cloudflare Gateway and blocks iOS updates while active.",
+          "Puts <b>LB</b> on your home screen, full screen, with no link to remember. " +
+          "Tap → <b>Settings → Profile Downloaded → Install</b>.",
       },
       {
         id: "skibiditech",
@@ -384,7 +386,8 @@ const ETIQUETA_ESTADO = {
   online: "Online",
   offline: "Down",
   soon: "Soon",
-  live: "Live", // rojo, con latido
+  live:  "Live",  // rojo, con latido
+  ultra: "Ultra", // violeta reluciente: lo más importante
   hot:  "Hot",  // naranja: lo destacado / recomendado
 };
 
@@ -708,6 +711,69 @@ function actualizarEstado() {
    y cambia de valor (0 ↔ 1) al terminar cada ciclo.
    Para tener más o menos números, tocá DENSIDAD.
    ----------------------------------------------------------------- */
+/* =================================================================
+   CONTADOR DE VISITANTES (decorativo)
+   -----------------------------------------------------------------
+   ⚠️ El número NO es real: es un contador simulado. Un sitio estático
+   como este no tiene servidor que cuente visitas, así que esto es un
+   adorno. Si algún día querés números reales, hace falta un servicio
+   externo (y eso rompe la promesa de "cero terceros" del sitio).
+
+   Cómo se logra que se vea natural:
+     · Camina al azar de a 1 o 2 personas por vez, nunca a saltos.
+     · Tiene "gravedad" hacia el centro del rango: si sube mucho tiende
+       a bajar y viceversa (así no se pega a los extremos).
+     · Los intervalos entre cambios también son irregulares.
+     · A veces se queda quieto un rato, como pasa de verdad.
+   ================================================================= */
+function activarVisitantes() {
+  const cont = document.getElementById("viewers");
+  const num = document.getElementById("viewers-n");
+  if (!cont || !num) return;
+
+  const MIN = 40;    // piso
+  const MAX = 200;   // techo
+  const CENTRO = (MIN + MAX) / 2;
+
+  // Arranca en un valor cualquiera del rango medio
+  let actual = Math.round(70 + Math.random() * 100);
+  num.textContent = actual;
+
+  function pintar() {
+    num.textContent = actual;
+    num.classList.remove("is-tick");
+    void num.offsetWidth;      // reinicia la animación
+    num.classList.add("is-tick");
+  }
+
+  function paso() {
+    // Cuanto más lejos del centro, más probable que vuelva hacia él
+    const desvio = (actual - CENTRO) / (MAX - CENTRO); // -1 … 1
+    const sesgo = 0.5 - desvio * 0.32;                  // gravedad al centro
+    const sube = Math.random() < sesgo;
+
+    // Casi siempre de a 1; de vez en cuando de a 2 o 3
+    const r = Math.random();
+    const salto = r < 0.72 ? 1 : r < 0.94 ? 2 : 3;
+
+    // 12% de las veces no pasa nada (mesetas naturales)
+    if (Math.random() > 0.12) {
+      actual = Math.min(MAX, Math.max(MIN, actual + (sube ? salto : -salto)));
+      pintar();
+    }
+
+    // Próximo cambio: entre 1.8 y 6 segundos
+    setTimeout(paso, 1800 + Math.random() * 4200);
+  }
+
+  setTimeout(paso, 1200 + Math.random() * 1500);
+
+  // Al tocar el ojo se despliega la palabra "visitors"
+  cont.addEventListener("click", () => {
+    cont.classList.toggle("is-open");
+  });
+}
+
 /* =================================================================
    PERSONALIZACIÓN (temas + efectos)
    -----------------------------------------------------------------
@@ -1075,6 +1141,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   activarPersonalizacion();
+  activarVisitantes();
   actualizarEstado();
   iniciarObservador();
   activarPestanas();

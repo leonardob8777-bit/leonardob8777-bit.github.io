@@ -913,6 +913,69 @@ body.is-glitching-micro .name::after {
 .handle { font-size: 0.95rem; color: var(--text-muted); font-weight: 500; }
 .bio    { font-size: 0.92rem; color: var(--text-muted); max-width: 34ch; margin-top: 4px; }
 
+/* Fila con el indicador "live" y el contador de visitantes */
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.meta .status { margin-top: 0; }
+
+/* ---- Contador de visitantes ----
+   El ojo con el número siempre visible; al tocarlo se despliega la
+   palabra "visitors". El número lo maneja el JS. */
+.viewers {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+          backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.2s var(--ease);
+}
+.viewers:hover { background: var(--glass-bg-hover); color: var(--text); }
+.viewers:active { transform: scale(0.95); }
+.viewers:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
+.viewers svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.9; }
+
+.viewers__n {
+  font-variant-numeric: tabular-nums; /* el ancho no baila al cambiar */
+  color: var(--bit);
+  transition: color 0.25s ease;
+}
+/* Pequeño destello cuando el número cambia */
+.viewers__n.is-tick { animation: viewers-tick 0.5s ease-out; }
+@keyframes viewers-tick {
+  0%   { opacity: 0.35; transform: translateY(-2px); }
+  100% { opacity: 1;    transform: none; }
+}
+
+/* La palabra aparece al tocar el ojo */
+.viewers__label {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width 0.35s var(--ease), opacity 0.3s ease, margin 0.35s var(--ease);
+}
+.viewers.is-open .viewers__label {
+  max-width: 90px;
+  opacity: 1;
+  margin-left: 1px;
+}
+
 /* ---- Indicador "live" ---- */
 .status {
   display: inline-flex;
@@ -1247,6 +1310,50 @@ body.is-glitching-micro .name::after {
 .badge--online  { color: var(--ok);     background: rgba(52, 211, 153, 0.12); border-color: rgba(52, 211, 153, 0.25); }
 .badge--offline { color: var(--danger); background: rgba(248, 113, 113, 0.12); border-color: rgba(248, 113, 113, 0.25); }
 .badge--soon    { color: var(--warn);   background: rgba(251, 191, 36, 0.12);  border-color: rgba(251, 191, 36, 0.25); }
+
+/* Chip "ULTRA": violeta reluciente, con un brillo que lo recorre.
+   Es el nivel más alto — se usa para lo más importante del sitio. */
+.badge--ultra {
+  position: relative;
+  overflow: hidden;
+  color: #f0e2ff;
+  background: linear-gradient(120deg, #7c3aed, #a855f7 45%, #c084fc 70%, #7c3aed);
+  border-color: rgba(216, 180, 254, 0.6);
+  box-shadow:
+    0 0 10px -1px rgba(168, 85, 247, 0.85),
+    0 0 22px -4px rgba(192, 132, 252, 0.6);
+  text-shadow: 0 0 8px rgba(240, 220, 255, 0.55);
+}
+.badge--ultra .badge__dot {
+  background: #f5ecff;
+  box-shadow: 0 0 8px rgba(240, 220, 255, 0.95);
+  animation: ultra-dot 1.6s ease-in-out infinite;
+}
+/* Destello que barre el chip */
+.badge--ultra::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  left: -60%;
+  width: 45%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.75) 50%,
+    transparent
+  );
+  transform: skewX(-20deg);
+  animation: ultra-shine 2.6s ease-in-out infinite;
+}
+@keyframes ultra-shine {
+  0%   { left: -60%; }
+  55%  { left: 130%; }
+  100% { left: 130%; }
+}
+@keyframes ultra-dot {
+  0%, 100% { opacity: 1;    transform: scale(1); }
+  50%      { opacity: 0.45; transform: scale(0.78); }
+}
 
 /* Chip "HOT" en naranja: lo recomendado / destacado */
 .badge--hot {

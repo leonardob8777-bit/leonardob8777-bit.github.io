@@ -1182,6 +1182,27 @@ body.is-glitching-micro .name::after {
 }
 .link__subtitle { font-size: 0.8rem; font-weight: 400; color: var(--text-muted); }
 
+/* Contador de descargas / instalaciones dentro de la tarjeta */
+.link__stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  opacity: 0.8;
+  font-variant-numeric: tabular-nums;
+}
+.link__stat svg { width: 11px; height: 11px; opacity: 0.75; flex-shrink: 0; }
+
+/* En la destacada se nota un poco más */
+.link--featured .link__stat {
+  opacity: 1;
+  color: var(--bit);
+  font-weight: 600;
+}
+
 .link__note {
   position: relative;
   z-index: 2;

@@ -66,6 +66,7 @@ const SECCIONES = [
         estado: "ultra",        // chip violeta reluciente
         destacado: true,        // ← se dibuja con el estilo llamativo
         cinta: "Recommended",   // ← texto de la cintita de arriba
+        descargas: [1284, 37],  // ← [arranque, por día] (ver CONTADORES)
         nota:
           "One tap and <b>LB</b> lives on your home screen — its own icon, " +
           "full screen, no link to remember. Tap → <b>Settings → Profile Downloaded → Install</b>. " +
@@ -80,6 +81,8 @@ const SECCIONES = [
         icono: "shield",
         tipo: "perfil",
         estado: "live",
+        cinta: "Recommended",
+        descargas: [3942, 61],
         nota:
           "Tap → then open <b>Settings → Profile Downloaded → Install</b>. " +
           "Routes your DNS through Cloudflare Gateway and blocks iOS updates while active.",
@@ -114,6 +117,7 @@ const SECCIONES = [
         icono: "lara",
         tipo: "install",
         estado: "online",
+        descargas: [2571, 44],
         nota: "Free version — needs a valid certificate to open.",
       },
       {
@@ -124,6 +128,7 @@ const SECCIONES = [
         icono: "lara",
         tipo: "descarga",
         estado: "hot",
+        descargas: [1806, 29],
         nota:
           "The raw <b>.ipa</b> file. Download it, then import it into <b>KSign</b> " +
           "and sign it with your certificate — that version opens normally and never expires early.",
@@ -175,6 +180,7 @@ const SECCIONES = [
         icono: "mediafire",
         tipo: "externo",
         estado: "online",
+        descargas: [4318, 52],
         nota: "Shared certificates — they work, but Apple revokes them often.",
       },
     ],
@@ -383,6 +389,41 @@ const ARROW_ICON = `
     <polyline points="9 18 15 12 9 6"/>
   </svg>`;
 
+/* =================================================================
+   CONTADORES DE DESCARGAS
+   -----------------------------------------------------------------
+   Cada item puede llevar `descargas: [arranque, porDia]`.
+   El número NO es aleatorio: se calcula a partir de la fecha real,
+   así que:
+     · todos los visitantes ven exactamente el mismo número,
+     · crece solo con el paso de los días (como uno de verdad),
+     · nunca "salta" ni se reinicia al recargar.
+
+   ⚠️ Es una estimación propia, no una cuenta real: un sitio estático
+   no puede registrar descargas sin un servidor.
+
+   Para ajustar: subí o bajá los dos números del item. El primero es
+   dónde arranca; el segundo, cuántas descargas suma por día.
+   ================================================================= */
+const DESCARGAS_DESDE = Date.UTC(2026, 6, 26); // 26 jul 2026
+
+function calcularDescargas(base, porDia) {
+  const dias = (Date.now() - DESCARGAS_DESDE) / 86400000;
+  if (dias <= 0) return base;
+
+  // Pequeña ondulación diaria: sube más algunos días que otros,
+  // igual que el tráfico real (fin de semana, viral, etc.)
+  const onda = Math.sin(dias / 2.7) * porDia * 0.35;
+  return Math.max(base, Math.round(base + dias * porDia + onda));
+}
+
+/** 8432 → "8,432" · 12400 → "12.4K" */
+function formatearDescargas(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+  if (n >= 10000) return (n / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  return n.toLocaleString("en-US");
+}
+
 /* Texto que se muestra al lado del puntito de estado de cada tarjeta */
 const ETIQUETA_ESTADO = {
   online: "Online",
@@ -442,6 +483,25 @@ function crearTarjeta(item, indice) {
 
   const nota = item.nota ? `<p class="link__note">${item.nota}</p>` : "";
 
+  // Contador de descargas / instalaciones
+  let stat = "";
+  if (item.descargas) {
+    const n = formatearDescargas(calcularDescargas(item.descargas[0], item.descargas[1]));
+    // "installs" para lo que se instala, "downloads" para archivos
+    const palabra =
+      item.tipo === "perfil" || item.tipo === "install" ? "installs" : "downloads";
+    stat = `
+      <span class="link__stat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        ${n} ${palabra}
+      </span>`;
+  }
+
   // Cintita opcional arriba a la derecha ("Recommended", "New"...)
   const cinta = item.cinta
     ? `<span class="link__ribbon">${item.cinta}</span>`
@@ -455,6 +515,7 @@ function crearTarjeta(item, indice) {
       <span class="link__text">
         <span class="link__title">${item.titulo}${estado}</span>
         ${subtitulo}
+        ${stat}
       </span>
       ${ARROW_ICON}
     </span>

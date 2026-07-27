@@ -80,8 +80,28 @@ jobs:
         if: failure()
         working-directory: ios-app
         run: |
+          # 1) Resumen legible en la pestaña "Summary" del run.
+          {
+            echo "## ❌ Errores de compilación"
+            echo ""
+            echo '```'
+            grep -E "error:|fatal error:|The following build commands failed|Command .* failed with" compilacion.log | sort -u | head -40 || true
+            echo '```'
+            echo ""
+            echo "### Últimas 60 líneas del registro"
+            echo '```'
+            tail -60 compilacion.log || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # 2) Cada error como anotación de workflow. Las anotaciones se
+          #    leen por la API pública SIN login, así se puede diagnosticar
+          #    a distancia sin tener que copiar y pegar a mano.
           echo "============= ERRORES ENCONTRADOS ============="
-          grep -E "error:|fatal error:|The following build commands failed" compilacion.log | head -40 || true
+          grep -E "error:|fatal error:" compilacion.log | sort -u | head -30 | while IFS= read -r linea; do
+            limpia=$(printf '%s' "$linea" | tr '\r\n' '  ')
+            echo "::error::${limpia}"
+          done || true
           echo "============= ÚLTIMAS 60 LÍNEAS =============="
           tail -60 compilacion.log || true
 

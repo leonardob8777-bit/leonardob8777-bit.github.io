@@ -30,12 +30,24 @@ on:
 jobs:
   build:
     name: Compilar IPA sin firmar
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 25
 
     steps:
       - name: Descargar el repositorio
         uses: actions/checkout@v4
+
+      # XcodeGen 2.45+ genera el proyecto en formato de Xcode 16. Si el
+      # runner usa un Xcode viejo (p. ej. 15.4), xcodebuild no lo puede
+      # leer ("Unable to read project"). Elegimos el Xcode más nuevo
+      # instalado para que el formato coincida.
+      - name: Usar el Xcode más nuevo del runner
+        run: |
+          NUEVO=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1)
+          if [ -n "$NUEVO" ]; then
+            sudo xcode-select -s "$NUEVO"
+          fi
+          echo "::warning::[diag] Xcode activo: $(xcodebuild -version 2>&1 | tr '\n' ' ')"
 
       - name: Instalar XcodeGen
         run: brew install xcodegen

@@ -777,64 +777,69 @@ function actualizarEstado() {
 /* =================================================================
    CONTADOR DE VISITANTES (decorativo)
    -----------------------------------------------------------------
-   ⚠️ El número NO es real: es un contador simulado. Un sitio estático
-   como este no tiene servidor que cuente visitas, así que esto es un
-   adorno. Si algún día querés números reales, hace falta un servicio
-   externo (y eso rompe la promesa de "cero terceros" del sitio).
+   ⚠️ El número NO es real: un sitio estático no tiene servidor que
+   cuente visitas. Es un adorno.
 
-   Cómo se logra que se vea natural:
-     · Camina al azar de a 1 o 2 personas por vez, nunca a saltos.
-     · Tiene "gravedad" hacia el centro del rango: si sube mucho tiende
-       a bajar y viceversa (así no se pega a los extremos).
-     · Los intervalos entre cambios también son irregulares.
-     · A veces se queda quieto un rato, como pasa de verdad.
+   La clave para que no se note: NO se sortea al azar. Se calcula a
+   partir del RELOJ, sumando varias ondas de distinto ritmo. Eso da:
+
+     · Al recargar la página el número SIGUE donde estaba (antes
+       saltaba, y eso lo delataba enseguida).
+     · Todos los visitantes ven el mismo número al mismo tiempo.
+     · Igual sube y baja solo, de a poco, sin repetir un patrón
+       reconocible (las ondas tienen períodos que no encajan entre sí).
+     · Hay más gente a la tarde/noche que de madrugada, como en la
+       vida real.
+
+   Para cambiar el rango, tocá CENTRO y AMPLITUD.
    ================================================================= */
 function activarVisitantes() {
   const cont = document.getElementById("viewers");
   const num = document.getElementById("viewers-n");
   if (!cont || !num) return;
 
-  const MIN = 40;    // piso
-  const MAX = 200;   // techo
-  const CENTRO = (MIN + MAX) / 2;
+  const MIN = 40, MAX = 200;
+  const CENTRO = 118;    // valor típico
+  const AMPLITUD = 52;   // cuánto se aleja del centro
 
-  // Arranca en un valor cualquiera del rango medio
-  let actual = Math.round(70 + Math.random() * 100);
-  num.textContent = actual;
+  /** Devuelve cuántos "visitantes" hay en un instante dado. */
+  function visitantesEn(ms) {
+    const m = ms / 60000; // minutos
 
-  function pintar() {
-    num.textContent = actual;
-    num.classList.remove("is-tick");
-    void num.offsetWidth;      // reinicia la animación
-    num.classList.add("is-tick");
+    // Cuatro ondas de períodos que no son múltiplos entre sí: al
+    // sumarse nunca vuelven a la misma combinación → no hay bucle.
+    const onda =
+      Math.sin(m / 14.6) * 0.50 +
+      Math.sin(m / 6.2 + 1.7) * 0.27 +
+      Math.sin(m / 2.7 + 4.2) * 0.15 +
+      Math.sin(m / 1.2 + 2.9) * 0.08;
+
+    // Ciclo del día: pico a la tarde, valle de madrugada
+    const hora = (ms % 86400000) / 3600000;
+    const ciclo = 0.86 + 0.24 * Math.sin(((hora - 9) / 24) * Math.PI * 2);
+
+    const v = (CENTRO + onda * AMPLITUD) * ciclo;
+    return Math.min(MAX, Math.max(MIN, Math.round(v)));
   }
 
-  function paso() {
-    // Cuanto más lejos del centro, más probable que vuelva hacia él
-    const desvio = (actual - CENTRO) / (MAX - CENTRO); // -1 … 1
-    const sesgo = 0.5 - desvio * 0.32;                  // gravedad al centro
-    const sube = Math.random() < sesgo;
+  let anterior = null;
 
-    // Casi siempre de a 1; de vez en cuando de a 2 o 3
-    const r = Math.random();
-    const salto = r < 0.72 ? 1 : r < 0.94 ? 2 : 3;
-
-    // 12% de las veces no pasa nada (mesetas naturales)
-    if (Math.random() > 0.12) {
-      actual = Math.min(MAX, Math.max(MIN, actual + (sube ? salto : -salto)));
-      pintar();
+  function refrescar() {
+    const v = visitantesEn(Date.now());
+    if (v !== anterior) {
+      anterior = v;
+      num.textContent = v;
+      num.classList.remove("is-tick");
+      void num.offsetWidth;   // reinicia la animación
+      num.classList.add("is-tick");
     }
-
-    // Próximo cambio: entre 1.8 y 6 segundos
-    setTimeout(paso, 1800 + Math.random() * 4200);
   }
 
-  setTimeout(paso, 1200 + Math.random() * 1500);
+  refrescar();                 // valor correcto desde el primer instante
+  setInterval(refrescar, 3000);
 
   // Al tocar el ojo se despliega la palabra "visitors"
-  cont.addEventListener("click", () => {
-    cont.classList.toggle("is-open");
-  });
+  cont.addEventListener("click", () => cont.classList.toggle("is-open"));
 }
 
 /* =================================================================

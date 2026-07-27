@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>404 · Leonardo Bt</title>
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#030806" />
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
+  <link rel="stylesheet" href="styles.css?v=33" />
+  <style>
+    /* Pantalla de error, centrada y con el mismo lenguaje visual */
+    .err {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      text-align: center;
+    }
+    .err__box {
+      max-width: 380px;
+      padding: 30px 26px;
+      border-radius: 24px;
+      background: var(--glass-bg);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+              backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: var(--shadow);
+    }
+    .err__code {
+      font-size: 3.4rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      color: var(--bit);
+      text-shadow: 0 0 22px rgba(60, 255, 140, 0.45);
+    }
+    .err__msg { margin-top: 10px; font-size: 0.95rem; color: var(--text-muted); }
+    .err__link {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 11px 22px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.92);
+      color: #08120c;
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-decoration: none;
+      transition: transform 0.2s var(--ease);
+    }
+    .err__link:hover { transform: translateY(-2px) scale(1.03); }
+  </style>
+</head>
+<body>
+  <div class="mesh" aria-hidden="true"></div>
+  <div class="aurora" aria-hidden="true"></div>
+  <div class="bits" id="bits" aria-hidden="true"></div>
+
+  <main class="err">
+    <div class="err__box">
+      <p class="err__code">404</p>
+      <p class="err__msg">This page doesn't exist — or it was moved.</p>
+      <a class="err__link" href="./">Back to the hub</a>
+    </div>
+  </main>
+
+  <script src="script.js?v=33" defer></script>
+</body>
+</html>

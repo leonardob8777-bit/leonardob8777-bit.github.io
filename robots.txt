@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://leonardob8777-bit.github.io/sitemap.xml

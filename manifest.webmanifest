@@ -1,0 +1,25 @@
+{
+  "name": "Leonardo Bt · iOS Hub",
+  "short_name": "Leonardo Bt",
+  "description": "Signed IPAs, certificates, UDID tools and step-by-step guides for iOS sideloading.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#030806",
+  "theme_color": "#030806",
+  "icons": [
+    {
+      "src": "assets/avatar.jpg",
+      "sizes": "400x400",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

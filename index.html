@@ -13,7 +13,7 @@
   <title>Leonardo Bt · iOS Hub</title>
   <meta name="description" content="Signed IPAs, certificates, UDID tools and step-by-step guides for iOS sideloading." />
   <meta name="author" content="Leonardo Bt" />
-  <meta name="theme-color" content="#05060a" />
+  <meta name="theme-color" content="#030806" />
 
   <!-- ============================================================= -->
   <!-- OPEN GRAPH                                                    -->
@@ -35,18 +35,53 @@
   <meta name="twitter:description" content="Signed IPAs, certificates, UDID tools and step-by-step guides for iOS sideloading." />
   <meta name="twitter:image" content="https://leonardob8777-bit.github.io/assets/og-image.jpg" />
 
-  <!-- FAVICON -->
+  <!-- ============================================================= -->
+  <!-- PRIVACIDAD                                                    -->
+  <!-- no-referrer: cuando alguien toca un enlace, el otro sitio NO  -->
+  <!-- se entera de que vino de acá.                                 -->
+  <!-- ============================================================= -->
+  <meta name="referrer" content="no-referrer" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- FAVICON / APP INSTALABLE -->
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
   <link rel="apple-touch-icon" href="assets/avatar.jpg" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Leonardo Bt" />
 
-  <!-- FUENTE -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- ============================================================= -->
+  <!-- FUENTE AUTO-HOSPEDADA                                         -->
+  <!-- Antes venía de Google Fonts: eso le mandaba la IP de CADA     -->
+  <!-- visitante a Google. Ahora el archivo vive en este mismo sitio -->
+  <!-- → cero pedidos a terceros y carga más rápido.                 -->
+  <!-- ============================================================= -->
+  <link rel="preload" href="assets/fonts/space-grotesk-latin.woff2"
+        as="font" type="font/woff2" crossorigin />
 
   <!-- El ?v= evita que el navegador use una versión vieja en caché.
        Subí el número cada vez que edites styles.css. -->
-  <link rel="stylesheet" href="styles.css?v=32" />
+  <link rel="stylesheet" href="styles.css?v=33" />
+
+  <!-- Datos estructurados: ayuda a Google a entender de quién es -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "mainEntity": {
+      "@type": "Person",
+      "name": "Leonardo Bt",
+      "alternateName": "@leonardo.bt4",
+      "url": "https://leonardob8777-bit.github.io/",
+      "image": "https://leonardob8777-bit.github.io/assets/avatar.jpg",
+      "sameAs": [
+        "https://www.tiktok.com/@leonardo.bt4",
+        "https://t.me/leonardoPhl"
+      ]
+    }
+  }
+  </script>
 </head>
 
 <body>
@@ -71,6 +106,41 @@
   </noscript>
 
   <a class="skip" href="#content">Skip to content</a>
+
+  <!-- ================= PERSONALIZACIÓN ================= -->
+  <button class="gear" id="gear" type="button"
+          aria-label="Appearance settings" aria-expanded="false" aria-controls="panel">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+    </svg>
+  </button>
+
+  <div class="panel" id="panel" role="dialog" aria-label="Appearance settings">
+    <p class="panel__title">Theme</p>
+    <div class="themes" id="themes"></div>
+
+    <p class="panel__title">Display</p>
+    <button class="toggle" id="fx-toggle" type="button" aria-pressed="true">
+      <span>Background effects</span>
+      <span class="toggle__switch" aria-hidden="true"></span>
+    </button>
+    <button class="toggle" id="share-btn" type="button" hidden>
+      <span>Share this page</span>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+        <polyline points="16 6 12 2 8 6"/>
+        <line x1="12" y1="2" x2="12" y2="15"/>
+      </svg>
+    </button>
+
+    <p class="panel__note">
+      Your choice is saved on this device only. This site sets no cookies,
+      uses no analytics and loads nothing from third parties.
+    </p>
+  </div>
 
   <div class="page">
     <!-- ================= HERO / PERFIL ================= -->
@@ -103,10 +173,13 @@
 
     <footer class="footer">
       <p>© <span id="year"></span> Leonardo Bt · Made with ♥</p>
+      <p class="footer__note">
+        No cookies · No analytics · No third-party requests
+      </p>
       <p class="footer__note">Not affiliated with Apple Inc. Use at your own risk.</p>
     </footer>
   </div>
 
-  <script src="script.js?v=32" defer></script>
+  <script src="script.js?v=33" defer></script>
 </body>
 </html>

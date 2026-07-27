@@ -112,13 +112,15 @@ const SECCIONES = [
       {
         id: "ksign",
         titulo: "KSign",
-        subtitulo: "IPA signer for iOS",
-        // 👇 CAMBIAR cuando tengas un enlace de instalación nuevo.
-        url: "#guide",
+        subtitulo: "The signer app · get it here",
+        // 👇 CAMBIAR si conseguís un enlace de instalación propio.
+        url: "https://signtools.ipaomtk.com/",
         icono: "ksign",
-        tipo: "interno",
-        estado: "soon",
-        nota: "Setup guide in the Guide tab.",
+        tipo: "externo",
+        estado: "online",
+        nota:
+          "Sign IPAs directly on your iPhone — no computer needed. " +
+          "Install it first, then follow the <b>Guide</b> tab.",
       },
     ],
   },
@@ -176,7 +178,7 @@ const SECCIONES = [
         titulo: "Install KSign",
         detalle:
           "KSign is the app that signs IPAs directly on your iPhone — no computer needed. " +
-          "Grab it from the <b>Apps</b> tab. After installing, open " +
+          "Get it from the <b>Apps</b> tab. After installing, open " +
           "<b>Settings → General → VPN & Device Management</b> and tap <b>Trust</b> on its profile.",
       },
       {
@@ -679,6 +681,121 @@ function actualizarEstado() {
    y cambia de valor (0 ↔ 1) al terminar cada ciclo.
    Para tener más o menos números, tocá DENSIDAD.
    ----------------------------------------------------------------- */
+/* =================================================================
+   PERSONALIZACIÓN (temas + efectos)
+   -----------------------------------------------------------------
+   Para agregar un tema: sumá un objeto acá y copiá el bloque
+   [data-theme="tu-id"] en styles.css.
+   Lo elegido se guarda SOLO en el navegador del visitante
+   (localStorage). No se manda a ningún servidor.
+   ================================================================= */
+const TEMAS = [
+  { id: "matrix",  nombre: "Matrix",  color: "#28ff82" },
+  { id: "crimson", nombre: "Crimson", color: "#ff2d2d" },
+  { id: "ice",     nombre: "Ice",     color: "#3caaff" },
+  { id: "amber",   nombre: "Amber",   color: "#ffaf2d" },
+  { id: "violet",  nombre: "Violet",  color: "#aa6eff" },
+];
+
+const CLAVE_TEMA = "lb-theme";
+const CLAVE_FX = "lb-fx";
+
+/** Lee del almacenamiento sin romper si está bloqueado (modo privado). */
+function leer(clave) {
+  try { return localStorage.getItem(clave); } catch { return null; }
+}
+function guardar(clave, valor) {
+  try { localStorage.setItem(clave, valor); } catch { /* sin permiso: da igual */ }
+}
+
+function activarPersonalizacion() {
+  const raiz = document.documentElement;
+  const cuerpo = document.body;
+  const gear = document.getElementById("gear");
+  const panel = document.getElementById("panel");
+  const cont = document.getElementById("themes");
+  const fxBtn = document.getElementById("fx-toggle");
+  const shareBtn = document.getElementById("share-btn");
+  if (!gear || !panel || !cont) return;
+
+  /* ---- Tema ---- */
+  let temaActual = leer(CLAVE_TEMA) || "matrix";
+
+  function aplicarTema(id) {
+    temaActual = id;
+    if (id === "matrix") raiz.removeAttribute("data-theme");
+    else raiz.setAttribute("data-theme", id);
+    guardar(CLAVE_TEMA, id);
+
+    // La barra del navegador en el celular acompaña el color del tema
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) {
+      meta.content = getComputedStyle(raiz).getPropertyValue("--bg").trim() || "#030806";
+    }
+
+    cont.querySelectorAll(".theme-dot").forEach((d) => {
+      const activo = d.dataset.tema === id;
+      d.classList.toggle("is-active", activo);
+      d.setAttribute("aria-pressed", activo ? "true" : "false");
+    });
+  }
+
+  TEMAS.forEach((t) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "theme-dot";
+    b.dataset.tema = t.id;
+    b.style.background = `radial-gradient(circle at 35% 30%, ${t.color}, rgba(0,0,0,0.85))`;
+    b.title = t.nombre;
+    b.setAttribute("aria-label", `${t.nombre} theme`);
+    b.addEventListener("click", () => aplicarTema(t.id));
+    cont.appendChild(b);
+  });
+
+  aplicarTema(temaActual);
+
+  /* ---- Efectos de fondo ---- */
+  let fxOn = leer(CLAVE_FX) !== "off";
+
+  function aplicarFx(on) {
+    fxOn = on;
+    cuerpo.classList.toggle("no-fx", !on);
+    fxBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    guardar(CLAVE_FX, on ? "on" : "off");
+  }
+  aplicarFx(fxOn);
+  fxBtn.addEventListener("click", () => aplicarFx(!fxOn));
+
+  /* ---- Compartir (solo si el dispositivo lo soporta) ---- */
+  if (navigator.share) {
+    shareBtn.hidden = false;
+    shareBtn.addEventListener("click", async () => {
+      try {
+        await navigator.share({
+          title: document.title,
+          text: "iOS signing tools, certificates and guides",
+          url: location.origin + location.pathname,
+        });
+      } catch { /* el usuario canceló */ }
+    });
+  }
+
+  /* ---- Abrir y cerrar el panel ---- */
+  function abrir(si) {
+    panel.classList.toggle("is-open", si);
+    gear.setAttribute("aria-expanded", si ? "true" : "false");
+  }
+  gear.addEventListener("click", (e) => {
+    e.stopPropagation();
+    abrir(!panel.classList.contains("is-open"));
+  });
+  panel.addEventListener("click", (e) => e.stopPropagation());
+  document.addEventListener("click", () => abrir(false));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") abrir(false);
+  });
+}
+
 /* Puente entre los dos sistemas: activarGlitches() llama a esto para
    corromper los dígitos justo cuando salta un glitch. */
 let corromperBits = null;
@@ -930,11 +1047,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  activarPersonalizacion();
   actualizarEstado();
   iniciarObservador();
   activarPestanas();
-  activarBits();
-  activarGlitches();
+  // Si el visitante apagó los efectos, ni los creamos (ahorra batería)
+  if (!document.body.classList.contains("no-fx")) {
+    activarBits();
+    activarGlitches();
+  }
 
   // Abre la categoría del enlace (#guide) o, si no hay, la primera.
   mostrarSeccion(location.hash.slice(1));

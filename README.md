@@ -14,13 +14,17 @@ backend, sin base de datos y sin build step. Alojado gratis en
 
 ```
 link-in-bio/
-├── index.html      → esqueleto + meta tags (SEO, Open Graph, Twitter)
-├── styles.css      → todo el diseño; variables de tema arriba de todo
+├── index.html      → esqueleto + meta tags (SEO, Open Graph, privacidad)
+├── styles.css      → diseño + los 5 temas de color
 ├── script.js       → CONFIGURACIÓN (lo único que editás) + motor
+├── manifest.webmanifest → permite "Agregar a inicio" en el iPhone
+├── 404.html        → página de error con el mismo diseño
+├── robots.txt / sitemap.xml → SEO
 ├── assets/
 │   ├── avatar.jpg      → foto de perfil
 │   ├── favicon.svg     → ícono de la pestaña
 │   ├── og-image.jpg    → imagen al compartir el link (1200x630)
+│   ├── fonts/          → la tipografía, auto-hospedada (privacidad)
 │   ├── lara.png        → logo de la app Lara
 │   ├── ksign.png       → logo de KSign
 │   └── bg.jpg          → (sin usar; era el fondo de foto anterior)
@@ -198,3 +202,63 @@ y entrás a `http://localhost:8000`.
 - Respeta `prefers-reduced-motion` (apaga malla, glitches y animaciones).
 - Animaciones de fondo con `transform` (aceleradas por GPU).
 - Respeta las zonas seguras del iPhone (muesca y barra inferior).
+
+---
+
+## f) 🎨 Temas de color
+
+El visitante puede elegir el tema desde la **ruedita** de arriba a la
+derecha. Su elección queda guardada en su propio navegador.
+
+Temas incluidos: **Matrix** (verde, por defecto), **Crimson**, **Ice**,
+**Amber** y **Violet**.
+
+**Para agregar uno nuevo** hacen falta 2 pasos:
+
+1. En `styles.css`, copiá un bloque y cambiá los colores:
+
+```css
+[data-theme="mi-tema"] {
+  --bg: #07070d;
+  --mesh:       rgba(200, 200, 255, 0.15);
+  --mesh-fine:  rgba(200, 200, 255, 0.05);
+  --mesh-glow:  rgba(150, 150, 220, 0.20);
+  --bit:        rgba(220, 220, 255, 0.85);
+  --avatar-glow: #8888dd;
+}
+```
+
+2. En `script.js`, sumalo al array `TEMAS`:
+
+```js
+{ id: "mi-tema", nombre: "Mi Tema", color: "#8888dd" },
+```
+
+El `color` es solo el del circulito del selector.
+
+---
+
+## g) 🔒 Privacidad
+
+El sitio **no hace ni un solo pedido a servidores de terceros**:
+
+- La tipografía está **auto-hospedada** (antes venía de Google Fonts, lo
+  que le mandaba la IP de cada visitante a Google).
+- Sin cookies, sin analítica, sin píxeles de seguimiento.
+- `referrer: no-referrer` → cuando alguien toca un enlace, el sitio de
+  destino no se entera de que vino de acá.
+- Lo único que se guarda es el tema elegido, y queda en **el navegador
+  del visitante** (localStorage). No viaja a ningún lado.
+
+Si algún día agregás algo externo (un video incrustado, una fuente, un
+contador de visitas), tené en cuenta que rompés esta propiedad.
+
+---
+
+## h) ⚡ Efectos y rendimiento
+
+Desde la ruedita también se pueden **apagar los efectos de fondo**
+(malla animada, bits, glitches, escáner). Útil en celulares viejos.
+Cuando están apagados, el JS ni siquiera los genera.
+
+El sitio también respeta `prefers-reduced-motion` del sistema.

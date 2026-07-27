@@ -1,5 +1,28 @@
 /* =================================================================
-   VARIABLES DE TEMA  ← cambiá acá para cambiar todo el look
+   FUENTE AUTO-HOSPEDADA (privacidad)
+   -----------------------------------------------------------------
+   Es una fuente variable: un solo archivo de 22 KB cubre todos los
+   pesos (400 a 700). Antes se pedía a Google en cada visita.
+   ================================================================= */
+@font-face {
+  font-family: "Space Grotesk";
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url("assets/fonts/space-grotesk-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6,
+                 U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F,
+                 U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* =================================================================
+   TEMAS DE COLOR
+   -----------------------------------------------------------------
+   El tema por defecto es Matrix (verde). El resto se activa con el
+   atributo data-theme en <html>, que pone el selector de la ruedita
+   y queda guardado en el navegador del visitante.
+   Para agregar un tema nuevo: copiá un bloque [data-theme="..."] y
+   sumalo al array TEMAS de script.js.
    ================================================================= */
 :root {
   --bg: #030806;
@@ -37,6 +60,52 @@
 
   --stagger: 60ms;
   --ease:    cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---- Tema CRIMSON (rojo) ---- */
+[data-theme="crimson"] {
+  --bg: #0a0406;
+  --mesh:       rgba(255, 45, 45, 0.16);
+  --mesh-fine:  rgba(255, 45, 45, 0.055);
+  --mesh-glow:  rgba(220, 30, 30, 0.22);
+  --bit:        rgba(255, 110, 110, 0.85);
+  --avatar-glow: #e02424;
+}
+
+/* ---- Tema ICE (azul) ---- */
+[data-theme="ice"] {
+  --bg: #04070d;
+  --mesh:       rgba(60, 170, 255, 0.15);
+  --mesh-fine:  rgba(60, 170, 255, 0.05);
+  --mesh-glow:  rgba(30, 120, 220, 0.20);
+  --bit:        rgba(120, 205, 255, 0.85);
+  --avatar-glow: #1e8fe0;
+}
+
+/* ---- Tema AMBER (ámbar) ---- */
+[data-theme="amber"] {
+  --bg: #0a0703;
+  --mesh:       rgba(255, 175, 45, 0.15);
+  --mesh-fine:  rgba(255, 175, 45, 0.05);
+  --mesh-glow:  rgba(220, 130, 20, 0.20);
+  --bit:        rgba(255, 200, 110, 0.85);
+  --avatar-glow: #e08a1e;
+}
+
+/* ---- Tema VIOLET (violeta) ---- */
+[data-theme="violet"] {
+  --bg: #07050d;
+  --mesh:       rgba(170, 110, 255, 0.15);
+  --mesh-fine:  rgba(170, 110, 255, 0.05);
+  --mesh-glow:  rgba(130, 70, 220, 0.20);
+  --bit:        rgba(200, 160, 255, 0.85);
+  --avatar-glow: #8a4ce0;
+}
+
+/* Todos los colores viajan con transición: al cambiar de tema no
+   hay un corte brusco, se funde. */
+body, .mesh, .aurora::after, .bits b {
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 /* ================= RESET ================= */
@@ -179,6 +248,155 @@ body {
    Para la esquina IZQUIERDA: cambiá `right:` por `left:`.
    Para el borde inferior: cambiá `top:` por `bottom:`.
    ================================================================= */
+/* =================================================================
+   PANEL DE PERSONALIZACIÓN
+   -----------------------------------------------------------------
+   La ruedita de arriba a la derecha. Deja elegir tema y apagar los
+   efectos (útil en celulares viejos o si molestan). Todo queda
+   guardado en el navegador del visitante, no se manda a ningún lado.
+   ================================================================= */
+.gear {
+  position: fixed;
+  top: calc(14px + env(safe-area-inset-top, 0px));
+  right: calc(14px + env(safe-area-inset-right, 0px));
+  z-index: 60;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+          backdrop-filter: blur(14px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: transform 0.25s var(--ease), color 0.25s ease, background 0.25s ease;
+}
+.gear:hover { color: var(--text); background: var(--glass-bg-hover); transform: rotate(45deg); }
+.gear:active { transform: scale(0.92) rotate(45deg); }
+.gear:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; }
+.gear svg { width: 19px; height: 19px; }
+
+/* --- Ventana de ajustes --- */
+.panel {
+  position: fixed;
+  top: calc(62px + env(safe-area-inset-top, 0px));
+  right: calc(14px + env(safe-area-inset-right, 0px));
+  z-index: 60;
+  width: min(280px, calc(100vw - 28px));
+  padding: 16px;
+  border-radius: 20px;
+  background: rgba(12, 16, 14, 0.72);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+          backdrop-filter: blur(24px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px) scale(0.96);
+  transform-origin: top right;
+  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease), visibility 0.25s;
+}
+.panel.is-open { opacity: 1; visibility: visible; transform: none; }
+
+.panel__title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.panel__title + .panel__title { margin-top: 18px; }
+
+/* Círculos de color para elegir tema */
+.themes { display: flex; gap: 10px; flex-wrap: wrap; }
+.theme-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.22s ease;
+}
+.theme-dot:hover { transform: scale(1.12); }
+.theme-dot.is-active {
+  border-color: #fff;
+  transform: scale(1.14);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.14);
+}
+.theme-dot:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* Interruptor de efectos */
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.25s ease;
+}
+.toggle:hover { background: rgba(255, 255, 255, 0.09); }
+.toggle:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+.toggle + .toggle { margin-top: 8px; }
+
+.toggle__switch {
+  flex-shrink: 0;
+  width: 38px;
+  height: 22px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  position: relative;
+  transition: background 0.25s ease;
+}
+.toggle__switch::after {
+  content: "";
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.25s var(--ease);
+}
+.toggle[aria-pressed="true"] .toggle__switch { background: var(--ok); }
+.toggle[aria-pressed="true"] .toggle__switch::after { transform: translateX(16px); }
+
+.panel__note {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+/* Modo "efectos apagados": el fondo queda quieto y limpio */
+body.no-fx .bits,
+body.no-fx .scan,
+body.no-fx .glitch { display: none !important; }
+body.no-fx .mesh::before,
+body.no-fx .mesh::after,
+body.no-fx .aurora::after,
+body.no-fx .avatar-wrap,
+body.no-fx .avatar-wrap::before,
+body.no-fx .name { animation: none !important; }
+body.no-fx .name {
+  -webkit-text-fill-color: var(--text);
+  background: none;
+}
+
 /* =================================================================
    BITS: unos y ceros que aparecen y desaparecen
    -----------------------------------------------------------------

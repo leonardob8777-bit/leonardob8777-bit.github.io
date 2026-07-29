@@ -109,6 +109,24 @@ const SECCIONES = [
     descripcion: "Tap to install directly on your iPhone (Safari only).",
     items: [
       {
+        // ⭐ LA app: este mismo hub como app nativa, con su propio ícono.
+        // Se baja el .ipa, se firma en KSign y se instala (como Lara IPA).
+        id: "lb-app",
+        titulo: "LB — iOS Hub",
+        subtitulo: "The app · download & sign it",
+        url: "apps/lb.ipa",
+        icono: "appicon",
+        tipo: "descarga",
+        estado: "ultra",       // violeta reluciente: lo más alto
+        destacado: true,        // estilo llamativo (borde, latido, barrido)
+        cinta: "Recommended",
+        descargas: [318, 46],
+        nota:
+          "This whole hub as a <b>native app</b>, with its own icon and full screen. " +
+          "Download the <b>.ipa</b>, import it into <b>KSign</b>, sign it with your " +
+          "certificate and install — it opens normally and never expires early.",
+      },
+      {
         id: "lara",
         titulo: "Lara",
         subtitulo: "Tap to install (iOS)",
@@ -116,7 +134,7 @@ const SECCIONES = [
         url: "itms-services://?action=download-manifest&url=https://leonardob8777-bit.github.io/apps/lara.plist",
         icono: "lara",
         tipo: "install",
-        estado: "online",
+        estado: "popular",     // magenta: la instalación gratis más usada
         descargas: [2571, 44],
         nota: "Free version — needs a valid certificate to open.",
       },
@@ -128,6 +146,7 @@ const SECCIONES = [
         icono: "lara",
         tipo: "descarga",
         estado: "hot",
+        cinta: "Recommended",
         descargas: [1806, 29],
         nota:
           "The raw <b>.ipa</b> file. Download it, then import it into <b>KSign</b> " +
@@ -141,7 +160,7 @@ const SECCIONES = [
         url: "https://signtools.ipaomtk.com/",
         icono: "ksign",
         tipo: "externo",
-        estado: "online",
+        estado: "verified",    // azul: herramienta confiable
         nota:
           "Sign IPAs directly on your iPhone — no computer needed. " +
           "Install it first, then follow the <b>Guide</b> tab.",
@@ -167,6 +186,7 @@ const SECCIONES = [
         icono: "kravasign",
         tipo: "externo",
         estado: "hot",
+        cinta: "Best value",
         nota:
           "Paste your <b>UDID</b> there and complete the purchase. You'll receive a " +
           "<b>.p12</b> file and a <b>.mobileprovision</b> — those two go into KSign. " +
@@ -448,6 +468,9 @@ const ETIQUETA_ESTADO = {
   live:  "Live",  // rojo, con latido
   ultra: "Ultra", // violeta reluciente: lo más importante
   hot:  "Hot",  // naranja: lo destacado / recomendado
+  new:  "New",      // cian: recién agregado
+  popular: "Popular", // magenta: lo más usado
+  verified: "Verified", // azul: fuente confiable / verificada
 };
 
 /* =================================================================

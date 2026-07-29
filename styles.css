@@ -401,6 +401,7 @@ body.is-paused .link--featured .link__shine,
 body.is-paused .link--featured .link__arrow,
 body.is-paused .badge__dot,
 body.is-paused .badge--ultra::after,
+body.is-paused .link__ribbon::after,
 body.is-paused .status__dot::after { animation-play-state: paused !important; }
 
 /* -----------------------------------------------------------------
@@ -443,6 +444,7 @@ body.no-fx .glitch { display: none !important; }
 body.no-fx .link--featured,
 body.no-fx .link--featured .link__shine,
 body.no-fx .link--featured .link__arrow,
+body.no-fx .link__ribbon::after,
 body.no-fx .mesh::before,
 body.no-fx .mesh::after,
 body.no-fx .aurora::after,
@@ -1277,9 +1279,11 @@ body.is-glitching-micro .name::after {
 
 .link:hover {
   background: var(--glass-bg-hover);
-  transform: translateY(-2px) scale(1.012);
-  box-shadow: 0 14px 40px rgba(0,0,0,0.5),
-              inset 0 1px 0 rgba(255,255,255,0.3),
+  transform: translateY(-3px) scale(1.014);
+  /* Sumamos un halo del color del tema: la tarjeta "se enciende". */
+  box-shadow: 0 16px 44px rgba(0,0,0,0.5),
+              0 0 26px -8px var(--avatar-glow),
+              inset 0 1px 0 rgba(255,255,255,0.32),
               inset 0 -1px 0 rgba(0,0,0,0.25);
 }
 .link:active { transform: scale(0.978); }
@@ -1350,21 +1354,35 @@ body.is-glitching-micro .name::after {
   50%      { transform: translateX(4px); }
 }
 
-/* --- Cintita ("Recommended") --- */
+/* --- Cintita ("Recommended", "New", "Best value"...) --- */
 .link__ribbon {
   position: absolute;
   top: 0;
   right: 16px;
   z-index: 3;
+  overflow: hidden;
   padding: 3px 10px 4px;
   border-radius: 0 0 8px 8px;
-  background: var(--avatar-glow);
+  background: linear-gradient(135deg, var(--avatar-glow), #ffffff 130%);
   color: #04120b;
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  box-shadow: 0 3px 12px -2px var(--avatar-glow);
+  box-shadow: 0 3px 14px -2px var(--avatar-glow);
+}
+/* Destello que recorre la cinta, para que llame la atención */
+.link__ribbon::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.75) 50%, transparent);
+  transform: translateX(-130%) skewX(-18deg);
+  animation: ribbon-shine 3.4s ease-in-out infinite;
+}
+@keyframes ribbon-shine {
+  0%        { transform: translateX(-130%) skewX(-18deg); }
+  55%, 100% { transform: translateX(330%) skewX(-18deg); }
 }
 
 /* ---- Chip de estado dentro de la tarjeta ---- */
@@ -1458,6 +1476,39 @@ body.is-glitching-micro .name::after {
 @keyframes live-blink {
   0%, 100% { opacity: 1;   transform: scale(1); }
   50%      { opacity: 0.35; transform: scale(0.8); }
+}
+
+/* Chip "NEW" en cian: recién agregado */
+.badge--new {
+  color: #5eead4;
+  background: rgba(45, 212, 191, 0.14);
+  border-color: rgba(45, 212, 191, 0.42);
+}
+.badge--new .badge__dot {
+  animation: hot-pulse 1.8s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(45, 212, 191, 0.9);
+}
+
+/* Chip "POPULAR" en magenta: lo más usado */
+.badge--popular {
+  color: #f0abfc;
+  background: rgba(232, 121, 249, 0.15);
+  border-color: rgba(232, 121, 249, 0.42);
+}
+.badge--popular .badge__dot {
+  animation: hot-pulse 1.8s ease-in-out infinite;
+  box-shadow: 0 0 8px rgba(232, 121, 249, 0.9);
+}
+
+/* Chip "VERIFIED" en azul: fuente confiable / verificada */
+.badge--verified {
+  color: #7dd3fc;
+  background: rgba(56, 189, 248, 0.14);
+  border-color: rgba(56, 189, 248, 0.42);
+}
+.badge--verified .badge__dot {
+  background: #7dd3fc;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.95);
 }
 
 /* Pestaña "Live" del menú: texto rojo + puntito latiendo */

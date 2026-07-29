@@ -1024,11 +1024,12 @@ function activarBits() {
   if (!capa) return;
 
   const CELDA = 34;      // debe coincidir con la malla del CSS
+  // En celular NO dibujamos los bits: son cientos de nodos que se
+  // regeneran y animan `filter` → tirones. El fondo queda limpio y fluido.
   const esMovil = window.matchMedia("(pointer: coarse)").matches;
-  // En celular la mitad: 220 elementos animándose a la vez hacían
-  // que el scroll se sintiera con tirones.
-  const DENSIDAD = esMovil ? 0.045 : 0.075;
-  const MAX = esMovil ? 90 : 200;
+  if (esMovil) return;
+  const DENSIDAD = 0.075;
+  const MAX = 200;
 
   const reducido = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -1146,6 +1147,9 @@ function activarBits() {
 function activarGlitches() {
   // Respeta a quien pidió menos animaciones en su dispositivo.
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  // En celular NO corren los glitches: animan filter/clip-path a pantalla
+  // completa → son los "tirones". En desktop sí (aguanta de sobra).
+  if (window.matchMedia("(pointer: coarse)").matches) return;
 
   const cuerpo = document.body;
 

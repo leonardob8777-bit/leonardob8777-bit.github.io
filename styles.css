@@ -1753,3 +1753,41 @@ body.is-glitching-micro .name::after {
   .page { max-width: 560px; }
   .name { font-size: 1.7rem; }
 }
+
+/* =================================================================
+   MODO CELULAR FLUIDO  (rendimiento)
+   -----------------------------------------------------------------
+   En pantallas táctiles apagamos las animaciones CARAS (las que animan
+   filter / clip-path / box-shadow, o repintan texto): eran las que
+   causaban lag y tirones en el iPhone. El fondo queda quieto y limpio,
+   y solo dejamos animaciones baratas (transform / opacity). Se ve
+   premium y va fluido. En desktop se mantiene todo el show.
+   ================================================================= */
+@media (pointer: coarse) {
+  /* Fondo estático: la malla deja de viajar (así el backdrop-filter de
+     las tarjetas no se recalcula en cada cuadro); sin barrido ni glitch. */
+  .mesh::before,
+  .mesh::after { animation: none !important; }
+  .scan,
+  .glitch { display: none !important; }
+
+  /* Nombre fijo (el shimmer repinta el texto en cada cuadro). */
+  .name {
+    animation: none !important;
+    background: none !important;
+    -webkit-text-fill-color: var(--text) !important;
+  }
+
+  /* Tarjeta destacada: sin latido de sombra ni barrido (caros). Sigue
+     resaltando por el borde de color y el ícono grande. */
+  .link--featured { animation: none !important; }
+  .link--featured .link__shine { display: none !important; }
+
+  /* Chips y cintas: sin el destello que barre (siguen vivos por color y
+     glow, que no cuestan nada). */
+  .badge--ultra::after,
+  .link__ribbon::after { display: none !important; }
+
+  /* Blur del vidrio más liviano = scroll más suave. */
+  body { --glass-blur: 12px; }
+}

@@ -5,10 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Page not found — Leonardo B.</title>
   <meta name="robots" content="noindex" />
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'none';
+    script-src 'sha256-ovGakpt/bn8K8qI6DiPNjdpGLohRtS8lgotH9DNdGzU=';
+    style-src 'self';
+    img-src 'self';
+    font-src 'self';
+    connect-src 'none';
+    form-action 'none';
+    base-uri 'none';
+    object-src 'none';
+    upgrade-insecure-requests" />
   <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)" />
   <meta name="theme-color" content="#0D0D12" media="(prefers-color-scheme: dark)" />
   <link rel="icon" type="image/png" href="assets/vendor-icon.png" />
-  <link rel="stylesheet" href="styles.css?v=54" />
+  <link rel="stylesheet" href="styles.css?v=55" />
   <script>
     (function () {
       try {
@@ -19,34 +30,6 @@
       } catch (e) {}
     })();
   </script>
-  <style>
-    .err {
-      min-height: 100dvh;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      text-align: center;
-    }
-    .err__code {
-      color: var(--brand);
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-    .err__title {
-      margin-top: 12px;
-      font-size: clamp(26px, 5vw, 36px);
-      letter-spacing: -0.03em;
-    }
-    .err__msg {
-      margin-top: 12px;
-      max-width: 44ch;
-      color: var(--ink-2);
-      font-size: 16px;
-    }
-    .err__cta { margin-top: 26px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-  </style>
 </head>
 <body>
   <main class="err">

@@ -746,7 +746,14 @@ b { font-weight: 600; color: var(--ink); }
   color: var(--c);
 }
 .clink__icon svg { width: 21px; height: 21px; }
+
+/* Brand colours live here, not in a style="" attribute: the page's
+   Content-Security-Policy forbids inline styles outright. */
+.clink__icon--tg { --c: #229ED9; }
+.clink__icon--gh { --c: #6C5CE7; }
+.clink__icon--rd { --c: #FF4500; }
 .clink__icon--ink {
+  --c: var(--ink);
   background: var(--canvas);
   color: var(--ink);
 }
@@ -793,6 +800,44 @@ b { font-weight: 600; color: var(--ink); }
   margin-inline: auto;
   color: var(--ink-3);
   font-size: 13px;
+}
+
+/* -----------------------------------------------------------------
+   404 PAGE
+   Lives here rather than in a <style> block inside 404.html, so that
+   page can run under the same no-inline-styles CSP as the home page.
+   ----------------------------------------------------------------- */
+.err {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+}
+.err__code {
+  color: var(--brand);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.err__title {
+  margin-top: 12px;
+  font-size: clamp(26px, 5vw, 36px);
+  letter-spacing: -0.03em;
+}
+.err__msg {
+  margin-top: 12px;
+  max-width: 44ch;
+  color: var(--ink-2);
+  font-size: 16px;
+}
+.err__cta {
+  margin-top: 26px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 /* -----------------------------------------------------------------

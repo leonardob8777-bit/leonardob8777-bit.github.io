@@ -63,6 +63,41 @@ analíticas.
 
 ---
 
+## Seguridad
+
+La página lleva una **Content-Security-Policy** estricta en un `<meta>`
+de `index.html` y `404.html`. Parte de `default-src 'none'`: el navegador
+rechaza todo lo que no esté nombrado. Como todo lo que la página necesita
+es del propio dominio, **ningún host externo está permitido** — un script
+inyectado, un píxel de rastreo o un `fetch()` a otro dominio son
+bloqueados por el navegador, no por confianza.
+
+Probado: script externo, script inline sin hash, píxel de Google
+Analytics y `fetch()` a otro dominio → los cuatro bloqueados.
+
+**Dos reglas al editar:**
+
+1. El script inline del tema está permitido **por su hash SHA-256**, no
+   por `'unsafe-inline'`. Si lo tocas —aunque sea un espacio— hay que
+   recalcular el hash o dejará de ejecutarse:
+
+   ```bash
+   python3 -c "import re,hashlib,base64;s=open('index.html').read();b=re.search(r'<script>(.*?)</script>',s,re.S).group(1);print('sha256-'+base64.b64encode(hashlib.sha256(b.encode()).digest()).decode())"
+   ```
+
+2. **No uses `style=\"...\"` ni `<style>`**: la política prohíbe estilos
+   inline. Todo el CSS va en `styles.css`.
+
+**Lo que la CSP no cubre:** `frame-ancestors` (evitar que te metan en un
+iframe) solo funciona como cabecera HTTP real, y GitHub Pages no permite
+enviar cabeceras propias. Para eso haría falta poner un CDN delante
+(Cloudflare) con un dominio propio.
+
+**Dónde está el riesgo real:** la página es HTML estático, sin login ni
+base de datos ni formularios — no hay nada que atacar en ella. El único
+camino para modificarla es entrar a la cuenta de GitHub. La seguridad de
+verdad son el 2FA y las llaves de acceso de esa cuenta, no el código.
+
 ## Probar en local
 
 ```bash

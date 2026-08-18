@@ -2,203 +2,532 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- viewport-fit=cover: permite usar toda la pantalla del iPhone
-       (incluida la zona de la muesca / isla dinámica). -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <link rel="canonical" href="https://leonardob8777-bit.github.io/" />
 
-  <!-- ============================================================= -->
-  <!-- BASIC SEO                                                     -->
-  <!-- ============================================================= -->
-  <title>Leonardo Bt · iOS Hub</title>
-  <meta name="description" content="Signed IPAs, certificates, UDID tools and step-by-step guides for iOS sideloading." />
-  <meta name="author" content="Leonardo Bt" />
-  <meta name="theme-color" content="#030806" />
+  <title>Leonardo Baptiste — iOS Developer</title>
+  <meta name="description" content="Open-source iOS apps by Leonardo Baptiste. Vendor signs and installs apps from your own device; Eagle is an iOS personalization toolbox. All source code on GitHub." />
+  <meta name="author" content="Leonardo Baptiste" />
+  <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0D0D12" media="(prefers-color-scheme: dark)" />
 
-  <!-- ============================================================= -->
-  <!-- OPEN GRAPH                                                    -->
-  <!-- ============================================================= -->
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Leonardo Bt · iOS Hub" />
-  <meta property="og:description" content="Signed IPAs, certificates, UDID tools and step-by-step guides for iOS sideloading." />
-  <meta property="og:image" content="https://leonardob8777-bit.github.io/assets/og-image.jpg" />
+  <meta property="og:title" content="Leonardo Baptiste — iOS Developer" />
+  <meta property="og:description" content="Open-source iOS apps: Vendor, Eagle and more. All source code on GitHub." />
+  <meta property="og:image" content="https://leonardob8777-bit.github.io/assets/og-image.jpg?v=2" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:url" content="https://leonardob8777-bit.github.io/" />
   <meta property="og:locale" content="en_US" />
 
-  <!-- ============================================================= -->
-  <!-- TWITTER CARD                                                  -->
-  <!-- ============================================================= -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Leonardo Bt · iOS Hub" />
-  <meta name="twitter:description" content="Signed IPAs, certificates, UDID tools and step-by-step guides for iOS sideloading." />
-  <meta name="twitter:image" content="https://leonardob8777-bit.github.io/assets/og-image.jpg" />
+  <meta name="twitter:title" content="Leonardo Baptiste — iOS Developer" />
+  <meta name="twitter:description" content="Open-source iOS apps: Vendor, Eagle and more." />
+  <meta name="twitter:image" content="https://leonardob8777-bit.github.io/assets/og-image.jpg?v=2" />
 
-  <!-- ============================================================= -->
-  <!-- PRIVACIDAD                                                    -->
-  <!-- no-referrer: cuando alguien toca un enlace, el otro sitio NO  -->
-  <!-- se entera de que vino de acá.                                 -->
-  <!-- ============================================================= -->
+  <!-- no-referrer: the destination site never learns a click came from here. -->
   <meta name="referrer" content="no-referrer" />
   <meta name="robots" content="index, follow" />
 
-  <!-- FAVICON / APP INSTALABLE -->
-  <link rel="icon" type="image/png" href="assets/lb-icon.png" />
-  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-  <link rel="apple-touch-icon" href="assets/lb-icon.png" />
+  <link rel="icon" type="image/png" href="assets/vendor-icon.png" />
+  <link rel="apple-touch-icon" href="assets/vendor-icon.png" />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Leonardo Bt" />
 
-  <!-- ============================================================= -->
-  <!-- FUENTE AUTO-HOSPEDADA                                         -->
-  <!-- Antes venía de Google Fonts: eso le mandaba la IP de CADA     -->
-  <!-- visitante a Google. Ahora el archivo vive en este mismo sitio -->
-  <!-- → cero pedidos a terceros y carga más rápido.                 -->
-  <!-- ============================================================= -->
+  <!-- Self-hosted font: no request ever reaches a third party. -->
   <link rel="preload" href="assets/fonts/space-grotesk-latin.woff2"
         as="font" type="font/woff2" crossorigin />
 
-  <!-- El ?v= evita que el navegador use una versión vieja en caché.
-       Subí el número cada vez que edites styles.css. -->
-  <link rel="stylesheet" href="styles.css?v=46" />
+  <!-- ?v= busts the cache — bump it whenever styles.css or script.js change. -->
+  <link rel="stylesheet" href="styles.css?v=54" />
 
-  <!-- Datos estructurados: ayuda a Google a entender de quién es -->
+  <!-- Applied before first paint so there's no flash of the wrong theme. -->
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("lb-scheme");
+        if (saved === "light" || saved === "dark") {
+          document.documentElement.setAttribute("data-scheme", saved);
+        }
+      } catch (e) {}
+    })();
+  </script>
+
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "ProfilePage",
-    "mainEntity": {
-      "@type": "Person",
-      "name": "Leonardo Bt",
-      "alternateName": "@leonardo.bt4",
-      "url": "https://leonardob8777-bit.github.io/",
-      "image": "https://leonardob8777-bit.github.io/assets/avatar.jpg",
-      "sameAs": [
-        "https://www.tiktok.com/@leonardo.bt4",
-        "https://t.me/leonardoPhl"
-      ]
-    }
+    "@type": "Person",
+    "name": "Leonardo Baptiste",
+    "alternateName": "Leonardo Bt",
+    "jobTitle": "iOS Developer",
+    "url": "https://leonardob8777-bit.github.io/",
+    "image": "https://leonardob8777-bit.github.io/assets/avatar.jpg",
+    "sameAs": [
+      "https://github.com/leonardob8777-bit",
+      "https://t.me/LBsignapp",
+      "https://www.reddit.com/user/ComprehensiveRole412/",
+      "https://www.tiktok.com/@leonardo.bt4"
+    ]
   }
   </script>
 </head>
 
 <body>
-  <!-- Fondo: malla cyber animada + resplandor + barrido + glitches -->
-  <div class="mesh" aria-hidden="true"></div>
-  <div class="aurora" aria-hidden="true"></div>
-  <div class="scan" aria-hidden="true"></div>
+  <a class="skip" href="#main">Skip to content</a>
 
-  <!-- Lluvia de bits: unos y ceros que aparecen y desaparecen -->
-  <div class="bits" id="bits" aria-hidden="true"></div>
+  <header class="topbar" id="top">
+    <div class="wrap topbar__inner">
+      <a class="brandmark" href="#top">
+        <img src="assets/avatar.jpg?v=2" alt="" width="30" height="30" />
+        <span>Leonardo Baptiste</span>
+      </a>
 
-  <div class="glitch" aria-hidden="true"></div>
+      <nav class="topnav" aria-label="Sections">
+        <a href="#apps">Apps</a>
+        <a href="#source">Open source</a>
+        <a href="#guide">Guide</a>
+        <a href="#contact">Contact</a>
+      </nav>
 
-  <!-- Si el JavaScript no carga, la página quedaría vacía: este aviso
-       evita que el visitante vea una pantalla en blanco. -->
-  <noscript>
-    <div class="noscript">
-      <h1>Leonardo Bt</h1>
-      <p>This page needs JavaScript enabled. Please turn it on and reload.</p>
-      <p><a href="https://t.me/leonardoPhl">Contact me on Telegram</a></p>
+      <button class="scheme" id="scheme" type="button" aria-label="Switch color theme">
+        <svg class="scheme__sun" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2"/>
+          <path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>
+        </svg>
+        <svg class="scheme__moon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/>
+        </svg>
+      </button>
     </div>
-  </noscript>
+  </header>
 
-  <a class="skip" href="#content">Skip to content</a>
+  <main id="main">
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+      <div class="wrap hero__inner">
+        <img class="hero__avatar" src="assets/avatar.jpg?v=2"
+             alt="Leonardo Baptiste" width="92" height="92" fetchpriority="high" />
 
-  <!-- ================= PERSONALIZACIÓN ================= -->
-  <button class="gear" id="gear" type="button"
-          aria-label="Appearance settings" aria-expanded="false" aria-controls="panel">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="3"/>
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-    </svg>
-  </button>
+        <h1 class="hero__name">Leonardo Baptiste</h1>
+        <p class="hero__role">iOS Developer</p>
 
-  <div class="panel" id="panel" role="dialog" aria-label="Appearance settings">
-    <p class="panel__title">Theme</p>
-    <div class="themes" id="themes"></div>
+        <p class="hero__bio">
+          I build open-source iOS apps in Swift. Everything I make runs entirely on
+          your device — no accounts, no servers, nothing uploaded anywhere.
+          The source code for all of it is public.
+        </p>
 
-    <p class="panel__title">Display</p>
-    <button class="toggle" id="fx-toggle" type="button" aria-pressed="true">
-      <span>Background effects</span>
-      <span class="toggle__switch" aria-hidden="true"></span>
-    </button>
-    <button class="toggle" id="contrast-toggle" type="button" aria-pressed="false">
-      <span>High contrast</span>
-      <span class="toggle__switch" aria-hidden="true"></span>
-    </button>
-    <button class="toggle" id="share-btn" type="button" hidden>
-      <span>Share this page</span>
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-        <polyline points="16 6 12 2 8 6"/>
-        <line x1="12" y1="2" x2="12" y2="15"/>
-      </svg>
-    </button>
-
-    <p class="panel__note">
-      Your choice is saved on this device only. This site sets no cookies,
-      uses no analytics and loads nothing from third parties.
-    </p>
-  </div>
-
-  <div class="page">
-    <!-- ================= HERO / PERFIL ================= -->
-    <header class="hero">
-      <div class="avatar-wrap">
-        <img class="avatar" src="assets/avatar.jpg"
-             alt="Leonardo Bt profile photo" width="112" height="112" fetchpriority="high" />
-      </div>
-
-      <!-- data-text = el mismo texto: lo usan las capas del glitch -->
-      <h1 class="name" data-text="Leonardo Bt">Leonardo Bt</h1>
-      <p class="handle">@leonardo.bt4</p>
-
-      <p class="bio">Signed IPAs, certificates and guides — everything in one place.</p>
-
-      <div class="meta">
-        <!-- Indicador "live": el punto late y el texto lo pone el JS -->
-        <div class="status" id="status" role="status">
-          <span class="status__dot" aria-hidden="true"></span>
-          <span class="status__text">Checking status…</span>
+        <div class="hero__cta">
+          <a class="btn btn--primary" href="https://github.com/leonardob8777-bit"
+             target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7 0-.7 0-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 5.3 18 5.6 18 5.6c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/>
+            </svg>
+            View my code
+          </a>
+          <a class="btn" href="#apps">Browse apps</a>
         </div>
 
-        <!-- Contador de visitantes. Tocalo y aparece la palabra. -->
-        <button class="viewers" id="viewers" type="button"
-                aria-label="Visitors browsing right now">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M1.5 12S5 5.5 12 5.5 22.5 12 22.5 12 19 18.5 12 18.5 1.5 12 1.5 12z"/>
-            <circle cx="12" cy="12" r="3.2"/>
-          </svg>
-          <span class="viewers__n" id="viewers-n">—</span>
-          <span class="viewers__label">visitors</span>
-        </button>
+        <ul class="trust">
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3l7.5 3.3v5.2c0 4.7-3.1 8.6-7.5 10.2-4.4-1.6-7.5-5.5-7.5-10.2V6.3z"/>
+              <polyline points="9 12 11 14 15.5 9.5"/>
+            </svg>
+            Runs on-device
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+            </svg>
+            Open source
+          </li>
+          <li>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 2a10 10 0 1 0 10 10"/><path d="M21.5 2.5 12 12"/>
+            </svg>
+            No tracking, no cookies
+          </li>
+        </ul>
       </div>
-    </header>
+    </section>
 
-    <!-- ================= NAV DE CATEGORÍAS ================= -->
-    <!-- Se genera desde script.js a partir de las secciones -->
-    <nav class="catnav" id="catnav" role="tablist" aria-label="Categories"></nav>
+    <!-- ================= APPS ================= -->
+    <section class="band" id="apps">
+      <div class="wrap">
+        <div class="sechead">
+          <h2>Apps</h2>
+          <p>Free and open source. Downloads come from GitHub releases —
+             full details are in each repository.</p>
+        </div>
 
-    <!-- ================= SECCIONES ================= -->
-    <!-- Todo el contenido lo dibuja script.js -->
-    <main id="content"></main>
+        <div class="apps">
+          <!-- VENDOR -->
+          <article class="app app--lead">
+            <div class="app__head">
+              <img class="app__icon" src="assets/vendor-icon.png" alt=""
+                   width="72" height="72" loading="lazy" />
+              <div class="app__id">
+                <h3>Vendor</h3>
+                <p class="app__tag">Sign and install iOS apps from your own device</p>
+                <div class="app__meta">
+                  <span class="chip chip--brand">v0.6.4</span>
+                  <span class="chip">Swift</span>
+                  <span class="chip">MIT</span>
+                  <span class="chip">21.6 MB</span>
+                </div>
+              </div>
+            </div>
 
-    <footer class="footer">
-      <p>© <span id="year"></span> Leonardo Bt · Made with ♥</p>
+            <p class="app__desc">
+              Signs IPAs with your own certificate and installs them from the phone
+              itself — no computer, no Apple ID, nothing leaves the device.
+            </p>
+
+            <div class="app__cta">
+              <a class="btn btn--primary"
+                 href="https://github.com/leonardob8777-bit/Vendor/releases/latest"
+                 target="_blank" rel="noopener noreferrer">Download IPA</a>
+              <a class="btn"
+                 href="https://github.com/leonardob8777-bit/Vendor"
+                 target="_blank" rel="noopener noreferrer">Source code</a>
+            </div>
+
+            <p class="app__note">
+              The IPA is unsigned on purpose — <a href="#guide">the guide</a> covers
+              signing it the first time.
+            </p>
+          </article>
+
+          <!-- EAGLE -->
+          <article class="app">
+            <div class="app__head">
+              <img class="app__icon" src="assets/eagle-icon.png" alt=""
+                   width="72" height="72" loading="lazy" />
+              <div class="app__id">
+                <h3>Eagle</h3>
+                <p class="app__tag">iOS personalization toolbox</p>
+                <div class="app__meta">
+                  <span class="chip chip--beta">v0.3.0 beta 8</span>
+                  <span class="chip">Swift</span>
+                  <span class="chip">AGPL-3.0</span>
+                  <span class="chip">11 MB</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="app__desc">
+              Styles, wallpapers, icons, dock and more — iOS personalization
+              built on DarkSword.
+            </p>
+
+            <div class="app__cta">
+              <!-- Straight to the repo: every Eagle build is flagged as a
+                   pre-release, so GitHub has no "latest" to redirect to. -->
+              <a class="btn btn--primary"
+                 href="https://github.com/leonardob8777-bit/Eagle"
+                 target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7 0-.7 0-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 5.3 18 5.6 18 5.6c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/>
+                </svg>
+                Get it on GitHub
+              </a>
+            </div>
+
+            <p class="app__note app__note--warn">
+              Public beta — experimental features can respring the device.
+              Back up first.
+            </p>
+          </article>
+
+          <!-- DUCK -->
+          <article class="app app--wip">
+            <div class="app__head">
+              <span class="app__icon app__icon--placeholder" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14.7 6.3a3 3 0 1 0-4.4 4L3 17.6V21h3.4l7.3-7.3a3 3 0 0 0 4-4.4z"/>
+                  <path d="M17 3v4M15 5h4"/>
+                </svg>
+              </span>
+              <div class="app__id">
+                <h3>duck</h3>
+                <p class="app__tag">Customization toolbox</p>
+                <div class="app__meta">
+                  <span class="chip chip--wip">Coming soon</span>
+                </div>
+              </div>
+            </div>
+
+            <p class="app__desc">
+              A customization toolbox built on DarkSword. Coming soon —
+              nothing to install yet.
+            </p>
+
+            <div class="app__cta">
+              <a class="btn" href="https://t.me/LBsignapp"
+                 target="_blank" rel="noopener noreferrer">Get notified</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= OPEN SOURCE ================= -->
+    <section class="band band--alt" id="source">
+      <div class="wrap">
+        <div class="sechead">
+          <h2>Open source</h2>
+          <p>Every line of every app is public. Read it, audit it, build it yourself,
+             or open an issue.</p>
+        </div>
+
+        <div class="repos">
+          <a class="repo" href="https://github.com/leonardob8777-bit/Eagle"
+             target="_blank" rel="noopener noreferrer">
+            <span class="repo__name">Eagle</span>
+            <span class="repo__desc">Experimental iOS personalization powered by DarkSword — public beta</span>
+            <span class="repo__meta">
+              <span class="dot dot--swift" aria-hidden="true"></span>Swift
+              <span class="repo__sep">·</span>AGPL-3.0
+            </span>
+          </a>
+
+          <a class="repo" href="https://github.com/leonardob8777-bit/Vendor"
+             target="_blank" rel="noopener noreferrer">
+            <span class="repo__name">Vendor</span>
+            <span class="repo__desc">Sign and install iOS apps from your own device</span>
+            <span class="repo__meta">
+              <span class="dot dot--swift" aria-hidden="true"></span>Swift
+              <span class="repo__sep">·</span>MIT
+            </span>
+          </a>
+
+          <a class="repo" href="https://github.com/leonardob8777-bit/duck"
+             target="_blank" rel="noopener noreferrer">
+            <span class="repo__name">duck</span>
+            <span class="repo__desc">A customization toolbox that utilizes DarkSword</span>
+            <span class="repo__meta">Coming soon</span>
+          </a>
+        </div>
+
+        <p class="repos__all">
+          <a href="https://github.com/leonardob8777-bit"
+             target="_blank" rel="noopener noreferrer">All repositories on GitHub →</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- ================= GUIDE ================= -->
+    <section class="band" id="guide">
+      <div class="wrap">
+        <div class="sechead">
+          <h2>Installing a signed app</h2>
+          <p>How to get Vendor onto your iPhone and sign apps with it.
+             About ten minutes end to end.</p>
+        </div>
+
+        <ol class="steps">
+          <li class="step">
+            <span class="step__n">1</span>
+            <div class="step__body">
+              <h3>Get your device UDID</h3>
+              <p>
+                Your UDID identifies your iPhone — a signing certificate gets locked to
+                it. Open <a href="https://udid.tech/" target="_blank" rel="noopener noreferrer">udid.tech</a>
+                in Safari on the phone, follow the steps, and copy the code it gives you.
+              </p>
+            </div>
+          </li>
+
+          <li class="step">
+            <span class="step__n">2</span>
+            <div class="step__body">
+              <h3>Get a signing certificate</h3>
+              <p>
+                A certificate is what lets iOS actually open a signed app. You can use a
+                free Apple developer account — apps expire every 7 days — or buy a
+                certificate from a signing service using the UDID you copied, which lasts
+                up to a year. Either way you end up with a <b>.p12</b> file, a
+                <b>.mobileprovision</b> and a password. Keep all three.
+              </p>
+            </div>
+          </li>
+
+          <li class="step">
+            <span class="step__n">3</span>
+            <div class="step__body">
+              <h3>Install Vendor once</h3>
+              <p>
+                Vendor can't sign its own first install — nothing on a fresh phone can
+                sign anything yet. Download the IPA from the <a href="#apps">Apps
+                section</a> and sign it once with any signer you already have (AltStore,
+                SideStore, Xcode or a web signer). Then open <b>Settings → General →
+                VPN &amp; Device Management</b> and tap <b>Trust</b> on its profile.
+              </p>
+            </div>
+          </li>
+
+          <li class="step">
+            <span class="step__n">4</span>
+            <div class="step__body">
+              <h3>Import your certificate into Vendor</h3>
+              <p>
+                Open Vendor → <b>Certificates</b> → import the <b>.p12</b> and the
+                <b>.mobileprovision</b>, then type the password. It stays on the device
+                and is kept out of iCloud backups, so you only do this once.
+              </p>
+            </div>
+          </li>
+
+          <li class="step">
+            <span class="step__n">5</span>
+            <div class="step__body">
+              <h3>Sign and install anything</h3>
+              <p>
+                Pick an IPA in Vendor, choose your certificate and tap <b>Sign</b>, then
+                <b>Install</b>. It lands on your home screen — no cable, no computer, no
+                third party in between. From here on Vendor handles its own updates too.
+              </p>
+            </div>
+          </li>
+
+          <li class="step">
+            <span class="step__n">6</span>
+            <div class="step__body">
+              <h3>When a certificate expires</h3>
+              <p>
+                Apps stop opening once their certificate is revoked or expires. Vendor
+                warns you 7 days and 1 day ahead, and can re-sign everything in a single
+                batch when you have a new one. Nothing has to be downloaded again.
+              </p>
+            </div>
+          </li>
+        </ol>
+
+        <p class="guide__help">
+          Stuck on a step?
+          <a href="https://t.me/leonardoPhl" target="_blank" rel="noopener noreferrer">Message me on Telegram</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ================= CONTACT ================= -->
+    <section class="band band--alt" id="contact">
+      <div class="wrap">
+        <div class="sechead">
+          <h2>Contact</h2>
+          <p>Updates and new releases go to the Telegram channel first.
+             For anything else, reach me directly.</p>
+        </div>
+
+        <div class="links">
+          <a class="clink clink--lead" href="https://t.me/LBsignapp"
+             target="_blank" rel="noopener noreferrer">
+            <span class="clink__icon" style="--c:#229ED9">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M21.9 4.3 18.7 19c-.2 1-.9 1.3-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.8-8c.4-.3-.1-.5-.6-.2L6.6 12.7l-4.7-1.5c-1-.3-1-1 .2-1.5l18.4-7.1c.9-.3 1.6.2 1.4 1.7z"/>
+              </svg>
+            </span>
+            <span class="clink__body">
+              <span class="clink__title">Telegram channel</span>
+              <span class="clink__sub">Release announcements and help · @LBsignapp</span>
+            </span>
+            <svg class="clink__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
+
+          <a class="clink" href="https://t.me/leonardoPhl"
+             target="_blank" rel="noopener noreferrer">
+            <span class="clink__icon" style="--c:#229ED9">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M21.9 4.3 18.7 19c-.2 1-.9 1.3-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.9 8.8-8c.4-.3-.1-.5-.6-.2L6.6 12.7l-4.7-1.5c-1-.3-1-1 .2-1.5l18.4-7.1c.9-.3 1.6.2 1.4 1.7z"/>
+              </svg>
+            </span>
+            <span class="clink__body">
+              <span class="clink__title">Direct message</span>
+              <span class="clink__sub">Telegram · @leonardoPhl</span>
+            </span>
+            <svg class="clink__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
+
+          <a class="clink" href="https://github.com/leonardob8777-bit"
+             target="_blank" rel="noopener noreferrer">
+            <span class="clink__icon" style="--c:#6C5CE7">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7 0-.7 0-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17 5.3 18 5.6 18 5.6c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/>
+              </svg>
+            </span>
+            <span class="clink__body">
+              <span class="clink__title">GitHub</span>
+              <span class="clink__sub">Source code and issues · @leonardob8777-bit</span>
+            </span>
+            <svg class="clink__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
+
+          <a class="clink" href="https://www.reddit.com/user/ComprehensiveRole412/"
+             target="_blank" rel="noopener noreferrer">
+            <span class="clink__icon" style="--c:#FF4500">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M22 11.8a2.3 2.3 0 0 0-3.9-1.6 11.3 11.3 0 0 0-5.6-1.7l1-4.4 3.1.7a1.8 1.8 0 1 0 .3-1.4l-3.8-.9a.7.7 0 0 0-.8.5l-1.2 5.4A11.4 11.4 0 0 0 5.9 10a2.3 2.3 0 1 0-2.6 3.7 4.3 4.3 0 0 0 0 .7c0 3.5 4 6.3 9 6.3s9-2.8 9-6.3a4.3 4.3 0 0 0 0-.7 2.3 2.3 0 0 0 .7-1.9zM7.7 13.4a1.6 1.6 0 1 1 1.6 1.6 1.6 1.6 0 0 1-1.6-1.6zm8.7 4.1a5.9 5.9 0 0 1-4.1 1.3 5.9 5.9 0 0 1-4.1-1.3.6.6 0 0 1 .8-.8 4.8 4.8 0 0 0 3.3 1 4.8 4.8 0 0 0 3.3-1 .6.6 0 0 1 .8.8zm-1.7-2.5a1.6 1.6 0 1 1 1.6-1.6 1.6 1.6 0 0 1-1.6 1.6z"/>
+              </svg>
+            </span>
+            <span class="clink__body">
+              <span class="clink__title">Reddit</span>
+              <span class="clink__sub">u/ComprehensiveRole412</span>
+            </span>
+            <svg class="clink__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
+
+          <a class="clink" href="https://www.tiktok.com/@leonardo.bt4"
+             target="_blank" rel="noopener noreferrer">
+            <span class="clink__icon clink__icon--ink">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M16.6 5.8a4.8 4.8 0 0 1-1.1-3.1h-3.2v12.6a2.7 2.7 0 1 1-2-2.6V9.4a5.9 5.9 0 1 0 5.2 5.9V9a8 8 0 0 0 4.6 1.5V7.3a4.8 4.8 0 0 1-3.5-1.5z"/>
+              </svg>
+            </span>
+            <span class="clink__body">
+              <span class="clink__title">TikTok</span>
+              <span class="clink__sub">@leonardo.bt4</span>
+            </span>
+            <svg class="clink__arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__inner">
+      <p class="footer__line">© <span id="year">2026</span> Leonardo Baptiste</p>
       <p class="footer__note">
-        No cookies · No analytics · No third-party requests
+        This site sets no cookies, runs no analytics and loads nothing from third
+        parties. Not affiliated with Apple Inc.
       </p>
-      <p class="footer__note">Not affiliated with Apple Inc. Use at your own risk.</p>
-    </footer>
-  </div>
+    </div>
+  </footer>
 
-  <script src="script.js?v=46" defer></script>
+  <script src="script.js?v=54" defer></script>
 </body>
 </html>

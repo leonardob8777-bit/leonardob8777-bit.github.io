@@ -3,13 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>404 · Leonardo Bt</title>
+  <title>Page not found — Leonardo Baptiste</title>
   <meta name="robots" content="noindex" />
-  <meta name="theme-color" content="#030806" />
-  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" />
-  <link rel="stylesheet" href="styles.css?v=46" />
+  <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0D0D12" media="(prefers-color-scheme: dark)" />
+  <link rel="icon" type="image/png" href="assets/vendor-icon.png" />
+  <link rel="stylesheet" href="styles.css?v=54" />
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem("lb-scheme");
+        if (saved === "light" || saved === "dark") {
+          document.documentElement.setAttribute("data-scheme", saved);
+        }
+      } catch (e) {}
+    })();
+  </script>
   <style>
-    /* Pantalla de error, centrada y con el mismo lenguaje visual */
     .err {
       min-height: 100dvh;
       display: grid;
@@ -17,53 +27,42 @@
       padding: 24px;
       text-align: center;
     }
-    .err__box {
-      max-width: 380px;
-      padding: 30px 26px;
-      border-radius: 24px;
-      background: var(--glass-bg);
-      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-              backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      box-shadow: var(--shadow);
-    }
     .err__code {
-      font-size: 3.4rem;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      line-height: 1;
-      color: var(--bit);
-      text-shadow: 0 0 22px rgba(60, 255, 140, 0.45);
-    }
-    .err__msg { margin-top: 10px; font-size: 0.95rem; color: var(--text-muted); }
-    .err__link {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 11px 22px;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.92);
-      color: #08120c;
+      color: var(--brand);
+      font-size: 15px;
       font-weight: 600;
-      font-size: 0.88rem;
-      text-decoration: none;
-      transition: transform 0.2s var(--ease);
+      letter-spacing: .08em;
+      text-transform: uppercase;
     }
-    .err__link:hover { transform: translateY(-2px) scale(1.03); }
+    .err__title {
+      margin-top: 12px;
+      font-size: clamp(26px, 5vw, 36px);
+      letter-spacing: -0.03em;
+    }
+    .err__msg {
+      margin-top: 12px;
+      max-width: 44ch;
+      color: var(--ink-2);
+      font-size: 16px;
+    }
+    .err__cta { margin-top: 26px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
   </style>
 </head>
 <body>
-  <div class="mesh" aria-hidden="true"></div>
-  <div class="aurora" aria-hidden="true"></div>
-  <div class="bits" id="bits" aria-hidden="true"></div>
-
   <main class="err">
-    <div class="err__box">
-      <p class="err__code">404</p>
-      <p class="err__msg">This page doesn't exist — or it was moved.</p>
-      <a class="err__link" href="./">Back to the hub</a>
+    <div>
+      <p class="err__code">Error 404</p>
+      <h1 class="err__title">This page doesn't exist</h1>
+      <p class="err__msg">
+        The link may be outdated, or the page was moved somewhere else.
+      </p>
+      <div class="err__cta">
+        <a class="btn btn--primary" href="./">Back to home</a>
+        <a class="btn" href="https://t.me/leonardoPhl" target="_blank" rel="noopener noreferrer">
+          Message me
+        </a>
+      </div>
     </div>
   </main>
-
-  <script src="script.js?v=46" defer></script>
 </body>
 </html>

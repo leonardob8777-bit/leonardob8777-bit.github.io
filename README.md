@@ -1,285 +1,72 @@
-# Leonardo Bt · iOS Hub
+# leonardob8777-bit.github.io
 
-Sitio web estático con estética *cyber / liquid glass*: categorías en
-pestañas, malla animada de fondo, glitches aleatorios e instalación de
-apps iOS (OTA) desde el propio dominio.
+Sitio personal de **Leonardo Baptiste** — desarrollador iOS.
+Presenta las apps propias (Vendor, Eagle, duck), los repositorios de
+código abierto, una guía de instalación y los canales de contacto.
 
-Hecho con **HTML + CSS + JavaScript vanilla**. Sin frameworks, sin
-backend, sin base de datos y sin build step. Alojado gratis en
-**GitHub Pages**: <https://leonardob8777-bit.github.io/>
+En vivo: <https://leonardob8777-bit.github.io/>
 
----
-
-## 📁 Estructura
-
-```
-link-in-bio/
-├── index.html      → esqueleto + meta tags (SEO, Open Graph, privacidad)
-├── styles.css      → diseño + los 5 temas de color
-├── script.js       → CONFIGURACIÓN (lo único que editás) + motor
-├── manifest.webmanifest → permite "Agregar a inicio" en el iPhone
-├── 404.html        → página de error con el mismo diseño
-├── robots.txt / sitemap.xml → SEO
-├── assets/
-│   ├── avatar.jpg      → foto de perfil
-│   ├── favicon.svg     → ícono de la pestaña
-│   ├── og-image.jpg    → imagen al compartir el link (1200x630)
-│   ├── fonts/          → la tipografía, auto-hospedada (privacidad)
-│   ├── lara.png        → logo de la app Lara
-│   ├── ksign.png       → logo de KSign
-│   └── bg.jpg          → (sin usar; era el fondo de foto anterior)
-├── apps/
-│   ├── lara.ipa        → la app
-│   └── lara.plist      → manifiesto de instalación OTA
-└── profiles/
-    └── anti-revoke.mobileconfig  → perfil DNS
-```
+HTML + CSS + JavaScript sin frameworks, sin backend y sin paso de
+compilación. Alojado en GitHub Pages.
 
 ---
 
-## a) ➕ Agregar una tarjeta o una categoría
+## Estructura
 
-Todo sale del array `SECCIONES` al principio de **`script.js`**.
-Cada elemento del array es **una pestaña**. El orden del array es el
-orden del menú: para reordenar, movés el bloque de lugar.
-
-### Tarjeta nueva
-
-Buscá la categoría y copiá un bloque `{ ... }`:
-
-```js
-{
-  id: "nombre-unico",        // sin espacios
-  titulo: "Texto grande",
-  subtitulo: "Texto chico",  // "" si no querés
-  url: "https://...",
-  icono: "telegram",         // nombre del objeto ICONS
-  tipo: "externo",
-  estado: "online",          // opcional
-  nota: "",                  // texto extra opcional
-}
+```
+├── index.html            → todo el contenido de la página
+├── styles.css            → diseño completo (claro y oscuro)
+├── script.js             → tema, nav activa y aparición al hacer scroll
+├── 404.html              → página de error
+├── manifest.webmanifest  → permite "Añadir a inicio" en el iPhone
+└── assets/               → imágenes, íconos y la fuente
 ```
 
-**Tipos disponibles:**
+Las descargas de apps apuntan a las *releases* de GitHub, así que el
+repositorio no guarda ningún `.ipa`. Las apps y perfiles antiguos
+(Lara, LB, los `.mobileconfig`) se eliminaron; siguen en el historial
+de git si alguna vez hicieran falta.
 
-| tipo | qué hace |
-|---|---|
-| `externo` | abre en pestaña nueva |
-| `install` | instalación OTA de iOS (`itms-services://`) |
-| `perfil`  | perfil de configuración `.mobileconfig` |
-| `descarga`| fuerza la descarga del archivo |
-| `interno` | salta a otra categoría (ej. `url: "#guide"`) |
-
-**Estados** (el chip de color): `online` verde · `hot` naranja ·
-`offline` rojo · `soon` ámbar · `live` rojo con latido.
-
-### Categoría nueva
-
-Copiá un bloque entero de `SECCIONES`. El menú se actualiza solo.
-Si le agregás `acento: "live"`, la pestaña se pinta de rojo.
-
-### Paso nuevo en la guía
-
-La categoría `guide` usa `pasos` en vez de `items`. Agregás
-`{ titulo, detalle }` y el número se pone solo. Podés usar `<b>`.
-
-### Ícono nuevo
-
-En el objeto `ICONS` agregás tu SVG (con `fill="currentColor"`) o una
-imagen: `milogo: '<img class="logo" src="assets/milogo.png" alt="" />'`.
-Si el nombre no existe, cae en un ícono genérico (no rompe nada).
+Todo el contenido vive en `index.html`. La página funciona con
+JavaScript desactivado: el script solo añade el cambio de tema, el
+resaltado de la sección actual y una aparición suave al hacer scroll.
 
 ---
 
-## b) 📲 Actualizar la app instalable (IPA)
+## Cómo editar
 
-El botón instala desde tu propio dominio usando `apps/lara.plist`.
+**Cambiar textos, apps o enlaces** → `index.html`. Cada sección está
+marcada con un comentario (`APPS`, `OPEN SOURCE`, `GUIDE`, `CONTACT`).
 
-**Cuando el certificado se vence** (la app instala pero no abre):
+**Publicar una versión nueva de una app** → no hace falta tocar nada:
+los botones apuntan a `/releases/latest` en GitHub. Solo actualizá el
+número de versión y el tamaño en el bloque `app__meta` de esa tarjeta.
 
-1. Volvés a firmar la app y conseguís el `.ipa` nuevo.
-2. Lo ponés en `apps/` **con el mismo nombre** (`lara.ipa`).
-3. Commit + push. **No hay que tocar el `.plist` ni el botón.**
-
-**Para agregar otra app**: copiás `apps/lara.plist` como
-`apps/otra.plist`, cambiás dentro la URL del `.ipa`, el
-`bundle-identifier` y el `title`; después agregás la tarjeta con
-`tipo: "install"` apuntando a:
-
-```
-itms-services://?action=download-manifest&url=https://leonardob8777-bit.github.io/apps/otra.plist
-```
-
-> ⚠️ GitHub bloquea archivos de más de 100 MB.
+**Después de editar `styles.css` o `script.js`** → subí el número de
+`?v=` en `index.html` (y en `404.html`), o los visitantes seguirán
+viendo la versión vieja en caché. Lo mismo vale para la foto de perfil:
+si la reemplazás, subí el `?v=` de `assets/avatar.jpg`.
 
 ---
 
-## c) 🎨 Cambiar los colores
+## Diseño
 
-Todo sale del bloque `:root` al principio de `styles.css`:
+La paleta sale del tema de la app Vendor
+(`Vendor/Views/VendorTheme.swift`) a propósito, para que la web y la
+app se lean como un mismo producto. El color de marca es
+`#6C5CE7` en claro y `#8B7CF6` en oscuro; si cambia en la app, hay que
+cambiarlo también en `styles.css`.
 
-```css
---bg: #030806;                          /* fondo base */
---mesh:      rgba(40, 255, 130, 0.15);  /* rejilla principal */
---mesh-fine: rgba(40, 255, 130, 0.05);  /* rejilla micro */
---mesh-glow: rgba(20, 210, 110, 0.18);  /* resplandor */
---bit:       rgba(80, 255, 150, 0.85);  /* los 1 y 0 */
---text:       #f6f7fc;
---text-muted: #b3b9d1;
---glass-bg:   rgba(255,255,255,0.055);  /* vidrio de las tarjetas */
---glass-blur: 22px;
-```
-
-Eso cambia el tema **por defecto**. Si querés que el visitante pueda
-elegir entre varios, mirá la sección (f) Temas de color.
+La fuente (Space Grotesk) está alojada en este mismo repositorio: la
+página no hace ni un solo pedido a terceros, no usa cookies y no lleva
+analíticas.
 
 ---
 
-## d) ⚡ Calibrar los glitches
-
-En `script.js`, dentro de `activarGlitches()`, está el bloque `CONFIG`:
-
-```js
-fuerteMin: 2200,  // espera mínima entre glitches fuertes (ms)
-fuerteMax: 5200,  // espera máxima
-fuerteDur: 260,
-replica: 0.55,    // probabilidad de una segunda sacudida
-microMin: 800,    // micro-glitches (sutiles)
-microMax: 2200,
-```
-
-Hay **6 variantes** de movimiento (`gv-1` … `gv-6` en el CSS) y
-**3 micro** (`mv-1` … `mv-3`). El JS elige una al azar y además
-sortea distancia, dirección, duración y ruido en cada disparo, para
-que ningún glitch se repita.
-
----
-
-## e) 🚀 Publicar los cambios
-
-El repo ya está conectado a GitHub Pages (rama `main`, carpeta raíz).
-
-1. Abrís **GitHub Desktop**.
-2. Escribís un resumen del cambio abajo a la izquierda → **Commit to main**.
-3. Botón **Push origin** (arriba).
-4. En 1–2 minutos se actualiza el sitio.
-
-### ⚠️ Importante: la caché
-
-Si cambiás `styles.css` o `script.js`, **subí el número de versión**
-en `index.html`:
-
-```html
-<link rel="stylesheet" href="styles.css?v=17" />
-<script src="script.js?v=17" defer></script>
-```
-
-Si no lo hacés, los visitantes que ya entraron pueden seguir viendo la
-versión vieja guardada en su navegador.
-
----
-
-## 🛠️ Probar antes de publicar
-
-Doble clic en `index.html`, o desde la terminal:
+## Probar en local
 
 ```bash
-python -m http.server 8000
+python3 -m http.server 4321
 ```
 
-y entrás a `http://localhost:8000`.
-
-> Los enlaces de instalación de iOS (`itms-services://`) **solo
-> funcionan desde el Safari de un iPhone y por HTTPS** — en la compu no
-> hacen nada, es normal.
-
----
-
-## ♿ Accesibilidad y rendimiento
-
-- Pestañas con `role="tab"` / `tabpanel` y navegación por flechas.
-- Enlace "Skip to content" para teclado.
-- Aviso visible si el visitante tiene JavaScript desactivado.
-- Respeta `prefers-reduced-motion` (apaga malla, glitches y animaciones).
-- Animaciones de fondo con `transform` (aceleradas por GPU).
-- Respeta las zonas seguras del iPhone (muesca y barra inferior).
-
----
-
-## f) 🎨 Temas de color
-
-El visitante puede elegir el tema desde la **ruedita** de arriba a la
-derecha. Su elección queda guardada en su propio navegador.
-
-Temas incluidos: **Matrix** (verde, por defecto), **Crimson**, **Ice**,
-**Amber** y **Violet**.
-
-**Para agregar uno nuevo** hacen falta 2 pasos:
-
-1. En `styles.css`, copiá un bloque y cambiá los colores:
-
-```css
-[data-theme="mi-tema"] {
-  --bg: #07070d;
-  --mesh:       rgba(200, 200, 255, 0.15);
-  --mesh-fine:  rgba(200, 200, 255, 0.05);
-  --mesh-glow:  rgba(150, 150, 220, 0.20);
-  --bit:        rgba(220, 220, 255, 0.85);
-  --avatar-glow: #8888dd;
-}
-```
-
-2. En `script.js`, sumalo al array `TEMAS`:
-
-```js
-{ id: "mi-tema", nombre: "Mi Tema", color: "#8888dd" },
-```
-
-El `color` es solo el del circulito del selector.
-
----
-
-## g) 🔒 Privacidad
-
-El sitio **no hace ni un solo pedido a servidores de terceros**:
-
-- La tipografía está **auto-hospedada** (antes venía de Google Fonts, lo
-  que le mandaba la IP de cada visitante a Google).
-- Sin cookies, sin analítica, sin píxeles de seguimiento.
-- `referrer: no-referrer` → cuando alguien toca un enlace, el sitio de
-  destino no se entera de que vino de acá.
-- Lo único que se guarda es el tema elegido, y queda en **el navegador
-  del visitante** (localStorage). No viaja a ningún lado.
-
-Si algún día agregás algo externo (un video incrustado, una fuente, un
-contador de visitas), tené en cuenta que rompés esta propiedad.
-
----
-
-## h) ⚡ Efectos y rendimiento
-
-Desde la ruedita también se pueden **apagar los efectos de fondo**
-(malla animada, bits, glitches, escáner). Útil en celulares viejos.
-Cuando están apagados, el JS ni siquiera los genera.
-
-El sitio también respeta `prefers-reduced-motion` del sistema.
-
----
-
-## i) 📱 App nativa para iPhone
-
-En la carpeta `ios-app/` está el proyecto de una app que muestra el
-sitio a pantalla completa. Se compila **en GitHub, sin necesidad de
-tener una Mac**, y se firma después con KSign.
-
-Los pasos están en [`ios-app/README.md`](ios-app/README.md). En corto:
-
-1. Push a GitHub.
-2. Pestaña **Actions** → **Build iOS app (.ipa)** → **Run workflow**.
-3. Descargar el `.ipa` desde **Artifacts**.
-4. Firmarlo con KSign en el iPhone.
-
-> El `.ipa` sale **sin firmar** a propósito: firmarlo requiere un
-> certificado, y eso se hace en el teléfono con el mismo proceso que
-> explica la guía del sitio.
-
+Y abrir <http://localhost:4321>.

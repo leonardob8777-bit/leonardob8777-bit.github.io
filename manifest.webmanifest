@@ -1,24 +1,23 @@
 {
-  "name": "Leonardo Bt · iOS Hub",
+  "name": "Leonardo Baptiste — iOS Developer",
   "short_name": "Leonardo Bt",
-  "description": "Signed IPAs, certificates, UDID tools and step-by-step guides for iOS sideloading.",
+  "description": "Open-source iOS apps: Vendor, Eagle and more. All source code on GitHub.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#030806",
-  "theme_color": "#030806",
+  "background_color": "#0D0D12",
+  "theme_color": "#0D0D12",
   "icons": [
     {
-      "src": "assets/lb-icon.png",
-      "sizes": "512x512",
+      "src": "assets/vendor-icon-1024.png",
+      "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "assets/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "assets/vendor-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any"
     }
   ]

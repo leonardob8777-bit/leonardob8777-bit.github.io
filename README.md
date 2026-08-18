@@ -1,6 +1,6 @@
 # leonardob8777-bit.github.io
 
-Sitio personal de **Leonardo Baptiste** — desarrollador iOS.
+Sitio personal de **Leonardo B.** — desarrollador iOS.
 Presenta las apps propias (Vendor, Eagle, duck), los repositorios de
 código abierto, una guía de instalación y los canales de contacto.
 

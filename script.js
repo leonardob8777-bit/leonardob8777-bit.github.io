@@ -137,3 +137,83 @@ setupTopbar();
 setupCurrentSection();
 setupReveal();
 setupYear();
+
+
+/* Public GitHub data, with a useful static snapshot if requests fail.
+   No token, visitor tracking, cookies or background timers. */
+const GITHUB_OWNER = "leonardob8777-bit";
+const STATS_CACHE_KEY = "lb-projects-v1";
+const STATS_TTL = 60 * 60 * 1000;
+
+async function githubJSON(url) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15000);
+  try {
+    const response = await fetch(url, { signal: controller.signal, credentials: "omit", referrerPolicy: "no-referrer" });
+    if (!response.ok) throw new Error("GitHub data unavailable");
+    return await response.json();
+  } finally { clearTimeout(timeout); }
+}
+
+async function getProjectData(name) {
+  const base = `https://api.github.com/repos/${GITHUB_OWNER}/${name}`;
+  const metadata = await githubJSON(base);
+  const releases = [];
+  // Follow all pages: Coconut also publishes wallpaper/catalog releases.
+  for (let page = 1; ; page++) {
+    if (page > 30) throw new Error("Release list incomplete");
+    const batch = await githubJSON(`${base}/releases?per_page=100&page=${page}`);
+    if (!Array.isArray(batch)) throw new Error("Invalid release list");
+    releases.push(...batch.filter(release => !release.draft));
+    if (batch.length < 100) break;
+  }
+  const appReleases = releases.filter(release => /^v?\d+\.\d+/i.test(release.tag_name) && release.assets?.some(asset => /\.ipa$/i.test(asset.name)));
+  appReleases.sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at));
+  const release = appReleases.find(item => !item.prerelease) || appReleases[0];
+  if (!release || !Number.isFinite(metadata.stargazers_count)) throw new Error("Incomplete project data");
+  return {
+    name, version: release.tag_name,
+    // Construct only known GitHub paths; API text never becomes HTML.
+    releaseURL: `https://github.com/${GITHUB_OWNER}/${name}/releases/tag/${encodeURIComponent(release.tag_name)}`,
+    stars: metadata.stargazers_count,
+    downloads: releases.flatMap(item => item.assets || []).filter(asset => /\.ipa$/i.test(asset.name)).reduce((sum, asset) => sum + (Number(asset.download_count) || 0), 0),
+    checkedAt: Date.now()
+  };
+}
+
+function renderProjectData(data) {
+  const card = [...document.querySelectorAll("[data-project]")].find(item => item.dataset.project === data.name);
+  if (!card) return;
+  const version = card.querySelector("[data-version]");
+  version.textContent = data.version;
+  version.href = data.releaseURL;
+  card.querySelector("[data-release]").href = data.releaseURL;
+  card.querySelector("[data-downloads]").textContent = `${data.downloads.toLocaleString("en-US")} IPA downloads`;
+  card.querySelector("[data-stars]").textContent = `${data.stars.toLocaleString("en-US")} stars ↗`;
+}
+
+async function setupProjectUpdates() {
+  const status = document.getElementById("data-status");
+  if (!status) return;
+  const names = [...document.querySelectorAll("[data-project]")].map(card => card.dataset.project);
+  let cached = {};
+  try { cached = JSON.parse(readStored(STATS_CACHE_KEY)) || {}; } catch { /* use snapshot */ }
+  const results = await Promise.allSettled(names.map(async name => {
+    const saved = cached[name];
+    const valid = saved && saved.name === name && Number.isFinite(saved.checkedAt) && saved.checkedAt <= Date.now() && Date.now() - saved.checkedAt < STATS_TTL && Number.isFinite(saved.downloads) && Number.isFinite(saved.stars) && typeof saved.version === "string" && saved.releaseURL === `https://github.com/${GITHUB_OWNER}/${name}/releases/tag/${encodeURIComponent(saved.version)}`;
+    const data = valid ? saved : await getProjectData(name);
+    renderProjectData(data);
+    cached[name] = data;
+    return data;
+  }));
+  store(STATS_CACHE_KEY, JSON.stringify(cached));
+  const complete = results.every(result => result.status === "fulfilled");
+  const checked = results.filter(result => result.status === "fulfilled").map(result => result.value.checkedAt);
+  if (complete) {
+    const date = new Date(Math.min(...checked));
+    status.textContent = `GitHub data checked ${date.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}. Refreshes on visits, cached up to one hour.`;
+  } else {
+    status.textContent = "Some live GitHub data is unavailable. Unchanged cards show the October 24, 2026 snapshot; open releases for current totals.";
+  }
+}
+setupProjectUpdates();
